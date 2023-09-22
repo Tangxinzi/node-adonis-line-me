@@ -23,3 +23,15 @@ import Route from '@ioc:Adonis/Core/Route'
 Route.get('/', async ({ view }) => {
   return view.render('welcome')
 })
+
+Route.group(() => {
+  Route.get('/user/wxa-login', 'api/UserController.wxaLogin')
+  Route.get('/user/info', 'api/UserController.getUserinfo')
+  Route.post('/user/info', 'api/UserController.updateUserinfo')
+  Route.post('/user/custom/create', 'api/PublishesController.create')
+
+  Route.post('/customer/info', 'api/CustomerController.updateCustomerinfo')
+
+  Route.post('/file/upload', 'api/FilesController.upload')
+})
+.prefix('/api')
