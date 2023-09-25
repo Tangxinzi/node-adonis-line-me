@@ -35,5 +35,9 @@ Route.group(() => {
   Route.get('/data/index', 'api/DataController.index')
 
   Route.post('/file/upload', 'api/FilesController.upload')
-})
-.prefix('/api')
+}).prefix('/api')
+
+Route.group(() => {
+  Route.get('/users/index', 'admin/UsersController.index').as('users')
+  Route.get('/customers/index', 'admin/CustomersController.index').as('customer')
+}).prefix('/admin')

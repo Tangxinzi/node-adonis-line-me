@@ -1,0 +1,9 @@
+<b>平台管理</b>
+<div class="ui vertical pointing menu">
+  <a class="{{ data.active == 'users' ? 'item active' : 'item' }}" href="{{ route('admin/UsersController.index') }}">Users</a>
+  <a class="{{ data.active == 'customers' ? 'item active' : 'item' }}" href="{{ route('admin/CustomersController.index' )}}">Customer</a>
+</div>
+<b>系统设置</b>
+<div class="ui vertical pointing menu">
+  <a class="item" href="">退出</a>
+</div>

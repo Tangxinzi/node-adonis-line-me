@@ -46,7 +46,7 @@ export default class UserController {
       return await Database.from('users').where('wechat_open_id', all.openid).first()
     } catch (error) {
       console.log(error)
-      return
+      return error
     }
   }
 
