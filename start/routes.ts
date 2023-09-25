@@ -32,6 +32,8 @@ Route.group(() => {
 
   Route.post('/customer/info', 'api/CustomerController.updateCustomerinfo')
 
+  Route.get('/data/index', 'api/DataController.index')
+
   Route.post('/file/upload', 'api/FilesController.upload')
 })
 .prefix('/api')

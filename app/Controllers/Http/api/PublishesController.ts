@@ -20,7 +20,6 @@ export default class PublishesController {
         relation: all.relation || '',
         relation_id: all.relation_id || '',
         detail: all.detail || '',
-
       })
 
       return user
