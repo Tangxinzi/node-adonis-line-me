@@ -1,6 +1,7 @@
 import Database from '@ioc:Adonis/Lucid/Database';
 import Env from '@ioc:Adonis/Core/Env';
 import axios from "axios";
+import RandomString from "randomstring";
 import { v4 as uuidv4 } from 'uuid';
 
 // const { jscode2session } = require('../lib/Weixin');
@@ -26,12 +27,12 @@ export default class UserController {
       if (user) {
         result.user = user
       } else {
-        const id = await Database.table('users').returning('id').insert({
-          user_id: uuidv4(),
+        await Database.table('users').returning('id').insert({
+          // user_id: uuidv4(),
+          user_id: RandomString.generate({ length: 8, charset: ['numeric'] }),
           wechat_open_id: result.openid,
         })
-
-        result.id = id
+        result.user = {}
       }
 
       return result
@@ -43,7 +44,12 @@ export default class UserController {
   public async getUserinfo({ request }: HttpContextContract) {
     try {
       const all = request.all()
-      return await Database.from('users').where('wechat_open_id', all.openid).first()
+      const user = await Database.from('users').where('wechat_open_id', all.openid).first()
+      if (user) {
+        user['photos'] = JSON.parse(user['photos'])
+      }
+
+      return user
     } catch (error) {
       console.log(error)
       return error
@@ -62,6 +68,18 @@ export default class UserController {
         photos: JSON.stringify(all.photos || ''),
         // modified_at: ''
       }, ['id'])
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  public async qrcode({ request }: HttpContextContract) {
+    try {
+      const all = request.all()
+      const QrCode = require('qrcode');
+      const user = await Database.from('users').where('wechat_open_id', all.openid).first()
+
+      return await QrCode.toDataURL(user.user_id, { width: 100 })
     } catch (error) {
       console.log(error)
     }
