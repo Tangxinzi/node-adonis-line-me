@@ -28,6 +28,8 @@ Route.group(() => {
   Route.get('/user/wxa-login', 'api/UserController.wxaLogin')
   Route.get('/user/info', 'api/UserController.getUserinfo')
   Route.post('/user/info', 'api/UserController.updateUserinfo')
+  Route.post('/user/field', 'api/UserController.updateUserField')
+  Route.get('/user/custom/public/user-list', 'api/DataController.customerPublicUserList')
   Route.post('/user/custom/create', 'api/PublishesController.create')
   Route.get('/user/qrcode', 'api/UserController.qrcode')
 

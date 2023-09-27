@@ -77,7 +77,8 @@ export const http: ServerConfig = {
   | headers.
   |
   */
-  trustProxy: proxyAddr.compile('loopback'),
+  // trustProxy: proxyAddr.compile('loopback'),
+  trustProxy: proxyAddr.compile(['127.0.0.0/8', 'fc00:ac:1ab5:fff::1/64']),
 
   /*
   |--------------------------------------------------------------------------

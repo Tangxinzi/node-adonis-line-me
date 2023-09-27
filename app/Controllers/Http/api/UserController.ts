@@ -46,6 +46,7 @@ export default class UserController {
       const all = request.all()
       const user = await Database.from('users').where('wechat_open_id', all.openid).first()
       if (user) {
+        await Database.from('users').where('wechat_open_id', all.openid).update({ ip: request.ip() })
         user['photos'] = JSON.parse(user['photos'])
       }
 
@@ -68,6 +69,24 @@ export default class UserController {
         photos: JSON.stringify(all.photos || ''),
         // modified_at: ''
       }, ['id'])
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  public async updateUserField({ request }: HttpContextContract) {
+    try {
+      const all = request.all()
+      switch (all.type) {
+        case 'nickname':
+          await Database.from('users').where('wechat_open_id', all.openid).update({ nickname: all.value })
+          break;
+
+        default:
+          break;
+      }
+
+      return 'ok'
     } catch (error) {
       console.log(error)
     }
