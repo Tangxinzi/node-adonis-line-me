@@ -1,5 +1,6 @@
 import Database from '@ioc:Adonis/Lucid/Database'
 import Moment from'moment';
+const zpData = require('../lib/Zhipin');
 
 export default class DataController {
   getZodiacSign(day, month) {
@@ -55,6 +56,11 @@ export default class DataController {
         customer[index]['photos'] = JSON.parse(customer[index]['photos'])
         customer[index]['zodiac_sign'] = this.getZodiacSign(Moment(customer[index]['birthday']).format('DD'), Moment(customer[index]['birthday']).format('MM'))
         customer[index]['age'] = Moment().diff(customer[index]['birthday'], 'years')
+
+        customer[index]['work'] = customer[index]['work'] ? JSON.parse(customer[index]['work']) : []
+        if (customer[index]['work']['value']) {
+          customer[index]['work']['text'] = await zpData.data(customer[index]['work']['value'][0], customer[index]['work']['value'][1])
+        }
       }
       return customer
     } catch (error) {

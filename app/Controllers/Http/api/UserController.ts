@@ -3,7 +3,9 @@ import Env from '@ioc:Adonis/Core/Env';
 import axios from "axios";
 import RandomString from "randomstring";
 import { v4 as uuidv4 } from 'uuid';
+import Moment from'moment';
 
+const zpData = require('../lib/Zhipin');
 // const { jscode2session } = require('../lib/Weixin');
 
 export default class UserController {
@@ -45,9 +47,14 @@ export default class UserController {
     try {
       const all = request.all()
       const user = await Database.from('users').where('wechat_open_id', all.openid).first()
+
       if (user) {
-        await Database.from('users').where('wechat_open_id', all.openid).update({ ip: request.ip() })
+        await Database.from('users').where('wechat_open_id', all.openid).update({ online_at: Moment().format('YYYY-MM-DD HH:mm:ss'), ip: request.ip() })
         user['photos'] = JSON.parse(user['photos'])
+        user['work'] = JSON.parse(user['work'])
+        if (user['work']['value']) {
+          user['work']['text'] = await zpData.data(user['work']['value'][0], user['work']['value'][1])
+        }
       }
 
       return user
@@ -63,10 +70,11 @@ export default class UserController {
       return Database.from('users').where('wechat_open_id', all.openid).update({
         nickname: all.nickname,
         avatar_url: all.avatar_url,
-        work: all.work,
+        work: JSON.stringify(all.work),
         height: all.height,
         sex: all.sex,
         photos: JSON.stringify(all.photos || ''),
+        ip: request.ip(),
         // modified_at: ''
       }, ['id'])
     } catch (error) {
@@ -74,21 +82,47 @@ export default class UserController {
     }
   }
 
-  public async updateUserField({ request }: HttpContextContract) {
+  public async updateUserField({ request, response }: HttpContextContract) {
     try {
       const all = request.all()
       switch (all.type) {
         case 'nickname':
           await Database.from('users').where('wechat_open_id', all.openid).update({ nickname: all.value })
           break;
+        case 'birthday':
+          await Database.from('users').where('wechat_open_id', all.openid).update({ birthday: all.value })
+          break;
+        case 'height':
+          await Database.from('users').where('wechat_open_id', all.openid).update({ height: all.value })
+          break;
+        case 'work':
+          await Database.from('users').where('wechat_open_id', all.openid).update({ work: JSON.stringify(all.value) })
+          break;
+        case 'birthday':
+          await Database.from('users').where('wechat_open_id', all.openid).update({ birthday: all.value })
+          break;
+        case 'detail':
+          await Database.from('users').where('wechat_open_id', all.openid).update({ detail: all.value })
+          break;
+        case 'phone':
+          await Database.from('users').where('wechat_open_id', all.openid).update({ phone: all.value })
+          break;
 
         default:
           break;
       }
 
-      return 'ok'
+      response.json({
+        status: 200,
+        message: "ok"
+      })
     } catch (error) {
       console.log(error)
+      response.json({
+        status: 500,
+        message: "ok",
+        data: error
+      })
     }
   }
 
