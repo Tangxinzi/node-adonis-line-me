@@ -1,6 +1,7 @@
 import Database from '@ioc:Adonis/Lucid/Database';
 import Env from '@ioc:Adonis/Core/Env';
 import axios from "axios";
+import iconv from 'iconv-lite';
 import RandomString from "randomstring";
 import { v4 as uuidv4 } from 'uuid';
 import Moment from'moment';
@@ -56,6 +57,16 @@ export default class UserController {
           user['work']['text'] = await zpData.data(user['work']['value'][0], user['work']['value'][1])
         }
       }
+
+      await axios({
+        url: `http://whois.pconline.com.cn/ipJson.jsp?ip=${ request.ip() }&json=true`,
+        responseType: "arraybuffer"
+      }).then(function (response) {
+        const data = iconv.decode(response.data, 'gbk')
+        user.ip = data ? JSON.parse(data) : ''
+      }).catch(function (error) {
+        console.log(error)
+      })
 
       return user
     } catch (error) {
