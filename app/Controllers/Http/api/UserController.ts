@@ -53,7 +53,7 @@ export default class UserController {
         await Database.from('users').where('wechat_open_id', all.openid).update({ online_at: Moment().format('YYYY-MM-DD HH:mm:ss'), ip: request.ip() })
         user['photos'] = JSON.parse(user['photos'])
         user['work'] = JSON.parse(user['work'])
-        if (user['work']['value']) {
+        if (user['work'] && user['work']['value']) {
           user['work']['text'] = await zpData.data(user['work']['value'][0], user['work']['value'][1])
         }
       }
@@ -134,6 +134,24 @@ export default class UserController {
         message: "ok",
         data: error
       })
+    }
+  }
+
+  // 切换用户身份
+  public async switch({ request, response }: HttpContextContract) {
+    try {
+      const all = request.all()
+      const QrCode = require('qrcode');
+      const user = await Database.from('users').where('wechat_open_id', all.openid).first()
+      if (user) {
+        await Database.from('users').where('wechat_open_id', all.openid).update({ type: user.type == 1 ? 2 : 1 })
+        response.json({
+          status: 200,
+          message: "ok"
+        })
+      }
+    } catch (error) {
+      console.log(error)
     }
   }
 
