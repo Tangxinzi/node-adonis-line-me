@@ -1,4 +1,6 @@
+import Application from '@ioc:Adonis/Core/Application'
 import Database from '@ioc:Adonis/Lucid/Database'
+import * as Vibrant from 'node-vibrant'
 import Moment from'moment';
 const zpData = require('../lib/Zhipin');
 
@@ -60,6 +62,15 @@ export default class DataController {
         customer[index]['work'] = customer[index]['work'] ? JSON.parse(customer[index]['work']) : []
         if (customer[index]['work']['value']) {
           customer[index]['work']['text'] = await zpData.data(customer[index]['work']['value'][0], customer[index]['work']['value'][1])
+        }
+
+        if (customer[index].avatar_url) {
+          const imagePath = Application.publicPath(customer[index].avatar_url);
+          await Vibrant.from(imagePath).getPalette().then((palette) => {
+            let rgb = palette.DarkVibrant._rgb
+            let color = `rgba(${ parseInt(rgb[0]) }, ${ parseInt(rgb[1]) }, ${ parseInt(rgb[2]) }, 1)`
+            customer[index].color = color
+          })
         }
       }
       return customer

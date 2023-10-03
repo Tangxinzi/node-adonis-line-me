@@ -1,3 +1,4 @@
+import Application from '@ioc:Adonis/Core/Application'
 import Database from '@ioc:Adonis/Lucid/Database';
 import Env from '@ioc:Adonis/Core/Env';
 import axios from "axios";
@@ -5,6 +6,7 @@ import iconv from 'iconv-lite';
 import RandomString from "randomstring";
 import { v4 as uuidv4 } from 'uuid';
 import Moment from'moment';
+import * as Vibrant from 'node-vibrant'
 
 const zpData = require('../lib/Zhipin');
 // const { jscode2session } = require('../lib/Weixin');
@@ -55,6 +57,14 @@ export default class UserController {
         user['work'] = JSON.parse(user['work'])
         if (user['work'] && user['work']['value']) {
           user['work']['text'] = await zpData.data(user['work']['value'][0], user['work']['value'][1])
+        }
+
+        if (user.avatar_url) {
+          const imagePath = Application.publicPath(user.avatar_url);
+          Vibrant.from(imagePath).getPalette().then((palette) => {
+            let rgb = palette.Vibrant._rgb
+            user.color = `rgba(${ rgb[0] }, ${ rgb[1] }, ${ rgb[2] }, .2)`
+          })
         }
       }
 
