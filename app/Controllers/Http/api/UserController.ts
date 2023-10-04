@@ -151,7 +151,6 @@ export default class UserController {
   public async switch({ request, response }: HttpContextContract) {
     try {
       const all = request.all()
-      const QrCode = require('qrcode');
       const user = await Database.from('users').where('wechat_open_id', all.openid).first()
       if (user) {
         await Database.from('users').where('wechat_open_id', all.openid).update({ type: user.type == 1 ? 2 : 1 })
@@ -168,9 +167,9 @@ export default class UserController {
   public async qrcode({ request }: HttpContextContract) {
     try {
       const all = request.all()
-      const QrCode = require('qrcode');
       const user = await Database.from('users').where('wechat_open_id', all.openid).first()
 
+      const QrCode = require('qrcode');
       return await QrCode.toDataURL(user.user_id, { width: 100 })
     } catch (error) {
       console.log(error)
