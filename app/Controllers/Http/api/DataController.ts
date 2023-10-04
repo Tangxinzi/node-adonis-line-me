@@ -1,6 +1,8 @@
 import Application from '@ioc:Adonis/Core/Application'
 import Database from '@ioc:Adonis/Lucid/Database'
 import * as Vibrant from 'node-vibrant'
+import axios from "axios";
+import iconv from 'iconv-lite';
 import Moment from'moment';
 const zpData = require('../lib/Zhipin');
 
@@ -53,7 +55,7 @@ export default class DataController {
   public async index({ request }: HttpContextContract) {
     try {
       const all = request.all()
-      const customer = (await Database.rawQuery('select customer.id, customer.user_wechat_open_id, customer.introduction, users.avatar_url, users.detail, users.nickname, users.height, users.birthday, users.photos, users.work from customer, users where `customer`.`user_wechat_open_id` = `users`.`wechat_open_id`'))[0]
+      const customer = (await Database.rawQuery('select customer.id, customer.user_wechat_open_id, customer.introduction, users.avatar_url, users.detail, users.nickname, users.height, users.birthday, users.photos, users.work, users.ip from customer, users where `customer`.`user_wechat_open_id` = `users`.`wechat_open_id`'))[0]
       for (let index = 0; index < customer.length; index++) {
         customer[index]['photos'] = JSON.parse(customer[index]['photos'])
         customer[index]['zodiac_sign'] = this.getZodiacSign(Moment(customer[index]['birthday']).format('DD'), Moment(customer[index]['birthday']).format('MM'))
@@ -72,6 +74,16 @@ export default class DataController {
             customer[index].color = color
           })
         }
+
+        await axios({
+          url: `http://whois.pconline.com.cn/ipJson.jsp?ip=${ customer[index].ip }&json=true`,
+          responseType: "arraybuffer"
+        }).then(function (response) {
+          const data = iconv.decode(response.data, 'gbk')
+          customer[index].ip = data ? JSON.parse(data) : ''
+        }).catch(function (error) {
+          console.log(error)
+        })
       }
       return customer
     } catch (error) {

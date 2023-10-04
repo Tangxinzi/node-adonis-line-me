@@ -148,7 +148,7 @@ export default class UserController {
   }
 
   // 切换用户身份
-  public async switch({ request, response }: HttpContextContract) {
+  public async changeType({ request, response }: HttpContextContract) {
     try {
       const all = request.all()
       const user = await Database.from('users').where('wechat_open_id', all.openid).first()
