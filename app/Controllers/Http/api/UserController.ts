@@ -128,8 +128,11 @@ export default class UserController {
         case 'phone':
           await Database.from('users').where('wechat_open_id', all.openid).update({ phone: all.value })
           break;
-
+        case 'photos':
+          await Database.from('users').where('wechat_open_id', all.openid).update({ photos: JSON.stringify(all.value || '') })
+          break;
         default:
+
           break;
       }
 
