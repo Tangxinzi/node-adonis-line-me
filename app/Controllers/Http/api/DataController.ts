@@ -66,6 +66,27 @@ export default class DataController {
           customer[index]['work']['text'] = await zpData.data(customer[index]['work']['value'][0], customer[index]['work']['value'][1])
         }
 
+        // 个性化问答
+        let _answer = [[], [], []]
+        const answer = (await Database.rawQuery("select questions.type, questions.title, questions.description, answer.content, answer.relation_user_id from answer left outer join questions on answer.relation_question_id = questions.id where answer.relation_user_id = :relation_user_id order by type asc;", {
+          relation_user_id: customer[index].user_wechat_open_id
+        }))[0]
+
+        for (let index = 0; index < answer.length; index++) {
+          switch (answer[index].type) {
+            case '0':
+              _answer[0].push(answer[index])
+              break;
+            case '1':
+              _answer[1].push(answer[index])
+              break;
+            case '2':
+              _answer[2].push(answer[index])
+              break;
+          }
+        }
+        customer[index].answer = _answer
+
         if (customer[index].avatar_url) {
           const imagePath = Application.publicPath(customer[index].avatar_url);
           await Vibrant.from(imagePath).getPalette().then((palette) => {
@@ -82,7 +103,7 @@ export default class DataController {
           const data = iconv.decode(response.data, 'gbk')
           customer[index].ip = data ? JSON.parse(data) : ''
         }).catch(function (error) {
-          console.log(error)
+          // console.log(error)
         })
       }
       return customer

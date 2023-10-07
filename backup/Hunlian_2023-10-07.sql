@@ -5,9 +5,9 @@
 # https://sequel-ace.com/
 # https://github.com/Sequel-Ace/Sequel-Ace
 #
-# 主机: localhost (MySQL 5.7.34)
-# 数据库: Hunlian
-# 生成时间: 2023-10-07 00:16:03 +0000
+# 主机: localhost (MySQL 5.7.39)
+# 数据库: hunlian
+# 生成时间: 2023-10-07 10:23:49 +0000
 # ************************************************************
 
 
@@ -18,6 +18,36 @@ SET NAMES utf8mb4;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE='NO_AUTO_VALUE_ON_ZERO', SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+
+# 转储表 answer
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `answer`;
+
+CREATE TABLE `answer` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `relation_question_id` varchar(50) CHARACTER SET utf8mb4 NOT NULL COMMENT '关联 Question ID',
+  `relation_user_id` varchar(50) CHARACTER SET utf8mb4 NOT NULL COMMENT '关联 User ID',
+  `content` varchar(128) CHARACTER SET utf8mb4 NOT NULL COMMENT '描述',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `modified_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+LOCK TABLES `answer` WRITE;
+/*!40000 ALTER TABLE `answer` DISABLE KEYS */;
+
+INSERT INTO `answer` (`id`, `relation_question_id`, `relation_user_id`, `content`, `created_at`, `modified_at`, `deleted_at`)
+VALUES
+	(1,'1','op02s4vhiiLffHPfdB7LKmpMdr_I','喂马劈柴，周游世界','2023-10-07 16:15:39','2023-10-07 16:15:39',NULL),
+	(2,'7','op02s4vhiiLffHPfdB7LKmpMdr_I','听听歌就很愉快','2023-10-07 16:20:33','2023-10-07 16:20:33',NULL),
+	(3,'9','op02s4vhiiLffHPfdB7LKmpMdr_I','脚踏祥云','2023-10-07 16:26:23','2023-10-07 16:26:23',NULL),
+	(4,'4','op02s4vhiiLffHPfdB7LKmpMdr_I','世界毁灭','2023-10-07 16:26:56','2023-10-07 16:26:56',NULL);
+
+/*!40000 ALTER TABLE `answer` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # 转储表 customer
@@ -151,7 +181,7 @@ LOCK TABLES `users` WRITE;
 
 INSERT INTO `users` (`id`, `type`, `user_id`, `nickname`, `avatar_url`, `birthday`, `height`, `sex`, `work`, `photos`, `videos`, `detail`, `contact`, `location`, `realname`, `phone`, `wechat_union_id`, `wechat_open_id`, `wechat_platform_open_id`, `parent_id`, `ip`, `online_at`, `created_at`, `modified_at`, `deleted_at`)
 VALUES
-	(2,1,'10000001','Jiangkun','/uploads/files/c9WyMZmT3nl6QKrXhNivsFAvMcv7MPBd.png','2001-03-01',173,1,'{\"key\":\"zhipin\",\"value\":[2,0]}','[\"/uploads/files/4Yk9GYRHwbJCubuPNhCc2UL0XkfYymq0.png\",\"/uploads/files/S1O8rRym4gBMYniWqGwnHub7UtDkAGJT.png\",\"/uploads/files/2GQ6uwNXugR6eWD8AYm5eCH6aZ0UDzg0.jpg\",\"/uploads/files/rMp4Y9km65FkpIC3XOYpQovkcyieSqUo.jpg\",\"/uploads/files/FbPVlAFTnTMEwz1H2HpW5XDGcG5bTShB.jpg\",\"/uploads/files/I4MbhatLDwwTtwNVG97ym5jRQ0VmKsK0.jpg\"]',NULL,'Hi 你好哇~',NULL,NULL,NULL,'17725386753',NULL,'op02s4vhiiLffHPfdB7LKmpMdr_I',NULL,NULL,'10.0.8.14','2023-10-06 23:40:20','2023-09-22 08:03:17','2023-09-22 08:03:32',NULL),
+	(2,1,'10000001','Jiangkun','/uploads/files/c9WyMZmT3nl6QKrXhNivsFAvMcv7MPBd.png','2001-03-01',173,1,'{\"key\":\"zhipin\",\"value\":[2,0]}','[\"/uploads/files/4Yk9GYRHwbJCubuPNhCc2UL0XkfYymq0.png\",\"/uploads/files/S1O8rRym4gBMYniWqGwnHub7UtDkAGJT.png\",\"/uploads/files/2GQ6uwNXugR6eWD8AYm5eCH6aZ0UDzg0.jpg\",\"/uploads/files/rMp4Y9km65FkpIC3XOYpQovkcyieSqUo.jpg\",\"/uploads/files/FbPVlAFTnTMEwz1H2HpW5XDGcG5bTShB.jpg\",\"/uploads/files/I4MbhatLDwwTtwNVG97ym5jRQ0VmKsK0.jpg\"]',NULL,'Hi 你好哇~',NULL,NULL,NULL,'17725386753',NULL,'op02s4vhiiLffHPfdB7LKmpMdr_I',NULL,NULL,'10.0.8.14','2023-10-07 18:23:12','2023-09-22 08:03:17','2023-09-22 08:03:32',NULL),
 	(3,1,'10000002','☄️ 彗星撞地球','/uploads/files/10000002.png','1998-05-10',173,0,'{\"key\":\"zhipin\",\"value\":[4,0]}',NULL,NULL,'爱笑开朗乐观，对你充满期待',NULL,NULL,NULL,NULL,NULL,'test-1234',NULL,NULL,NULL,NULL,'2023-09-24 21:51:03','2023-09-24 21:51:03',NULL),
 	(4,1,'77500354','Charles正泉',NULL,NULL,165,1,'{\"key\":\"zhipin\",\"value\":[0,13]}','\"\"',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4vllnME96C7JPHus0K0IjGE',NULL,NULL,'10.0.8.14','2023-10-02 11:47:11','2023-09-27 08:56:33','2023-09-27 08:56:33',NULL),
 	(5,1,'93498125',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4vkWz17jyhDWsWuzDrV41_E',NULL,NULL,'10.0.8.14',NULL,'2023-09-27 14:58:56','2023-09-27 14:58:56',NULL),

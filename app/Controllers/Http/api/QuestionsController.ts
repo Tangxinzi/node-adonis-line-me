@@ -2,6 +2,42 @@ import Application from '@ioc:Adonis/Core/Application'
 import Database from '@ioc:Adonis/Lucid/Database'
 
 export default class QuestionsController {
+  public async index({ request, response }: HttpContextContract) {
+    try {
+      let all = request.all(), _answer = [[], [], []]
+      const answer = (await Database.rawQuery("select questions.type, questions.title, questions.description, answer.content, answer.relation_user_id from answer left outer join questions on answer.relation_question_id = questions.id where answer.relation_user_id = :relation_user_id order by type asc;", {
+        relation_user_id: customer[index].user_wechat_open_id
+      }))[0]
+
+      for (let index = 0; index < answer.length; index++) {
+        switch (answer[index].type) {
+          case '0':
+            _answer[0].push(answer[index])
+            break;
+          case '1':
+            _answer[1].push(answer[index])
+            break;
+          case '2':
+            _answer[2].push(answer[index])
+            break;
+        }
+      }
+
+      response.json({
+        status: 200,
+        message: "ok",
+        data: _answer
+      })
+    } catch (error) {
+      console.log(error)
+      response.json({
+        status: 500,
+        message: "internalServerError",
+        data: error
+      })
+    }
+  }
+
   public async lists({ request, response }: HttpContextContract) {
     try {
       const all = request.all()
@@ -27,15 +63,13 @@ export default class QuestionsController {
       const all = request.all()
       const question = await Database.from('questions').where('id', params.id).first()
       if (all.openid) {
-        var answer = await Database.from('answer').where({id: params.id, relation_user_id: all.openid}).first()
+        let answer = await Database.from('answer').where({id: params.id, relation_user_id: all.openid}).first()
+        question.content = answer ? answer.content : ''
       }
       response.json({
         status: 200,
         message: "ok",
-        data: {
-          ...question,
-          content: answer.content
-        }
+        data: question
       })
     } catch (error) {
       console.log(error)

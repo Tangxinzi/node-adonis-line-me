@@ -24,6 +24,30 @@ export default class UserController {
     });
   }
 
+  getZodiacSign(day, month) {
+    const zodiacSigns = [
+      '摩羯座', '水瓶座', '双鱼座', '白羊座', '金牛座', '双子座',
+      '巨蟹座', '狮子座', '处女座', '天秤座', '天蝎座', '射手座'
+    ];
+
+    const signDates = [
+      { month: 1, day: 20 }, { month: 2, day: 19 }, { month: 3, day: 20 },
+      { month: 4, day: 20 }, { month: 5, day: 21 }, { month: 6, day: 21 },
+      { month: 7, day: 23 }, { month: 8, day: 23 }, { month: 9, day: 23 },
+      { month: 10, day: 23 }, { month: 11, day: 22 }, { month: 12, day: 22 }
+    ];
+
+    let i = 0;
+    while (i < signDates.length) {
+      if (month < signDates[i].month || (month === signDates[i].month && day <= signDates[i].day)) {
+        return zodiacSigns[i];
+      }
+      i++;
+    }
+
+    return zodiacSigns[0];
+  }
+
   public async wxaLogin({ request }: HttpContextContract) {
     try {
       const all = request.all()
@@ -54,10 +78,15 @@ export default class UserController {
       if (user) {
         await Database.from('users').where('wechat_open_id', all.openid).update({ online_at: Moment().format('YYYY-MM-DD HH:mm:ss'), ip: request.ip() })
         user['photos'] = JSON.parse(user['photos'])
+        user['zodiac_sign'] = this.getZodiacSign(Moment(user['birthday']).format('DD'), Moment(user['birthday']).format('MM'))
+        user['age'] = Moment().diff(user['birthday'], 'years')
+
         user['work'] = JSON.parse(user['work'])
         if (user['work'] && user['work']['value']) {
           user['work']['text'] = await zpData.data(user['work']['value'][0], user['work']['value'][1])
         }
+
+
 
         if (user.avatar_url) {
           const imagePath = Application.publicPath(user.avatar_url);
@@ -75,7 +104,7 @@ export default class UserController {
         const data = iconv.decode(response.data, 'gbk')
         user.ip = data ? JSON.parse(data) : ''
       }).catch(function (error) {
-        console.log(error)
+        // console.log(error)
       })
 
       return user
