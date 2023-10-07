@@ -34,6 +34,9 @@ Route.group(() => {
   Route.post('/user/custom/create', 'api/PublishesController.create')
   Route.get('/user/qrcode', 'api/UserController.qrcode')
 
+  Route.get('/user/question/show/:id', 'api/QuestionsController.show')
+  Route.get('/user/question/lists', 'api/QuestionsController.lists')
+
   Route.post('/customer/info', 'api/CustomerController.updateCustomerinfo')
 
   Route.get('/data/index', 'api/DataController.index')
@@ -42,6 +45,12 @@ Route.group(() => {
 }).prefix('/api')
 
 Route.group(() => {
-  Route.get('/users/index', 'admin/UsersController.index').as('users')
-  Route.get('/customers/index', 'admin/CustomersController.index').as('customer')
+  Route.get('/users', 'admin/UsersController.index').as('users')
+  Route.get('/customers', 'admin/CustomersController.index').as('customers')
+
+  Route.get('/questions', 'admin/QuestionsController.index').as('questions')
+  Route.get('/questions/edit/:id', 'admin/QuestionsController.edit')
+  Route.get('/questions/create', 'admin/QuestionsController.create')
+  Route.post('/questions/save', 'admin/QuestionsController.save')
+  Route.post('/questions/update', 'admin/QuestionsController.update')
 }).prefix('/admin')

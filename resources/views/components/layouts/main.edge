@@ -19,10 +19,23 @@
     <div class="item close">
       <i class="material-icons">close</i>
     </div>
-    @!component('components.navbar-user-menu', data=data, csrf=csrfField())
+    @!component('components.navbar-menus', data=data, csrf=csrfField())
   </div>
   <div class="pusher">
-    @!section('content')
+    {{-- navbar --}}
+    @!component('components.navbar-admin', data=data, csrf=csrfField())
+
+    <div class="ui container" style="padding: 30px 0;">
+      @if(flashMessages.get('message'))
+        @!component('components.alert', {
+          type: [flashMessages.get('message.type')],
+          header: [flashMessages.get('message.header')],
+          message: [flashMessages.get('message.message')]
+        })
+      @endif
+      @!section('content')
+    </div>
+
     <div class="ui loading basic modal">
       <div class="ui active centered large inline loader"></div>
       <p style="text-align: center; margin-top: 1rem;">加载中</p>

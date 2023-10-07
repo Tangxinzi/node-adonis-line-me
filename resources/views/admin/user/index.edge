@@ -13,50 +13,47 @@
 @endsection
 
 @section('content')
-  @!component('components.navbar-admin', data=data, csrf=csrfField())
-  <div class="ui container" style="padding: 30px 0;">
-    <div class="ui stackable four column grid">
-      <div class="three wide column">
-        @!component('components.navbar-user-menu', data=data, csrf=csrfField())
+  <div class="ui stackable four column grid">
+    <div class="three wide column">
+      @!component('components.navbar-menus', data=data, csrf=csrfField())
+    </div>
+    <div class="thirteen wide column">
+      <div class="ui header flex-between">
+        <span>{{ data.title }}</span>
       </div>
-      <div class="thirteen wide column">
-        <div class="ui header flex-between">
-          <span>{{ data.title }}</span>
-        </div>
-        <table class="ui celled center aligned table">
-          <thead>
+      <table class="ui celled center aligned table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Sex</th>
+            <th>Type</th>
+            <th>Create Time</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @each(row in data.users)
             <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Phone</th>
-              <th>Sex</th>
-              <th>Type</th>
-              <th>Create Time</th>
-              <th>Action</th>
+              <td class="td">{{ row.id }}</td>
+              <td class="td">
+                <img class="ui avatar image" src="{{ row.avatar_url }}" />
+                {{ row.nickname }}
+              </td>
+              <td class="td">{{ row.phone || '' }}</td>
+              <td class="td">{{ row.sex == 1 ? '男' : '' }}{{ row.sex == 0 ? '女' : '' }}</td>
+              <td class="td">{{ row.type == 1 ? '用户' : '' }}{{ row.type == 2 ? '红娘' : '' }}</td>
+              <td class="td">{{ row.created_at }}</td>
+              <td class="td">
+                <a href="">查看</a>
+                &nbsp;&nbsp;
+                <a href="">删除</a>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            @each(row in data.users)
-              <tr>
-                <td class="td">{{ row.id }}</td>
-                <td class="td">
-                  <img class="ui avatar image" src="{{ row.avatar_url }}" />
-                  {{ row.nickname }}
-                </td>
-                <td class="td">{{ row.phone || '' }}</td>
-                <td class="td">{{ row.sex == 1 ? '男' : '' }}{{ row.sex == 0 ? '女' : '' }}</td>
-                <td class="td">{{ row.type == 1 ? '用户' : '' }}{{ row.type == 2 ? '红娘' : '' }}</td>
-                <td class="td">{{ row.created_at }}</td>
-                <td class="td">
-                  <a href="">查看</a>
-                  &nbsp;&nbsp;
-                  <a href="">删除</a>
-                </td>
-              </tr>
-            @endeach
-          </tbody>
-        </table>
-      </div>
+          @endeach
+        </tbody>
+      </table>
     </div>
   </div>
 @endsection

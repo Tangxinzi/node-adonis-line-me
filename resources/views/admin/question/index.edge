@@ -20,33 +20,38 @@
     <div class="thirteen wide column">
       <div class="ui header flex-between">
         <span>{{ data.title }}</span>
+        <small><a href="{{ route('admin/QuestionsController.create') }}">添加</a></small>
       </div>
       <table class="ui celled center aligned table">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Sex</th>
-            <th>Type</th>
-            <th>Create Time</th>
-            <th>Action</th>
+            <th class="one wide">ID</th>
+            <th class="two wide">类型</th>
+            <th class="one wide">性别</th>
+            <th class="four wide">问题</th>
+            <th>描述</th>
+            <th class="two wide">操作</th>
           </tr>
         </thead>
         <tbody>
-          @each(row in data.customers)
+          @each(row in data.questions)
             <tr>
               <td class="td">{{ row.id }}</td>
               <td class="td">
-                <img class="ui avatar image" src="{{ row.avatar_url }}" />
-                {{ row.nickname }}
+                {{ row.type === '0' ? '关于我' : '' }}
+                {{ row.type === '1' ? '我的日常' : '' }}
+                {{ row.type === '2' ? '我的愿望' : '' }}
+                {{ row.type === '3' ? '对 ta 的期待' : '' }}
               </td>
-              <td class="td">{{ row.phone || '' }}</td>
-              <td class="td">{{ row.sex == 1 ? '男' : '' }}{{ row.sex == 0 ? '女' : '' }}</td>
-              <td class="td">{{ row.type == 1 ? '用户' : '' }}{{ row.type == 2 ? '红娘' : '' }}</td>
-              <td class="td">{{ row.created_at }}</td>
               <td class="td">
-                <a href="">查看</a>
+                {{ row.sex == '0' ? '女' : '' }}
+                {{ row.sex == '1' ? '男' : '' }}
+                {{ row.sex == '2' ? '无' : '' }}
+              </td>
+              <td class="td">{{ row.title }}</td>
+              <td class="td">{{ row.description }}</td>
+              <td class="td">
+                <a href="{{ route('admin/QuestionsController.edit', { id: row.id }) }}">编辑</a>
                 &nbsp;&nbsp;
                 <a href="">删除</a>
               </td>
