@@ -1,4 +1,3 @@
-import Application from '@ioc:Adonis/Core/Application'
 import Database from '@ioc:Adonis/Lucid/Database'
 
 export default class QuestionsController {
@@ -6,7 +5,7 @@ export default class QuestionsController {
     try {
       let all = request.all(), _answer = [[], [], []]
       const answer = (await Database.rawQuery("select questions.type, questions.title, questions.description, answer.content, answer.relation_user_id from answer left outer join questions on answer.relation_question_id = questions.id where answer.relation_user_id = :relation_user_id order by type asc;", {
-        relation_user_id: customer[index].user_wechat_open_id
+        relation_user_id: all.openid
       }))[0]
 
       for (let index = 0; index < answer.length; index++) {

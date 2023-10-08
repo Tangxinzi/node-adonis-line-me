@@ -40,6 +40,10 @@ Route.group(() => {
   Route.get('/user/question/answer/:id', 'api/QuestionsController.answer')
   Route.post('/user/question/answer/:id', 'api/QuestionsController.answer')
 
+  Route.get('/user/moments', 'api/MomentsController.index')
+  Route.get('/user/moment/lists', 'api/MomentsController.lists')
+  Route.post('/user/moment/create', 'api/MomentsController.create')
+
   Route.post('/customer/info', 'api/CustomerController.updateCustomerinfo')
 
   Route.get('/data/index', 'api/DataController.index')
