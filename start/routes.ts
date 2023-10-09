@@ -30,7 +30,6 @@ Route.group(() => {
   Route.post('/user/info', 'api/UserController.updateUserinfo')
   Route.post('/user/change-type', 'api/UserController.changeType')
   Route.post('/user/field', 'api/UserController.updateUserField')
-  Route.get('/user/custom/public/user-list', 'api/DataController.customerPublicUserList')
   Route.post('/user/custom/create', 'api/PublishesController.create')
   Route.get('/user/qrcode', 'api/UserController.qrcode')
 
@@ -44,9 +43,10 @@ Route.group(() => {
   Route.get('/user/moment/lists', 'api/MomentsController.lists')
   Route.post('/user/moment/create', 'api/MomentsController.create')
 
-  Route.post('/customer/info', 'api/CustomerController.updateCustomerinfo')
-
-  Route.get('/data/index', 'api/DataController.index')
+  Route.get('/customs', 'api/CustomerController.index')
+  Route.get('/custom/user-lists', 'api/CustomerController.createCustomerList')
+  Route.post('/customer/create', 'api/CustomerController.createCustomerinfo')
+  Route.post('/customer/create/relation', 'api/CustomerController.relationCustomerinfo')
 
   Route.post('/file/upload', 'api/FilesController.upload')
 }).prefix('/api').middleware('apicheck')

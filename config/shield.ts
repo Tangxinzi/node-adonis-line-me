@@ -94,7 +94,8 @@ export const csrf: ShieldConfig['csrf'] = {
   */
   exceptRoutes: [
     '/api/file/upload',
-    '/api/customer/info',
+    '/api/customer/create',
+    '/api/customer/create/relation',
     '/api/user/custom/create',
     '/api/user/change-type',
     '/api/user/field',

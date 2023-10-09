@@ -146,7 +146,7 @@ export default class UserController {
           await Database.from('users').where('wechat_open_id', all.openid).update({ height: all.value })
           break;
         case 'work':
-          await Database.from('users').where('wechat_open_id', all.openid).update({ work: JSON.stringify(all.value) })
+          await Database.from('users').where('wechat_open_id', all.openid).update({ work: JSON.stringify(all.value || '') })
           break;
         case 'birthday':
           await Database.from('users').where('wechat_open_id', all.openid).update({ birthday: all.value })
