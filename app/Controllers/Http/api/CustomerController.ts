@@ -34,7 +34,7 @@ export default class CustomerController {
   public async index({ request }: HttpContextContract) {
     try {
       const all = request.all()
-      const customer = await Database.from('customer').select('id', 'user_wechat_open_id', 'introduction', 'relation_log_id', 'relation_wechat_open_id').orderBy('created_at', 'desc').limit(20)
+      const customer = await Database.from('customer').select('id', 'user_wechat_open_id', 'introduction', 'relation', 'relation_log_id', 'relation_wechat_open_id').where('status', 1).orderBy('created_at', 'desc').limit(20)
       for (let index = 0; index < customer.length; index++) {
         // 红娘自行发布
         if (customer[index].relation_log_id) {
@@ -57,6 +57,11 @@ export default class CustomerController {
         customer[index]['zodiac_sign'] = this.getZodiacSign(Moment(customer[index]['birthday']).format('DD'), Moment(customer[index]['birthday']).format('MM'))
         customer[index]['age'] = Moment().diff(customer[index]['birthday'], 'years')
         customer[index]['work'] = customer[index]['work'] ? JSON.parse(customer[index]['work']) : []
+        customer[index].parent = await Database.from('users').select('nickname', 'avatar_url').where('wechat_open_id', customer[index].user_wechat_open_id).first()
+        let relation = ["朋友", "亲戚", "伙伴", "同事", "其他"]
+        customer[index].relation = relation[customer[index].relation]
+
+
         if (customer[index]['work']['value']) {
           customer[index]['work']['text'] = await zpData.data(customer[index]['work']['value'][0], customer[index]['work']['value'][1])
         }
@@ -140,23 +145,22 @@ export default class CustomerController {
   public async createCustomerinfo({ request, response }: HttpContextContract) {
     try {
       const all = request.all()
-      console.log(all);
-
       const id = await Database.table('customer_log').returning('id').insert({
         nickname: all.nickname,
         avatar_url: all.avatar_url || '',
         birthday: all.birthday || '',
         height: all.height,
         sex: all.sex,
-        work: JSON.stringify(all.value || ''),
-        photos: JSON.stringify(all.value || '')
+        work: JSON.stringify(all.work || ''),
+        photos: JSON.stringify(all.photos || '')
       })
 
       const customer = await Database.table('customer').insert({
         user_wechat_open_id: all.openid,
         relation_log_id: id,
         relation: all.relation,
-        introduction: all.introduction || ''
+        introduction: all.introduction || '',
+        userinfo: JSON.stringify(all)
       })
 
       response.json({
@@ -177,7 +181,7 @@ export default class CustomerController {
   public async createCustomerList({ request, response }: HttpContextContract) {
     try {
       const all = request.all()
-      const customer = await Database.from('customer').select('id', 'user_wechat_open_id', 'introduction', 'relation_log_id', 'relation_wechat_open_id').where('user_wechat_open_id', all.openid).orderBy('created_at', 'desc').limit(20)
+      const customer = await Database.from('customer').select('id', 'user_wechat_open_id', 'introduction', 'relation_log_id', 'relation_wechat_open_id').whereIn('status', [1, 2]).where('user_wechat_open_id', all.openid).orderBy('created_at', 'desc').limit(20)
       for (let index = 0; index < customer.length; index++) {
         if (customer[index].relation_log_id) {
           customer[index] = {
@@ -197,6 +201,29 @@ export default class CustomerController {
         status: 200,
         message: "ok",
         data: customer
+      })
+    } catch (error) {
+      response.json({
+        status: 500,
+        message: "internalServerError",
+        data: error
+      })
+    }
+  }
+
+  public async deleteCustomer({ params, request, response }: HttpContextContract) {
+    try {
+      const all = request.all()
+      console.log(params);
+
+      const id = await Database.from('customer').where('id', params.id).update({
+        status: 0,
+        deleted_at: Moment().format('YYYY-MM-DD HH:mm:ss')
+      }, ['id'])
+
+      response.json({
+        status: 200,
+        message: "ok"
       })
     } catch (error) {
       response.json({

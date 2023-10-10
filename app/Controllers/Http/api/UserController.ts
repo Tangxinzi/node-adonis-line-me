@@ -76,6 +76,7 @@ export default class UserController {
       const user = await Database.from('users').where('wechat_open_id', all.openid).first()
 
       if (user) {
+        // 格式数据
         await Database.from('users').where('wechat_open_id', all.openid).update({ online_at: Moment().format('YYYY-MM-DD HH:mm:ss'), ip: request.ip() })
         user['photos'] = JSON.parse(user['photos'])
         user['zodiac_sign'] = this.getZodiacSign(Moment(user['birthday']).format('DD'), Moment(user['birthday']).format('MM'))
@@ -86,26 +87,51 @@ export default class UserController {
           user['work']['text'] = await zpData.data(user['work']['value'][0], user['work']['value'][1])
         }
 
+        // 个性化问答
+        if (user.wechat_open_id) {
+          let _answer = [[], [], []]
+          const answer = (await Database.rawQuery("select questions.type, questions.title, questions.description, answer.content, answer.relation_user_id from answer left outer join questions on answer.relation_question_id = questions.id where answer.relation_user_id = :relation_user_id order by type asc;", {
+            relation_user_id: user.wechat_open_id
+          }))[0]
 
+          for (let index = 0; index < answer.length; index++) {
+            switch (answer[index].type) {
+              case '0':
+                _answer[0].push(answer[index])
+                break;
+              case '1':
+                _answer[1].push(answer[index])
+                break;
+              case '2':
+                _answer[2].push(answer[index])
+                break;
+            }
+          }
+          user.answer = _answer
+        }
 
-        if (user.avatar_url) {
-          const imagePath = Application.publicPath(user.avatar_url);
-          Vibrant.from(imagePath).getPalette().then((palette) => {
-            let rgb = palette.Vibrant._rgb
-            user.color = `rgba(${ rgb[0] }, ${ rgb[1] }, ${ rgb[2] }, .2)`
+        // 头像主色
+        // if (user.avatar_url) {
+        //   const imagePath = Application.publicPath(user.avatar_url);
+        //   Vibrant.from(imagePath).getPalette().then((palette) => {
+        //     let rgb = palette.Vibrant._rgb
+        //     user.color = `rgba(${ rgb[0] }, ${ rgb[1] }, ${ rgb[2] }, .2)`
+        //   })
+        // }
+
+        // IP 属地
+        if (user.ip) {
+          await axios({
+            url: `http://whois.pconline.com.cn/ipJson.jsp?ip=${ request.ip() }&json=true`,
+            responseType: "arraybuffer"
+          }).then(function (response) {
+            const data = iconv.decode(response.data, 'gbk')
+            user.ip = data ? JSON.parse(data) : ''
+          }).catch(function (error) {
+            // console.log(error)
           })
         }
       }
-
-      await axios({
-        url: `http://whois.pconline.com.cn/ipJson.jsp?ip=${ request.ip() }&json=true`,
-        responseType: "arraybuffer"
-      }).then(function (response) {
-        const data = iconv.decode(response.data, 'gbk')
-        user.ip = data ? JSON.parse(data) : ''
-      }).catch(function (error) {
-        // console.log(error)
-      })
 
       return user
     } catch (error) {
@@ -161,7 +187,14 @@ export default class UserController {
           await Database.from('users').where('wechat_open_id', all.openid).update({ photos: JSON.stringify(all.value || '') })
           break;
         default:
-
+        case 'school':
+          await Database.from('users').where('wechat_open_id', all.openid).update({ school: all.value })
+          break;
+        case 'company':
+          await Database.from('users').where('wechat_open_id', all.openid).update({ company: all.value })
+          break;
+        case 'location':
+          await Database.from('users').where('wechat_open_id', all.openid).update({ location: all.value })
           break;
       }
 

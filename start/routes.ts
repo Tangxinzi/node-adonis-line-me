@@ -47,6 +47,7 @@ Route.group(() => {
   Route.get('/custom/user-lists', 'api/CustomerController.createCustomerList')
   Route.post('/customer/create', 'api/CustomerController.createCustomerinfo')
   Route.post('/customer/create/relation', 'api/CustomerController.relationCustomerinfo')
+  Route.post('/customer/delete/:id', 'api/CustomerController.deleteCustomer')
 
   Route.post('/file/upload', 'api/FilesController.upload')
 }).prefix('/api').middleware('apicheck')
