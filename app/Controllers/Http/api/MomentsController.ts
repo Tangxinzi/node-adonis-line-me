@@ -53,6 +53,32 @@ export default class MomentsController {
     }
   }
 
+  public async show({ params, request, response }: HttpContextContract) {
+    try {
+      const all = request.all()
+      const moment = await Database.from('moments').where('id', params.id).first()
+
+      // 格式化数据
+      moment.data_type = 'image'
+      moment.photos = moment.photos ? JSON.parse(moment.photos) : []
+      moment.created_at = Moment(moment.created_at).format('YYYY-MM-DD HH:mm:ss')
+      moment.modified_at = Moment(moment.modified_at).format('YYYY-MM-DD HH:mm:ss')
+
+      response.json({
+        status: 200,
+        message: "ok",
+        data: moment
+      })
+    } catch (error) {
+      console.log(error)
+      response.json({
+        status: 500,
+        message: "internalServerError",
+        data: error
+      })
+    }
+  }
+
   public async create({ request, response }: HttpContextContract) {
     try {
       const all = request.all()
