@@ -144,6 +144,7 @@ export default class UserController {
     try {
       const all = request.all()
       return Database.from('users').where('wechat_open_id', all.openid).update({
+        type: all.type,
         nickname: all.nickname,
         avatar_url: all.avatar_url,
         work: JSON.stringify(all.work),

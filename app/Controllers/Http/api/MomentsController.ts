@@ -5,7 +5,7 @@ export default class MomentsController {
   public async index({ request, response }: HttpContextContract) {
     try {
       const all = request.all()
-      const moments = await Database.from('moments').select('moments.id', 'moments.relation_user_id', 'moments.content', 'moments.photos', 'moments.created_at', 'users.nickname', 'users.avatar_url', 'users.wechat_open_id').join('users', 'moments.relation_user_id', '=', 'users.wechat_open_id').orderBy('moments.created_at', 'desc')
+      const moments = await Database.from('moments').select('moments.id', 'moments.relation_user_id', 'moments.content', 'moments.photos', 'moments.created_at', 'users.wechat_open_id', 'users.nickname', 'users.avatar_url', 'users.sex', 'users.birthday', 'users.ip').join('users', 'moments.relation_user_id', '=', 'users.wechat_open_id').orderBy('moments.created_at', 'desc')
       for (let index = 0; index < moments.length; index++) {
         moments[index].data_type = 'image'
         moments[index].photos = moments[index].photos ? JSON.parse(moments[index].photos) : []
