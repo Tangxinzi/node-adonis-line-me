@@ -87,6 +87,14 @@ export default class UserController {
           user['work']['text'] = await zpData.data(user['work']['value'][0], user['work']['value'][1])
         }
 
+        user['number'] = {
+          message: 0,
+          introduction: 0,
+          visitor: 0,
+          moment: (await Database.from('moments').where('relation_user_id', all.openid).count('* as total'))[0].total,
+          answer: (await Database.from('answer').where('relation_user_id', all.openid).count('* as total'))[0].total
+        }
+
         // 个性化问答
         if (user.wechat_open_id) {
           let _answer = [[], [], []]
@@ -143,6 +151,8 @@ export default class UserController {
   public async updateUserinfo({ request }: HttpContextContract) {
     try {
       const all = request.all()
+      console.log(all);
+
       return Database.from('users').where('wechat_open_id', all.openid).update({
         type: all.type,
         nickname: all.nickname,
@@ -150,7 +160,8 @@ export default class UserController {
         work: JSON.stringify(all.work),
         height: all.height,
         sex: all.sex,
-        photos: JSON.stringify(all.photos || ''),
+        birthday: all.birthday,
+        photos: JSON.stringify(all.photos || []),
         ip: request.ip(),
         // modified_at: ''
       }, ['id'])
@@ -185,7 +196,7 @@ export default class UserController {
           await Database.from('users').where('wechat_open_id', all.openid).update({ phone: all.value })
           break;
         case 'photos':
-          await Database.from('users').where('wechat_open_id', all.openid).update({ photos: JSON.stringify(all.value || '') })
+          await Database.from('users').where('wechat_open_id', all.openid).update({ photos: JSON.stringify(all.value || []) })
           break;
         default:
         case 'school':

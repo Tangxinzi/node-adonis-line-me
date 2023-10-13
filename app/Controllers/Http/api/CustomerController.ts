@@ -152,7 +152,7 @@ export default class CustomerController {
         height: all.height,
         sex: all.sex,
         work: JSON.stringify(all.work || ''),
-        photos: JSON.stringify(all.photos || '')
+        photos: JSON.stringify(all.photos || [])
       })
 
       const customer = await Database.table('customer').insert({

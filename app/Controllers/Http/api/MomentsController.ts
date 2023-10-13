@@ -85,7 +85,7 @@ export default class MomentsController {
       let id = await Database.table('moments').returning('id').insert({
         relation_user_id: all.openid || '',
         content: all.content || '',
-        photos: JSON.stringify(all.photos) || '',
+        photos: JSON.stringify(all.photos || []),
       })
 
       if (id[0]) {

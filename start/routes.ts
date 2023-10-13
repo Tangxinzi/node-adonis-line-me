@@ -34,7 +34,8 @@ Route.group(() => {
   Route.get('/user/qrcode', 'api/UserController.qrcode')
 
   Route.get('/user/question', 'api/QuestionsController.index')
-  Route.get('/user/question/lists', 'api/QuestionsController.lists')
+  Route.get('/user/question/lists', 'api/QuestionsController.questionLists')
+  Route.get('/user/answer/lists', 'api/QuestionsController.answerLists')
   Route.get('/user/question/show/:id', 'api/QuestionsController.show')
   Route.get('/user/question/answer/:id', 'api/QuestionsController.answer')
   Route.post('/user/question/answer/:id', 'api/QuestionsController.answer')

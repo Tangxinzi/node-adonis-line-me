@@ -37,15 +37,55 @@ export default class QuestionsController {
     }
   }
 
-  public async lists({ request, response }: HttpContextContract) {
+  public async questionLists({ request, response }: HttpContextContract) {
     try {
       const all = request.all()
-      const questions = await Database.from('questions').where('type', all.type)
+      // const questions = await Database.from('questions').where('type', all.type || 0)
+      const questions = (await Database.rawQuery("SELECT * FROM questions ORDER BY RAND() LIMIT 5;", {
+        relation_user_id: all.openid
+      }))[0]
 
       response.json({
         status: 200,
         message: "ok",
         data: questions
+      })
+    } catch (error) {
+      console.log(error)
+      response.json({
+        status: 500,
+        message: "internalServerError",
+        data: error
+      })
+    }
+  }
+
+  public async answerLists({ request, response }: HttpContextContract) {
+    try {
+      const all = request.all()
+      const _answer = [[], [], []]
+      const answer = (await Database.rawQuery("select questions.id, questions.type, questions.title, questions.description, answer.content, answer.relation_user_id from answer left outer join questions on answer.relation_question_id = questions.id where answer.relation_user_id = :relation_user_id order by type asc;", {
+        relation_user_id: all.openid
+      }))[0]
+
+      for (let index = 0; index < answer.length; index++) {
+        switch (answer[index].type) {
+          case '0':
+            _answer[0].push(answer[index])
+            break;
+          case '1':
+            _answer[1].push(answer[index])
+            break;
+          case '2':
+            _answer[2].push(answer[index])
+            break;
+        }
+      }
+
+      response.json({
+        status: 200,
+        message: "ok",
+        data: _answer
       })
     } catch (error) {
       console.log(error)
