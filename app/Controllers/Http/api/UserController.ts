@@ -9,21 +9,9 @@ import Moment from'moment';
 import * as Vibrant from 'node-vibrant'
 
 const zpData = require('../lib/Zhipin');
-// const { jscode2session } = require('../lib/Weixin');
+const { jscode2session } = require('../lib/Weixin');
 
 export default class UserController {
-  jscode2session(code) {
-    return new Promise((resolve, reject) => {
-      return axios.get(`https://api.weixin.qq.com/sns/jscode2session?appid=${ Env.get('AppID') }&secret=${ Env.get('AppSecret') }&js_code=${ code }&grant_type=authorization_code`)
-        .then((response) => {
-          resolve(response.data)
-        })
-        .catch((error) => {
-          reject(error)
-        })
-    });
-  }
-
   getZodiacSign(day, month) {
     const zodiacSigns = [
       '摩羯座', '水瓶座', '双鱼座', '白羊座', '金牛座', '双子座',
@@ -51,7 +39,7 @@ export default class UserController {
   public async wxaLogin({ request }: HttpContextContract) {
     try {
       const all = request.all()
-      const result = await this.jscode2session(all.code)
+      const result = await jscode2session(all.code)
       const user = await Database.from('users').where('wechat_open_id', result.openid).first()
       if (user) {
         result.user = user

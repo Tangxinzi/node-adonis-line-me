@@ -42,8 +42,16 @@ export default class QuestionsController {
   public async questionLists({ request, response }: HttpContextContract) {
     try {
       const all = request.all()
-      // const questions = await Database.from('questions').where('type', all.type || 0)
-      const questions = (await Database.rawQuery("SELECT * FROM questions ORDER BY RAND() LIMIT 5;", {
+      const answer = await Database.from('answer').select('id').where({ relation_user_id: all.openid })
+      if (answer.length) {
+        let answerString = answer[0].id
+        for (let index = 1; index < answer.length; index++) answerString += ', ' + answer[index].id;
+        var rawQuerySql = "SELECT * FROM questions where id not in (" + answerString + ") ORDER BY RAND() LIMIT 6;"
+      } else {
+        var rawQuerySql = "SELECT * FROM questions ORDER BY RAND() LIMIT 6;"
+      }
+
+      const questions = (await Database.rawQuery(rawQuerySql, {
         relation_user_id: all.openid
       }))[0]
 
@@ -66,7 +74,7 @@ export default class QuestionsController {
     try {
       const all = request.all()
       const _answer = [[], [], []]
-      const answer = (await Database.rawQuery("select questions.id, questions.type, questions.title, questions.description, answer.content, answer.relation_user_id from answer left outer join questions on answer.relation_question_id = questions.id where answer.relation_user_id = :relation_user_id order by type asc;", {
+      const answer = (await Database.rawQuery("select questions.id as qid, questions.type, questions.title, questions.description, answer.content, answer.id as id, answer.relation_user_id from answer left outer join questions on answer.relation_question_id = questions.id where answer.relation_user_id = :relation_user_id order by type asc;", {
         relation_user_id: all.openid
       }))[0]
 
@@ -139,6 +147,20 @@ export default class QuestionsController {
       }
 
       if (request.method() == 'POST') {
+        // 邀请好友为自己介绍的接口
+        if (params.id == 'type') {
+          const id = await Database.table('answer').returning('id').insert({
+            type: 1,
+            introduce_name: all.name || '',
+            introduce_openid: all.introduce_openid || '',
+            content: all.content || '',
+            relation_question_id: '',
+            relation_user_id: all.openid || '',
+            photos: '',
+          })
+          return response.json({ status: 200, message: "ok", data: id })
+        }
+
         const id = await Database.table('answer').returning('id').insert({
           relation_question_id: params.id || '',
           relation_user_id: all.openid || '',
