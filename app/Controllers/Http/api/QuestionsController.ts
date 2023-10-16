@@ -1,4 +1,6 @@
 import Database from '@ioc:Adonis/Lucid/Database'
+import Moment from'moment'
+Moment.locale('zh-cn')
 
 export default class QuestionsController {
   public async index({ request, response }: HttpContextContract) {
@@ -104,6 +106,7 @@ export default class QuestionsController {
       if (all.openid) {
         let answer = await Database.from('answer').where({id: params.id, relation_user_id: all.openid}).first()
         question.content = answer ? answer.content : ''
+        question.photos = answer ? JSON.parse(answer.photos) : []
       }
       response.json({
         status: 200,
@@ -124,7 +127,14 @@ export default class QuestionsController {
     try {
       const all = request.all()
       if (request.method() == 'GET') {
-        const question = await Database.from('answer').where({id: params.id, relation_user_id: all.openid}).first()
+        var question = await Database.from('answer').where({id: params.id, relation_user_id: all.openid}).first()
+        question.userinfo = await Database.from('users').where({wechat_open_id: all.openid}).first()
+        question.created_at = Moment(question.created_at).fromNow()
+        question = {
+          ...question,
+          ...await Database.from('questions').select('title').where('id', question.relation_question_id).first()
+        }
+        question.photos = JSON.parse(question.photos || [])
         response.json({ status: 200, message: "ok", data: question })
       }
 
@@ -132,7 +142,8 @@ export default class QuestionsController {
         const id = await Database.table('answer').returning('id').insert({
           relation_question_id: params.id || '',
           relation_user_id: all.openid || '',
-          content: all.content || ''
+          content: all.content || '',
+          photos: JSON.stringify(all.photos || []),
         })
         response.json({ status: 200, message: "ok", data: id })
       }

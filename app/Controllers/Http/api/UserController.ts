@@ -79,6 +79,7 @@ export default class UserController {
         // 格式数据
         await Database.from('users').where('wechat_open_id', all.openid).update({ online_at: Moment().format('YYYY-MM-DD HH:mm:ss'), ip: request.ip() })
         user['photos'] = JSON.parse(user['photos'])
+        user['videos'] = JSON.parse(user['videos'])
         user['zodiac_sign'] = this.getZodiacSign(Moment(user['birthday']).format('DD'), Moment(user['birthday']).format('MM'))
         user['age'] = Moment().diff(user['birthday'], 'years')
 
@@ -197,6 +198,9 @@ export default class UserController {
           break;
         case 'photos':
           await Database.from('users').where('wechat_open_id', all.openid).update({ photos: JSON.stringify(all.value || []) })
+          break;
+        case 'videos':
+          await Database.from('users').where('wechat_open_id', all.openid).update({ videos: JSON.stringify(all.value || []) })
           break;
         default:
         case 'school':

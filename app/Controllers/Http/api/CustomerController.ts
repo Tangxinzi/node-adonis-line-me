@@ -54,6 +54,7 @@ export default class CustomerController {
 
         // 格式数据
         customer[index]['photos'] = customer[index]['photos'] ? JSON.parse(customer[index]['photos']) : []
+        customer[index]['videos'] = customer[index]['videos'] ? JSON.parse(customer[index]['videos']) : []
         customer[index]['zodiac_sign'] = this.getZodiacSign(Moment(customer[index]['birthday']).format('DD'), Moment(customer[index]['birthday']).format('MM'))
         customer[index]['age'] = Moment().diff(customer[index]['birthday'], 'years')
         customer[index]['work'] = customer[index]['work'] ? JSON.parse(customer[index]['work']) : []

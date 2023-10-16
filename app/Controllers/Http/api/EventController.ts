@@ -10,6 +10,20 @@ export default class EventController {
       const answer = await Database.from('answer').select('answer.id', 'answer.relation_question_id', 'answer.relation_user_id', 'answer.content', 'answer.photos', 'answer.created_at', 'users.nickname', 'users.avatar_url', 'users.sex', 'users.birthday', 'users.wechat_open_id').join('users', 'answer.relation_user_id', '=', 'users.wechat_open_id').limit(10).orderBy('answer.created_at', 'desc')
 
       let descovery = []
+      descovery.push({
+        id: 0,
+        relation_user_id: 'op02s4vhiiLffHPfdB7LKmpMdr_I',
+        nickname: 'Jiang',
+        avatar_url: '/uploads/files/c9WyMZmT3nl6QKrXhNivsFAvMcv7MPBd.png',
+        sex: '',
+        content: '我想向大家介绍一位非常出色的朋友，她叫小美。她今年 28 岁，是一名资深的市场营销专家，工作十分努力和聪明。小美是一个热情开朗、乐观向上的人，善于与人交往，总是能在困难时找到解决问题的方法。她热爱运动，经常参加慈善马拉松，并且对健康饮食有着很好的认识。此外，她还是一个优秀的画家，每幅画作都充满了她对生活的热爱和感悟。',
+        photos: ['/uploads/files/rMp4Y9km65FkpIC3XOYpQovkcyieSqUo.jpg'],
+        age: 0,
+        data_type: 'introduce',
+        ip: '',
+        created_at: Moment().fromNow()
+      })
+
       for (let index = 0; index < 10; index++) {
 
         // moment
