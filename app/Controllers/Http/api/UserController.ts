@@ -3,6 +3,7 @@ import Database from '@ioc:Adonis/Lucid/Database';
 import Env from '@ioc:Adonis/Core/Env';
 import axios from "axios";
 import iconv from 'iconv-lite';
+import Jwt from 'App/Models/Jwt';
 import RandomString from "randomstring";
 import { v4 as uuidv4 } from 'uuid';
 import Moment from'moment';
@@ -52,6 +53,7 @@ export default class UserController {
         result.user = {}
       }
 
+      result.user.sign = Jwt.signPrivateKey(result.user.id)
       return result
     } catch (error) {
       console.log(error)

@@ -24,32 +24,41 @@
       <table class="ui celled center aligned table">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Sex</th>
-            <th>Type</th>
-            <th>Create Time</th>
-            <th>Action</th>
+            <!-- <th>ID</th> -->
+            <th>推荐人</th>
+            <th>被推荐人</th>
+            <th>关系</th>
+            <th>手机号</th>
+            <th>照片</th>
+            <th>性别</th>
+            <th>类别</th>
+            <th>时间</th>
+            <!-- <th>操作</th> -->
           </tr>
         </thead>
         <tbody>
-          @each(row in data.customers)
+          @each(row in data.customer)
             <tr>
-              <td class="td">{{ row.id }}</td>
+              <!-- <td class="td">{{ row.id }}</td> -->
+              <td class="td">
+                <img class="ui avatar image" src="{{ row.parent.avatar_url }}" />
+                {{ row.parent.nickname }}
+              </td>
               <td class="td">
                 <img class="ui avatar image" src="{{ row.avatar_url }}" />
                 {{ row.nickname }}
               </td>
+              <td class="td">{{ row.relation || '' }}</td>
               <td class="td">{{ row.phone || '' }}</td>
+              <td class="td">{{ row.photos.length || '' }}</td>
               <td class="td">{{ row.sex == 1 ? '男' : '' }}{{ row.sex == 0 ? '女' : '' }}</td>
               <td class="td">{{ row.type == 1 ? '用户' : '' }}{{ row.type == 2 ? '红娘' : '' }}</td>
               <td class="td">{{ row.created_at }}</td>
-              <td class="td">
+              <!-- <td class="td">
                 <a href="">查看</a>
                 &nbsp;&nbsp;
                 <a href="">删除</a>
-              </td>
+              </td> -->
             </tr>
           @endeach
         </tbody>
