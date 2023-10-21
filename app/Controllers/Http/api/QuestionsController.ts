@@ -74,7 +74,7 @@ export default class QuestionsController {
     try {
       const all = request.all()
       const _answer = [[], [], []]
-      const answer = (await Database.rawQuery("select questions.id as qid, questions.type, questions.title, questions.description, answer.content, answer.id as id, answer.relation_user_id from answer left outer join questions on answer.relation_question_id = questions.id where answer.relation_user_id = :relation_user_id order by type asc;", {
+      const answer = (await Database.rawQuery("select questions.id as qid, questions.type, questions.title, questions.description, answer.content, answer.id as id, answer.relation_user_id from answer left outer join questions on answer.relation_question_id = questions.id where answer.type = 0 and answer.relation_user_id = :relation_user_id order by type asc;", {
         relation_user_id: all.openid
       }))[0]
 
@@ -96,6 +96,28 @@ export default class QuestionsController {
         status: 200,
         message: "ok",
         data: _answer
+      })
+    } catch (error) {
+      console.log(error)
+      response.json({
+        status: 500,
+        message: "internalServerError",
+        data: error
+      })
+    }
+  }
+
+  public async introduceLists({ request, response }: HttpContextContract) {
+    try {
+      const all = request.all()
+      const answer = (await Database.rawQuery("select questions.id as qid, questions.type, questions.title, questions.description, answer.content, answer.id as id, answer.relation_user_id from answer left outer join questions on answer.relation_question_id = questions.id where answer.type = 1 and answer.relation_user_id = :relation_user_id order by type asc;", {
+        relation_user_id: all.openid
+      }))[0]
+
+      response.json({
+        status: 200,
+        message: "ok",
+        data: answer
       })
     } catch (error) {
       console.log(error)
@@ -142,7 +164,8 @@ export default class QuestionsController {
           ...question,
           ...await Database.from('questions').select('title').where('id', question.relation_question_id).first()
         }
-        question.photos = JSON.parse(question.photos || [])
+
+        question.photos = JSON.parse(question.photos || '[]')
         response.json({ status: 200, message: "ok", data: question })
       }
 

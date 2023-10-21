@@ -62,7 +62,6 @@ export default class CustomerController {
         let relation = ["朋友", "亲戚", "伙伴", "同事", "其他"]
         customer[index].relation = relation[customer[index].relation]
 
-
         if (customer[index]['work']['value']) {
           customer[index]['work']['text'] = await zpData.data(customer[index]['work']['value'][0], customer[index]['work']['value'][1])
         }
@@ -134,6 +133,41 @@ export default class CustomerController {
       response.json({ status: 200, message: "ok" })
     } catch (error) {
       console.log(error)
+      response.json({
+        status: 500,
+        message: "internalServerError",
+        data: error
+      })
+    }
+  }
+
+  public async customerInfo({ params, request, response }: HttpContextContract) {
+    try {
+      const all = request.all()
+      let customer = await Database.from('customer').select('id', 'user_wechat_open_id', 'introduction', 'relation_log_id', 'relation_wechat_open_id').whereIn('status', [1, 2]).where({ id: params.id, user_wechat_open_id: all.openid }).first()
+
+      // 红娘自行发布用户
+      if (customer.relation_log_id) {
+        customer = {
+          ...customer,
+          ...await Database.from('customer_log').select('*').where('id', customer.relation_log_id).first()
+        }
+      }
+
+      // 关联已存在用户
+      if (customer.relation_wechat_open_id) {
+        customer = {
+          ...customer,
+          ...await Database.from('users').select('avatar_url', 'nickname', 'detail').where('wechat_open_id', customer.relation_wechat_open_id).first()
+        }
+      }
+      response.json({
+        status: 200,
+        message: "ok",
+        data: customer
+      })
+    } catch (error) {
+      console.log(error);
       response.json({
         status: 500,
         message: "internalServerError",
@@ -215,8 +249,6 @@ export default class CustomerController {
   public async deleteCustomer({ params, request, response }: HttpContextContract) {
     try {
       const all = request.all()
-      console.log(params);
-
       const id = await Database.from('customer').where('id', params.id).update({
         status: 0,
         deleted_at: Moment().format('YYYY-MM-DD HH:mm:ss')

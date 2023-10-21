@@ -36,6 +36,7 @@ Route.group(() => {
   Route.get('/user/question', 'api/QuestionsController.index')
   Route.get('/user/question/lists', 'api/QuestionsController.questionLists')
   Route.get('/user/answer/lists', 'api/QuestionsController.answerLists')
+  Route.get('/user/answer/introduce/lists', 'api/QuestionsController.introduceLists')
   Route.get('/user/question/show/:id', 'api/QuestionsController.show')
   Route.get('/user/question/answer/:id', 'api/QuestionsController.answer')
   Route.post('/user/question/answer/:id', 'api/QuestionsController.answer')
@@ -46,6 +47,7 @@ Route.group(() => {
   Route.post('/user/moment/create', 'api/MomentsController.create')
 
   Route.get('/customs', 'api/CustomerController.index')
+  Route.get('/custom/userinfo/:id', 'api/CustomerController.customerInfo')
   Route.get('/custom/user-lists', 'api/CustomerController.createCustomerList')
   Route.post('/customer/create', 'api/CustomerController.createCustomerinfo')
   Route.post('/customer/create/relation', 'api/CustomerController.relationCustomerinfo')
@@ -53,7 +55,11 @@ Route.group(() => {
 
   Route.post('/file/upload', 'api/FilesController.upload')
 
+  Route.post('/comments/create', 'api/CommentsController.create')
+
   Route.get('/event/descovery', 'api/EventController.descovery')
+  Route.get('/event/descovery/:type/:id', 'api/EventController.type')
+  Route.post('/event/like/:id', 'api/EventController.like')
 }).prefix('/api').middleware('apicheck')
 
 Route.group(() => {
