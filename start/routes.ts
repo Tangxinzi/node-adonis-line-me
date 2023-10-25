@@ -48,13 +48,14 @@ Route.group(() => {
 
   Route.get('/customs', 'api/CustomerController.index')
   Route.get('/custom/userinfo/:id', 'api/CustomerController.customerInfo')
-  Route.get('/custom/user-lists', 'api/CustomerController.createCustomerList')
+  Route.get('/custom/userlist', 'api/CustomerController.createCustomerList')
   Route.post('/customer/create', 'api/CustomerController.createCustomerinfo')
   Route.post('/customer/create/relation', 'api/CustomerController.relationCustomerinfo')
   Route.post('/customer/delete/:id', 'api/CustomerController.deleteCustomer')
 
   Route.post('/file/upload', 'api/FilesController.upload')
 
+  Route.get('/comments/my', 'api/CommentsController.my')
   Route.post('/comments/create', 'api/CommentsController.create')
 
   Route.get('/event/descovery', 'api/EventController.descovery')

@@ -1,9 +1,12 @@
 import Application from '@ioc:Adonis/Core/Application'
 import Database from '@ioc:Adonis/Lucid/Database'
+import Logger from '@ioc:Adonis/Core/Logger'
+import Jwt from 'App/Models/Jwt';
 import * as Vibrant from 'node-vibrant'
 import axios from "axios";
 import iconv from 'iconv-lite';
 import Moment from'moment';
+const Avatar = require('../lib/Avatar');
 const zpData = require('../lib/Zhipin');
 
 export default class CustomerController {
@@ -31,10 +34,10 @@ export default class CustomerController {
     return zodiacSigns[0];
   }
 
-  public async index({ request }: HttpContextContract) {
+  public async index({ request, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const customer = await Database.from('customer').select('id', 'user_wechat_open_id', 'introduction', 'relation', 'relation_log_id', 'relation_wechat_open_id').where('status', 1).orderBy('created_at', 'desc').limit(20)
+      const customer = await Database.from('customer').select('id', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id').where('status', 1).orderBy('created_at', 'desc').limit(20)
       for (let index = 0; index < customer.length; index++) {
         // 红娘自行发布
         if (customer[index].relation_log_id) {
@@ -45,10 +48,10 @@ export default class CustomerController {
         }
 
         // 关联注册用户 openid
-        if (customer[index].relation_wechat_open_id) {
+        if (customer[index].relation_user_id) {
           customer[index] = {
             ...customer[index],
-            ...await Database.from('users').select('*').where('wechat_open_id', customer[index].relation_wechat_open_id).first()
+            ...await Database.from('users').select('*').where('user_id', customer[index].relation_user_id).first()
           }
         }
 
@@ -58,7 +61,7 @@ export default class CustomerController {
         customer[index]['zodiac_sign'] = this.getZodiacSign(Moment(customer[index]['birthday']).format('DD'), Moment(customer[index]['birthday']).format('MM'))
         customer[index]['age'] = Moment().diff(customer[index]['birthday'], 'years')
         customer[index]['work'] = customer[index]['work'] ? JSON.parse(customer[index]['work']) : []
-        customer[index].parent = await Database.from('users').select('nickname', 'avatar_url').where('wechat_open_id', customer[index].user_wechat_open_id).first()
+        customer[index].parent = await Database.from('users').select('nickname', 'avatar_url').where('user_id', customer[index].relation_user_id).first()
         let relation = ["朋友", "亲戚", "伙伴", "同事", "其他"]
         customer[index].relation = relation[customer[index].relation]
 
@@ -69,8 +72,8 @@ export default class CustomerController {
         // 个性化问答
         if (customer[index].relation_wechat_open_id) {
           let _answer = [[], [], []]
-          const answer = (await Database.rawQuery("select questions.type, questions.title, questions.description, answer.content, answer.relation_user_id from answer left outer join questions on answer.relation_question_id = questions.id where answer.relation_user_id = :relation_user_id order by type asc;", {
-            relation_user_id: customer[index].relation_wechat_open_id
+          const answer = (await Database.rawQuery("select questions.type, questions.title, questions.description, answer.content, answer.user_id from answer left outer join questions on answer.relation_question_id = questions.id where answer.user_id = :user_id order by type asc;", {
+            user_id: customer[index].relation_user_id
           }))[0]
 
           for (let index = 0; index < answer.length; index++) {
@@ -114,25 +117,25 @@ export default class CustomerController {
       }
       return customer
     } catch (error) {
-      console.log(error)
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
     }
   }
 
-  public async relationCustomerinfo({ request, response }: HttpContextContract) {
+  public async relationCustomerinfo({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
+      const user_id = await Database.from('users').where('id', Jwt.verifyPublicKey(all.relation_sign)).first()
       const id = await Database.table('customer').returning('id').insert({
-        user_wechat_open_id: all.openid,
+        user_id: session.get('user_id'),
         relation: all.relation || '',
-        relation_wechat_open_id: all.relation_id || '',
+        relation_user_id: all.user_id || '',
         introduction: all.introduction,
         userinfo: JSON.stringify(all.userinfo)
-        // modified_at: ''
       })
 
       response.json({ status: 200, message: "ok" })
     } catch (error) {
-      console.log(error)
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
         message: "internalServerError",
@@ -144,7 +147,7 @@ export default class CustomerController {
   public async customerInfo({ params, request, response }: HttpContextContract) {
     try {
       const all = request.all()
-      let customer = await Database.from('customer').select('id', 'user_wechat_open_id', 'introduction', 'relation_log_id', 'relation_wechat_open_id').whereIn('status', [1, 2]).where({ id: params.id, user_wechat_open_id: all.openid }).first()
+      let customer = await Database.from('customer').select('id', 'user_id', 'introduction', 'relation_log_id', 'relation_user_id').whereIn('status', [1, 2]).where({ id: params.id }).first()
 
       // 红娘自行发布用户
       if (customer.relation_log_id) {
@@ -155,10 +158,10 @@ export default class CustomerController {
       }
 
       // 关联已存在用户
-      if (customer.relation_wechat_open_id) {
+      if (customer.relation_user_id) {
         customer = {
           ...customer,
-          ...await Database.from('users').select('avatar_url', 'nickname', 'detail').where('wechat_open_id', customer.relation_wechat_open_id).first()
+          ...await Database.from('users').select('avatar_url', 'nickname', 'detail').where('user_id', customer.relation_user_id).first()
         }
       }
       response.json({
@@ -167,7 +170,7 @@ export default class CustomerController {
         data: customer
       })
     } catch (error) {
-      console.log(error);
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
         message: "internalServerError",
@@ -177,12 +180,12 @@ export default class CustomerController {
   }
 
   // 红娘发布客户
-  public async createCustomerinfo({ request, response }: HttpContextContract) {
+  public async createCustomerinfo({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
       const id = await Database.table('customer_log').returning('id').insert({
         nickname: all.nickname,
-        avatar_url: all.avatar_url || '',
+        avatar_url: all.avatar_url || Avatar.data(all.sex),
         birthday: all.birthday || '',
         height: all.height,
         sex: all.sex,
@@ -191,8 +194,8 @@ export default class CustomerController {
       })
 
       const customer = await Database.table('customer').insert({
-        user_wechat_open_id: all.openid,
-        relation_log_id: id,
+        user_id: session.get('user_id'), // 关联 发布用户 user id
+        relation_log_id: id, // 关联 customer log
         relation: all.relation,
         introduction: all.introduction || '',
         userinfo: JSON.stringify(all)
@@ -204,7 +207,7 @@ export default class CustomerController {
         data: customer
       })
     } catch (error) {
-      console.log(error);
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
         message: "ok",
@@ -213,10 +216,10 @@ export default class CustomerController {
     }
   }
 
-  public async createCustomerList({ request, response }: HttpContextContract) {
+  public async createCustomerList({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const customer = await Database.from('customer').select('id', 'user_wechat_open_id', 'introduction', 'relation_log_id', 'relation_wechat_open_id').whereIn('status', [1, 2]).where('user_wechat_open_id', all.openid).orderBy('created_at', 'desc').limit(20)
+      const customer = await Database.from('customer').select('id', 'user_id', 'introduction', 'relation_log_id', 'user_id').whereIn('status', [1, 2]).where('user_id', session.get('user_id')).orderBy('created_at', 'desc')
       for (let index = 0; index < customer.length; index++) {
         if (customer[index].relation_log_id) {
           customer[index] = {
@@ -224,10 +227,10 @@ export default class CustomerController {
             ...await Database.from('customer_log').select('avatar_url', 'nickname', 'detail').where('id', customer[index].relation_log_id).first()
           }
         }
-        if (customer[index].relation_wechat_open_id) {
+        if (customer[index].user_id) {
           customer[index] = {
             ...customer[index],
-            ...await Database.from('users').select('avatar_url', 'nickname', 'detail').where('wechat_open_id', customer[index].relation_wechat_open_id).first()
+            ...await Database.from('users').select('avatar_url', 'nickname', 'detail').where('user_id', customer[index].user_id).first()
           }
         }
       }
@@ -238,6 +241,7 @@ export default class CustomerController {
         data: customer
       })
     } catch (error) {
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
         message: "internalServerError",
@@ -246,10 +250,10 @@ export default class CustomerController {
     }
   }
 
-  public async deleteCustomer({ params, request, response }: HttpContextContract) {
+  public async deleteCustomer({ params, request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const id = await Database.from('customer').where('id', params.id).update({
+      const id = await Database.from('customer').where({ 'id': params.id, user_id: session.get('user_id') }).update({
         status: 0,
         deleted_at: Moment().format('YYYY-MM-DD HH:mm:ss')
       }, ['id'])
@@ -259,6 +263,7 @@ export default class CustomerController {
         message: "ok"
       })
     } catch (error) {
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
         message: "internalServerError",

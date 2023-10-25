@@ -1,11 +1,12 @@
 import Database from '@ioc:Adonis/Lucid/Database'
+import Logger from '@ioc:Adonis/Core/Logger'
 import Moment from'moment';
 
 export default class MomentsController {
   public async index({ request, response }: HttpContextContract) {
     try {
       const all = request.all()
-      const moments = await Database.from('moments').select('moments.id', 'moments.relation_user_id', 'moments.content', 'moments.photos', 'moments.created_at', 'users.wechat_open_id', 'users.nickname', 'users.avatar_url', 'users.sex', 'users.birthday', 'users.ip').join('users', 'moments.relation_user_id', '=', 'users.wechat_open_id').orderBy('moments.created_at', 'desc')
+      const moments = await Database.from('moments').select('moments.id', 'moments.user_id', 'moments.content', 'moments.photos', 'moments.created_at', 'users.wechat_open_id', 'users.nickname', 'users.avatar_url', 'users.sex', 'users.birthday', 'users.ip').join('users', 'moments.user_id', '=', 'users.wechat_open_id').orderBy('moments.created_at', 'desc')
       for (let index = 0; index < moments.length; index++) {
         moments[index].data_type = 'image'
         moments[index].photos = moments[index].photos ? JSON.parse(moments[index].photos) : []
@@ -18,7 +19,7 @@ export default class MomentsController {
         data: moments
       })
     } catch (error) {
-      console.log(error)
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
         message: "internalServerError",
@@ -27,10 +28,10 @@ export default class MomentsController {
     }
   }
 
-  public async lists({ request, response }: HttpContextContract) {
+  public async lists({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const moments = await Database.from('moments').where('relation_user_id', all.openid).orderBy('created_at', 'desc')
+      const moments = await Database.from('moments').where('user_id', session.get('user_id')).orderBy('created_at', 'desc')
       for (let index = 0; index < moments.length; index++) {
         moments[index].data_type = 'image'
         moments[index].photos = moments[index].photos ? JSON.parse(moments[index].photos) : []
@@ -44,7 +45,7 @@ export default class MomentsController {
         data: moments
       })
     } catch (error) {
-      console.log(error)
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
         message: "internalServerError",
@@ -70,7 +71,7 @@ export default class MomentsController {
         data: moment
       })
     } catch (error) {
-      console.log(error)
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
         message: "internalServerError",
@@ -79,12 +80,12 @@ export default class MomentsController {
     }
   }
 
-  public async create({ request, response }: HttpContextContract) {
+  public async create({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
       let id = await Database.table('moments').returning('id').insert({
-        relation_user_id: all.openid || '',
-        content: all.content || '',
+        user_id: session.get('user_id'),
+        content: all.content,
         photos: JSON.stringify(all.photos || []),
       })
 
@@ -98,7 +99,7 @@ export default class MomentsController {
         })
       }
     } catch (error) {
-      console.log(error)
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
         message: "internalServerError",

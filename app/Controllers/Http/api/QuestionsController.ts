@@ -1,4 +1,5 @@
 import Database from '@ioc:Adonis/Lucid/Database'
+import Logger from '@ioc:Adonis/Core/Logger'
 import Moment from'moment'
 Moment.locale('zh-cn')
 
@@ -6,8 +7,8 @@ export default class QuestionsController {
   public async index({ request, response }: HttpContextContract) {
     try {
       let all = request.all(), _answer = [[], [], []]
-      const answer = (await Database.rawQuery("select questions.type, questions.title, questions.description, answer.content, answer.relation_user_id from answer left outer join questions on answer.relation_question_id = questions.id where answer.relation_user_id = :relation_user_id order by type asc;", {
-        relation_user_id: all.openid
+      const answer = (await Database.rawQuery("select questions.type, questions.title, questions.description, answer.content, answer.user_id from answer left outer join questions on answer.relation_question_id = questions.id where answer.user_id = :user_id order by type asc;", {
+        user_id: all.openid
       }))[0]
 
       for (let index = 0; index < answer.length; index++) {
@@ -30,7 +31,7 @@ export default class QuestionsController {
         data: _answer
       })
     } catch (error) {
-      console.log(error)
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
         message: "internalServerError",
@@ -39,20 +40,19 @@ export default class QuestionsController {
     }
   }
 
-  public async questionLists({ request, response }: HttpContextContract) {
+  public async questionLists({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const answer = await Database.from('answer').select('id').where({ relation_user_id: all.openid })
+      const answer = await Database.from('answer').select('relation_question_id').where({ user_id: session.get('user_id') })
       if (answer.length) {
-        let answerString = answer[0].id
+        let answerString = answer[0].relation_question_id
         for (let index = 1; index < answer.length; index++) answerString += ', ' + answer[index].id;
         var rawQuerySql = "SELECT * FROM questions where id not in (" + answerString + ") ORDER BY RAND() LIMIT 6;"
       } else {
         var rawQuerySql = "SELECT * FROM questions ORDER BY RAND() LIMIT 6;"
       }
-
       const questions = (await Database.rawQuery(rawQuerySql, {
-        relation_user_id: all.openid
+        user_id: session.get('user_id')
       }))[0]
 
       response.json({
@@ -61,7 +61,7 @@ export default class QuestionsController {
         data: questions
       })
     } catch (error) {
-      console.log(error)
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
         message: "internalServerError",
@@ -70,12 +70,12 @@ export default class QuestionsController {
     }
   }
 
-  public async answerLists({ request, response }: HttpContextContract) {
+  public async answerLists({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
       const _answer = [[], [], []]
-      const answer = (await Database.rawQuery("select questions.id as qid, questions.type, questions.title, questions.description, answer.content, answer.id as id, answer.relation_user_id from answer left outer join questions on answer.relation_question_id = questions.id where answer.type = 0 and answer.relation_user_id = :relation_user_id order by type asc;", {
-        relation_user_id: all.openid
+      const answer = (await Database.rawQuery("select questions.id as qid, questions.type, questions.title, questions.description, answer.content, answer.id as id, answer.user_id from answer left outer join questions on answer.relation_question_id = questions.id where answer.type = 0 and answer.user_id = :user_id order by type asc;", {
+        user_id: session.get('user_id')
       }))[0]
 
       for (let index = 0; index < answer.length; index++) {
@@ -98,7 +98,7 @@ export default class QuestionsController {
         data: _answer
       })
     } catch (error) {
-      console.log(error)
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
         message: "internalServerError",
@@ -107,11 +107,11 @@ export default class QuestionsController {
     }
   }
 
-  public async introduceLists({ request, response }: HttpContextContract) {
+  public async introduceLists({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const answer = (await Database.rawQuery("select questions.id as qid, questions.type, questions.title, questions.description, answer.content, answer.id as id, answer.relation_user_id from answer left outer join questions on answer.relation_question_id = questions.id where answer.type = 1 and answer.relation_user_id = :relation_user_id order by type asc;", {
-        relation_user_id: all.openid
+      const answer = (await Database.rawQuery("select questions.id as qid, questions.type, questions.title, questions.description, answer.content, answer.id as id, answer.user_id from answer left outer join questions on answer.relation_question_id = questions.id where answer.type = 1 and answer.user_id = :user_id order by type asc;", {
+        user_id: session.get('user_id')
       }))[0]
 
       response.json({
@@ -120,7 +120,7 @@ export default class QuestionsController {
         data: answer
       })
     } catch (error) {
-      console.log(error)
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
         message: "internalServerError",
@@ -129,22 +129,23 @@ export default class QuestionsController {
     }
   }
 
-  public async show({ params, request, response }: HttpContextContract) {
+  public async show({ params, request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
       const question = await Database.from('questions').where('id', params.id).first()
-      if (all.openid) {
-        let answer = await Database.from('answer').where({id: params.id, relation_user_id: all.openid}).first()
-        question.content = answer ? answer.content : ''
-        question.photos = answer ? JSON.parse(answer.photos) : []
-      }
+      let answer = await Database.from('answer').where({relation_question_id: params.id, user_id: session.get('user_id')}).first()
+      console.log(answer);
+
+
+      question.content = answer ? answer.content : ''
+      question.photos = answer ? JSON.parse(answer.photos) : []
       response.json({
         status: 200,
         message: "ok",
         data: question
       })
     } catch (error) {
-      console.log(error)
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
         message: "internalServerError",
@@ -153,12 +154,12 @@ export default class QuestionsController {
     }
   }
 
-  public async answer({ params, request, response }: HttpContextContract) {
+  public async answer({ params, request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
       if (request.method() == 'GET') {
-        var question = await Database.from('answer').where({id: params.id, relation_user_id: all.openid}).first()
-        question.userinfo = await Database.from('users').where({wechat_open_id: all.openid}).first()
+        var question = await Database.from('answer').where({id: params.id, user_id: session.get('user_id')}).first()
+        question.userinfo = await Database.from('users').where({ user_id: session.get('user_id') }).first()
         question.created_at = Moment(question.created_at).fromNow()
         question = {
           ...question,
@@ -178,22 +179,22 @@ export default class QuestionsController {
             introduce_openid: all.introduce_openid || '',
             content: all.content || '',
             relation_question_id: '',
-            relation_user_id: all.openid || '',
-            photos: '',
+            user_id: session.get('user_id') || '',
+            photos: JSON.stringify(all.photos || []),
           })
           return response.json({ status: 200, message: "ok", data: id })
         }
 
         const id = await Database.table('answer').returning('id').insert({
-          relation_question_id: params.id || '',
-          relation_user_id: all.openid || '',
+          user_id: session.get('user_id'),
+          relation_question_id: params.id,
           content: all.content || '',
           photos: JSON.stringify(all.photos || []),
         })
         response.json({ status: 200, message: "ok", data: id })
       }
     } catch (error) {
-      console.log(error)
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
         message: "internalServerError",
