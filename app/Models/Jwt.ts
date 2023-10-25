@@ -23,7 +23,7 @@ export default class Jwt extends BaseModel {
   // RS256
   static signPrivateKey (data) {
     try {
-      return Jwtoken.sign(JSON.parse(data), Fs.readFileSync(Application.configPath('pem/private.key')), { algorithm: 'RS256' })
+      return Jwtoken.sign(JSON.parse(data), Fs.readFileSync(Application.publicPath('pem/private.key')), { algorithm: 'RS256' })
     } catch (e) {
       console.log(e);
     }
@@ -31,7 +31,7 @@ export default class Jwt extends BaseModel {
 
   static verifyPublicKey (token) {
     try {
-      return Jwtoken.verify(token, Fs.readFileSync(Application.configPath('pem/public.key')))
+      return Jwtoken.verify(token, Fs.readFileSync(Application.publicPath('pem/public.key')))
     } catch (e) {
       console.log(e);
     }
