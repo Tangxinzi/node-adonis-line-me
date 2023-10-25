@@ -152,7 +152,7 @@ export const logger: LoggerConfig = {
   | at deployment level and not code level.
   |
   */
-  level: Env.get('LOG_LEVEL', 'info'),
+  level: Env.get('LOG_LEVEL', 'error'),
 
   /*
   |--------------------------------------------------------------------------

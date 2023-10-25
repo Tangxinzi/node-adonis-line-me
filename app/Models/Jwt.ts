@@ -3,6 +3,7 @@
 import Fs from 'fs';
 import Jwtoken from 'jsonwebtoken';
 import Env from '@ioc:Adonis/Core/Env';
+import Application from '@ioc:Adonis/Core/Application'
 import { column, beforeSave, BaseModel } from '@ioc:Adonis/Lucid/Orm'
 
 export default class Jwt extends BaseModel {
@@ -22,7 +23,7 @@ export default class Jwt extends BaseModel {
   // RS256
   static signPrivateKey (data) {
     try {
-      return Jwtoken.sign(JSON.parse(data), Fs.readFileSync('./config/pem/private.key'), { algorithm: 'RS256' })
+      return Jwtoken.sign(JSON.parse(data), Fs.readFileSync(Application.configPath('pem/private.key')), { algorithm: 'RS256' })
     } catch (e) {
       console.log(e);
     }
@@ -30,7 +31,7 @@ export default class Jwt extends BaseModel {
 
   static verifyPublicKey (token) {
     try {
-      return Jwtoken.verify(token, Fs.readFileSync('./config/pem/public.key'))
+      return Jwtoken.verify(token, Fs.readFileSync(Application.configPath('pem/public.key')))
     } catch (e) {
       console.log(e);
     }
