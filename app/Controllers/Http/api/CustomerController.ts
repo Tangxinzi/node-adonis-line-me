@@ -219,20 +219,21 @@ export default class CustomerController {
   public async createCustomerList({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const customer = await Database.from('customer').select('id', 'user_id', 'introduction', 'relation_log_id', 'user_id').whereIn('status', [1, 2]).where('user_id', session.get('user_id')).orderBy('created_at', 'desc')
+      const customer = await Database.from('customer').select('id', 'user_id', 'introduction', 'relation_log_id', 'user_id', 'created_at').whereIn('status', [1, 2]).where('user_id', session.get('user_id')).orderBy('created_at', 'desc')
       for (let index = 0; index < customer.length; index++) {
-        if (customer[index].relation_log_id) {
+        if (customer[index].relation_user_id) {
+          customer[index] = {
+            ...customer[index],
+            ...await Database.from('users').select('avatar_url', 'nickname', 'detail').where('user_id', customer[index].user_id).first()
+          }
+        } else if (customer[index].relation_log_id) {
           customer[index] = {
             ...customer[index],
             ...await Database.from('customer_log').select('avatar_url', 'nickname', 'detail').where('id', customer[index].relation_log_id).first()
           }
         }
-        if (customer[index].user_id) {
-          customer[index] = {
-            ...customer[index],
-            ...await Database.from('users').select('avatar_url', 'nickname', 'detail').where('user_id', customer[index].user_id).first()
-          }
-        }
+
+        customer[index].created_at = Moment(customer[index].created_at).format('YYYY-MM-DD')
       }
 
       response.json({

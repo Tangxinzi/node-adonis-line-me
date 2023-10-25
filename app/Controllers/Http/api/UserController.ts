@@ -51,7 +51,7 @@ export default class UserController {
         })
         result.user.id = id[0]
       }
-      result.user.sign = Jwt.signPrivateKey(result.user.id)
+      result.user.sign = await Jwt.signPrivateKey(result.user.id)
       return result
     } catch (error) {
       Logger.error("error 获取失败 %s", JSON.stringify(error));
