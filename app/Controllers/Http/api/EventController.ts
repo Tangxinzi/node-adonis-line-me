@@ -130,25 +130,25 @@ export default class EventController {
     try {
       const all = request.all()
       const user = this.getUserinfo(session.get('user_id'))
-      const like = await Database.from('likes').where({ relation_type_id: params.id, type: params.type, status: 1, user_id: session.get('user_id') || '' }).first()
+      const like = await Database.from('likes').where({ relation_type_id: params.id, type: params.type, status: 1, user_id: session.get('user_id') || '' }).first() || {}
 
       switch (params.type) {
         case 'moment':
-          const moment = await Database.from('moments').where('id', params.id).first()
+          const moment = await Database.from('moments').where('id', params.id).first()  || {}
 
           moment.like = like && like.id ? true : false
           moment.likeNum =(await Database.from('likes').where({ relation_type_id: params.id, type: 'moment', status: 1 }).count('* as total'))[0].total || 0
           moment.commentNum = (await Database.from('comments').where({ relation_type_id: params.id, type: 'moment', status: 1 }).count('* as total'))[0].total || 0
+
           moment.photos = moment.photos ? JSON.parse(moment.photos) : []
           moment.comments = await this.getComments('moment', moment.id)
-
           moment.created_at = Moment(moment.created_at).format('YYYY-MM-DD HH:mm:ss')
           moment.modified_at = Moment(moment.modified_at).format('YYYY-MM-DD HH:mm:ss')
           return response.json({ status: 200, message: "ok", data: moment })
           break;
 
         case 'answer'
-          var question = await Database.from('answer').where({id: params.id, user_id: session.get('user_id') || ''}).first()
+          var question = await Database.from('answer').where('id', params.id).first() || {}
 
           question.like = like && like.id ? true : false
           question.likeNum =(await Database.from('likes').where({ relation_type_id: params.id, type: 'answer', status: 1 }).count('* as total'))[0].total || 0

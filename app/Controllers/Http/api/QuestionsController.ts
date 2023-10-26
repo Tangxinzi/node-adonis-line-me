@@ -46,7 +46,7 @@ export default class QuestionsController {
       const answer = await Database.from('answer').select('relation_question_id').where({ user_id: session.get('user_id') })
       if (answer.length) {
         let answerString = answer[0].relation_question_id
-        for (let index = 1; index < answer.length; index++) answerString += ', ' + answer[index].id;
+        for (let index = 1; index < answer.length; index++) answerString += ', ' + (answer[index].id || 0);
         var rawQuerySql = "SELECT * FROM questions where id not in (" + answerString + ") ORDER BY RAND() LIMIT 6;"
       } else {
         var rawQuerySql = "SELECT * FROM questions ORDER BY RAND() LIMIT 6;"
