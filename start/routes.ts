@@ -47,8 +47,10 @@ Route.group(() => {
   Route.post('/user/moment/create', 'api/MomentsController.create')
 
   Route.get('/customs', 'api/CustomerController.index')
-  Route.get('/custom/userinfo/:id', 'api/CustomerController.customerInfo')
-  Route.get('/custom/userlist', 'api/CustomerController.createCustomerList')
+  Route.get('/customer/userinfo/:id', 'api/CustomerController.customerInfo')
+  Route.post('/customer/field/update/:id', 'api/CustomerController.updateCustomerField')
+  Route.get('/customer/userlist', 'api/CustomerController.customerList')
+  Route.get('/customer/userlist/show/:id', 'api/CustomerController.customerShow')
   Route.post('/customer/create', 'api/CustomerController.createCustomerinfo')
   Route.post('/customer/create/relation', 'api/CustomerController.relationCustomerinfo')
   Route.post('/customer/delete/:id', 'api/CustomerController.deleteCustomer')
@@ -68,8 +70,29 @@ Route.group(() => {
   Route.get('/customers', 'admin/CustomersController.index').as('customers')
 
   Route.get('/questions', 'admin/QuestionsController.index').as('questions')
+  Route.get('/questions/answer', 'admin/QuestionsController.answer')
   Route.get('/questions/edit/:id', 'admin/QuestionsController.edit')
   Route.get('/questions/create', 'admin/QuestionsController.create')
   Route.post('/questions/save', 'admin/QuestionsController.save')
   Route.post('/questions/update', 'admin/QuestionsController.update')
 }).prefix('/admin')
+
+Route.group(() => {
+  Route.get('/designer', 'land/admin/DesignerController.index')
+  Route.get('/designer/create', 'land/admin/DesignerController.create')
+  Route.get('/designer/show/:id', 'land/admin/DesignerController.show')
+  Route.get('/designer/edit/:id', 'land/admin/DesignerController.edit')
+  Route.post('/designer/save', 'land/admin/DesignerController.save')
+
+  Route.get('/work', 'land/admin/WorkController.index')
+  Route.get('/work/create', 'land/admin/WorkController.create')
+  Route.get('/work/show/:id', 'land/admin/WorkController.show')
+  Route.get('/work/edit/:id', 'land/admin/WorkController.edit')
+  Route.post('/work/save', 'land/admin/WorkController.save')
+
+  Route.get('/article', 'land/admin/ArticleController.index')
+  Route.get('/article/create', 'land/admin/ArticleController.create')
+  Route.get('/article/show/:id', 'land/admin/ArticleController.show')
+  Route.get('/article/edit/:id', 'land/admin/ArticleController.edit')
+  Route.post('/article/save', 'land/admin/ArticleController.save')
+}).prefix('/land')

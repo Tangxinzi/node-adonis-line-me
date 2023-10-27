@@ -1,0 +1,65 @@
+@layout('land.components.layouts.main')
+
+@section('title')
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<title>{{ data.title }} - LandTower</title>
+@endsection
+
+@section('style')
+<style media="screen">
+
+</style>
+@endsection
+
+@section('content')
+  <div class="ui stackable four column grid">
+    <div class="three wide column">
+      @!component('land.components.navbar-menus', data=data, csrf=csrfField())
+    </div>
+    <div class="thirteen wide column">
+      <div class="flex-between">
+        <b>{{ data.title }}</b>
+        <a href="{{ route('land/admin/DesignerController.create') }}">添加</a>
+      </div>
+      <table class="ui celled center aligned table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>姓名</th>
+            <th>性别</th>
+            <th>标签集</th>
+            <th>发布时间</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          @each(row in data.designers)
+            <tr>
+              <td class="td">{{ row.id }}</td>
+              <td class="td">{{ row.nickname }}</td>
+              <td class="td">{{ row.sex == 0 ? '女' : '' }} {{ row.sex == 1 ? '男' : '' }}</td>
+              <td class="td">
+                @each(label in row.labels)
+                  <div class="ui mini label">{{ label }}</div>
+                @endeach
+              </td>
+              <td class="td">{{ row.created_at }}</td>
+              <td class="td">
+                <a href="{{ route('land/admin/DesignerController.edit', { id: row.id }) }}">编辑</a>
+                &nbsp;&nbsp;
+                <a href="">删除</a>
+              </td>
+            </tr>
+          @endeach
+        </tbody>
+      </table>
+    </div>
+  </div>
+@endsection
+
+@section('script')
+<script src="https://unpkg.com/@wangeditor/editor@latest/dist/index.js"></script>
+<script type="text/javascript">
+
+@endsection
