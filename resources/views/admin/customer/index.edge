@@ -31,7 +31,6 @@
             <th>手机号</th>
             <th>照片</th>
             <th>性别</th>
-            <th>类别</th>
             <th>时间</th>
             <!-- <th>操作</th> -->
           </tr>
@@ -52,7 +51,6 @@
               <td class="td">{{ row.phone || '' }}</td>
               <td class="td">{{ row.photos.length || '' }}</td>
               <td class="td">{{ row.sex == 1 ? '男' : '' }}{{ row.sex == 0 ? '女' : '' }}</td>
-              <td class="td">{{ row.type == 1 ? '用户' : '' }}{{ row.type == 2 ? '红娘' : '' }}</td>
               <td class="td">{{ row.created_at }}</td>
               <!-- <td class="td">
                 <a href="">查看</a>

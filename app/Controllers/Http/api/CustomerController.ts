@@ -8,6 +8,7 @@ import iconv from 'iconv-lite';
 import Moment from'moment';
 const Avatar = require('../lib/Avatar');
 const zpData = require('../lib/Zhipin');
+const RELATION = ["朋友", "亲戚", "伙伴", "同事", "其他"]
 
 export default class CustomerController {
   getZodiacSign(day, month) {
@@ -43,7 +44,8 @@ export default class CustomerController {
         if (customer[index].relation_log_id) {
           customer[index] = {
             ...customer[index],
-            ...await Database.from('customer_log').select('*').where('id', customer[index].relation_log_id).first()
+            ...await Database.from('customer_log').select('*').where('id', customer[index].relation_log_id).first(),
+            parent: await Database.from('users').select('nickname', 'avatar_url').where('user_id', customer[index].user_id).first()
           }
         }
 
@@ -51,7 +53,8 @@ export default class CustomerController {
         if (customer[index].relation_user_id) {
           customer[index] = {
             ...customer[index],
-            ...await Database.from('users').select('*').where('user_id', customer[index].relation_user_id).first()
+            ...await Database.from('users').select('*').where('user_id', customer[index].relation_user_id).first(),
+            parent: await Database.from('users').select('nickname', 'avatar_url').where('user_id', customer[index].relation_user_id).first()
           }
         }
 
@@ -60,11 +63,9 @@ export default class CustomerController {
         customer[index]['videos'] = customer[index]['videos'] ? JSON.parse(customer[index]['videos']) : []
         customer[index]['zodiac_sign'] = this.getZodiacSign(Moment(customer[index]['birthday']).format('DD'), Moment(customer[index]['birthday']).format('MM'))
         customer[index]['age'] = Moment().diff(customer[index]['birthday'], 'years')
-        customer[index]['work'] = customer[index]['work'] ? JSON.parse(customer[index]['work']) : []
-        customer[index].parent = await Database.from('users').select('nickname', 'avatar_url').where('user_id', customer[index].relation_user_id).first()
-        let relation = ["朋友", "亲戚", "伙伴", "同事", "其他"]
-        customer[index].relation = relation[customer[index].relation]
+        customer[index].relation = RELATION[customer[index].relation]
 
+        customer[index]['work'] = customer[index]['work'] ? JSON.parse(customer[index]['work']) : []
         if (customer[index]['work']['value']) {
           customer[index]['work']['text'] = await zpData.data(customer[index]['work']['value'][0], customer[index]['work']['value'][1])
         }
@@ -216,21 +217,27 @@ export default class CustomerController {
     }
   }
 
-  public async createCustomerList({ request, response, session }: HttpContextContract) {
+  public async customerList({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const customer = await Database.from('customer').select('id', 'user_id', 'introduction', 'relation_log_id', 'user_id', 'created_at').whereIn('status', [1, 2]).where('user_id', session.get('user_id')).orderBy('created_at', 'desc')
+      const customer = await Database.from('customer').select('id', 'user_id', 'relation', 'introduction', 'relation_log_id', 'user_id', 'created_at').whereIn('status', [1, 2]).where('user_id', session.get('user_id')).orderBy('created_at', 'desc')
       for (let index = 0; index < customer.length; index++) {
         if (customer[index].relation_user_id) {
           customer[index] = {
             ...customer[index],
-            ...await Database.from('users').select('avatar_url', 'nickname', 'detail').where('user_id', customer[index].user_id).first()
+            ...await Database.from('users').select('avatar_url', 'nickname', 'work', 'detail').where('user_id', customer[index].user_id).first()
           }
         } else if (customer[index].relation_log_id) {
           customer[index] = {
             ...customer[index],
-            ...await Database.from('customer_log').select('avatar_url', 'nickname', 'detail').where('id', customer[index].relation_log_id).first()
+            ...await Database.from('customer_log').select('avatar_url', 'nickname', 'work', 'detail').where('id', customer[index].relation_log_id).first()
           }
+        }
+
+        customer[index].relation = RELATION[customer[index].relation]
+        customer[index].work = customer[index].work ? JSON.parse(customer[index].work) : []
+        if (customer[index].work.value) {
+          customer[index].work.text = await zpData.data(customer[index].work.value[0], customer[index].work.value[1])
         }
 
         customer[index].created_at = Moment(customer[index].created_at).format('YYYY-MM-DD')
@@ -246,6 +253,57 @@ export default class CustomerController {
       response.json({
         status: 500,
         message: "internalServerError",
+        data: error
+      })
+    }
+  }
+
+  public async customerShow({ params, request, response, session }: HttpContextContract) {
+    try {
+      const all = request.all()
+      const customer = await Database.from('customer').select('id', 'status', 'user_id', 'relation_user_id', 'relation', 'relation_log_id', 'introduction').where({ 'id': params.id, user_id: session.get('user_id'), status: 1 }).first()
+      customer.relation = RELATION[customer.relation]
+      if (customer.relation_log_id) {
+        customer.userinfo = await Database.from('customer_log').select('*').where({ 'id': customer.relation_log_id }).first()
+      }
+
+      response.json({
+        status: 200,
+        message: "ok",
+        data: customer
+      })
+    } catch (error) {
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
+      response.json({
+        status: 500,
+        message: "internalServerError",
+        data: error
+      })
+    }
+  }
+
+  public async updateCustomerField({ params, request, response, session }: HttpContextContract) {
+    try {
+      const all = request.all()
+      switch (all.type) {
+        case 'introduction':
+          const result = await Database.from('customer').where({ id: params.id, user_id: session.get('user_id') }).update({ introduction: all.value })
+          console.log(result);
+
+          break;
+      }
+
+      response.json({
+        status: 200,
+        message: "ok"
+      })
+    } catch (error) {
+      console.log(error);
+
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
+      response.json({
+        status: 500,
+        message: "ok",
         data: error
       })
     }

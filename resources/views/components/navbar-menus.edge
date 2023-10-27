@@ -3,6 +3,7 @@
   <a class="{{ data.active == 'users' ? 'item active' : 'item' }}" href="{{ route('admin/UsersController.index') }}">用户</a>
   <a class="{{ data.active == 'customers' ? 'item active' : 'item' }}" href="{{ route('admin/CustomersController.index' )}}">推介</a>
   <a class="{{ data.active == 'questions' ? 'item active' : 'item' }}" href="{{ route('admin/QuestionsController.index' )}}">个性化问答</a>
+  <a class="{{ data.active == 'answer' ? 'item active' : 'item' }}" href="{{ route('admin/QuestionsController.answer' )}}">　回答</a>
 </div>
 <b>系统设置</b>
 <div class="ui vertical pointing menu">

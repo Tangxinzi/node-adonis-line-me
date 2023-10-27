@@ -37,6 +37,7 @@ export default class EventController {
             nickname: moments[index].nickname,
             avatar_url: moments[index].avatar_url,
             sex: moments[index].sex,
+            title: '发布了动态',
             content: moments[index].content,
             photos: moments[index].photos ? JSON.parse(moments[index].photos) : [],
             age: Moment().diff(moments[index].birthday, 'years'),
@@ -52,12 +53,14 @@ export default class EventController {
         // answer
         if (answer[index]) {
           const like = await Database.from('likes').where({ relation_type_id: answer[index].id, type: 'answer', status: 1, user_id: session.get('user_id') || '' }).first()
+          const question = await Database.from('questions').select('title').where('id', answer[index].relation_question_id).first()
           descovery.push({
             id: answer[index].id,
             user_id: answer[index].user_id,
             nickname: answer[index].nickname,
             avatar_url: answer[index].avatar_url,
-            sex: answer[index].sex,
+            sex: answer[index].sex,,
+            title: '回答了「' + question.title + '」',
             content: answer[index].content,
             photos: answer[index].photos ? JSON.parse(answer[index].photos) : [],
             age: Moment().diff(answer[index].birthday, 'years'),
@@ -66,8 +69,7 @@ export default class EventController {
             likeNum: (await Database.from('likes').where({ relation_type_id: answer[index].id, type: 'answer', status: 1 }).count('* as total'))[0].total || 0,
             commentNum: (await Database.from('comments').where({ relation_type_id: answer[index].id, type: 'answer', status: 1 }).count('* as total'))[0].total || 0,
             ip: answer[index].ip,
-            created_at: Moment(answer[index].created_at).fromNow(),
-            ...await Database.from('questions').select('title').where('id', answer[index].relation_question_id).first()
+            created_at: Moment(answer[index].created_at).fromNow()
           })
         }
       }
@@ -134,36 +136,44 @@ export default class EventController {
 
       switch (params.type) {
         case 'moment':
-          const moment = await Database.from('moments').where('id', params.id).first()  || {}
+          let moment = await Database.from('moments').where('id', params.id).first() || {}
 
           moment.like = like && like.id ? true : false
           moment.likeNum =(await Database.from('likes').where({ relation_type_id: params.id, type: 'moment', status: 1 }).count('* as total'))[0].total || 0
           moment.commentNum = (await Database.from('comments').where({ relation_type_id: params.id, type: 'moment', status: 1 }).count('* as total'))[0].total || 0
 
+          moment.userinfo = await Database.from('users').where({user_id: moment.user_id}).first()
           moment.photos = moment.photos ? JSON.parse(moment.photos) : []
           moment.comments = await this.getComments('moment', moment.id)
-          moment.created_at = Moment(moment.created_at).format('YYYY-MM-DD HH:mm:ss')
-          moment.modified_at = Moment(moment.modified_at).format('YYYY-MM-DD HH:mm:ss')
+          // moment.created_at = Moment(moment.created_at).format('YYYY-MM-DD HH:mm:ss')
+          // moment.modified_at = Moment(moment.modified_at).format('YYYY-MM-DD HH:mm:ss')
+          moment.created_at = Moment(moment.created_at).fromNow()
+          moment.modified_at = Moment(moment.modified_at).fromNow()
+
+          moment.title = '发布了动态'
+
           return response.json({ status: 200, message: "ok", data: moment })
           break;
 
         case 'answer'
-          var question = await Database.from('answer').where('id', params.id).first() || {}
+          let answer = await Database.from('answer').where('id', params.id).first() || {}
 
-          question.like = like && like.id ? true : false
-          question.likeNum =(await Database.from('likes').where({ relation_type_id: params.id, type: 'answer', status: 1 }).count('* as total'))[0].total || 0
-          question.commentNum = (await Database.from('comments').where({ relation_type_id: params.id, type: 'answer', status: 1 }).count('* as total'))[0].total || 0
+          answer.like = like && like.id ? true : false
+          answer.likeNum =(await Database.from('likes').where({ relation_type_id: params.id, type: 'answer', status: 1 }).count('* as total'))[0].total || 0
+          answer.commentNum = (await Database.from('comments').where({ relation_type_id: params.id, type: 'answer', status: 1 }).count('* as total'))[0].total || 0
 
-          question.userinfo = await Database.from('users').where({user_id: question.user_id}).first()
-          question.comments = await Database.from('comments').where({ type: 'answer' })
-          question.created_at = Moment(question.created_at).format('YYYY-MM-DD HH:mm:ss')
-          question.modified_at = Moment(question.modified_at).format('YYYY-MM-DD HH:mm:ss')
-          question = {
-            ...question,
-            ...await Database.from('questions').select('title').where('id', question.relation_question_id).first()
-          }
-          question.photos = JSON.parse(question.photos || '[]')
-          return response.json({ status: 200, message: "ok", data: question })
+          answer.userinfo = await Database.from('users').where({user_id: answer.user_id}).first()
+          answer.photos = answer.photos ? JSON.parse(answer.photos) : []
+          answer.comments = await this.getComments('answer', answer.id)
+          answer.created_at = Moment(answer.created_at).fromNow()
+          answer.modified_at = Moment(answer.modified_at).fromNow()
+          // answer.created_at = Moment(answer.created_at).format('YYYY-MM-DD HH:mm:ss')
+          // answer.modified_at = Moment(answer.modified_at).format('YYYY-MM-DD HH:mm:ss')
+
+          const question = await Database.from('questions').select('title').where('id', answer.relation_question_id).first()
+          answer.title = '回答了问题「' + question.title + '」'
+
+          return response.json({ status: 200, message: "ok", data: answer })
           break;
       }
     } catch (error) {

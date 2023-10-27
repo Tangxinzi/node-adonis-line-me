@@ -142,6 +142,9 @@ export default class UserController {
       const all = request.all()
 
       switch (all.type) {
+        case 'avatar_url':
+          await Database.from('users').where('user_id', session.get('user_id')).update({ avatar_url: all.value })
+          break;
         case 'nickname':
           await Database.from('users').where('user_id', session.get('user_id')).update({ nickname: all.value })
           break;

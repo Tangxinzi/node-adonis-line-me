@@ -97,6 +97,7 @@ export const csrf: ShieldConfig['csrf'] = {
     '/api/customer/create',
     '/api/customer/create/relation',
     '/api/customer/delete/:id',
+    '/api/customer/field/update/:id',
     '/api/user/custom/create',
     '/api/user/change-type',
     '/api/user/field',

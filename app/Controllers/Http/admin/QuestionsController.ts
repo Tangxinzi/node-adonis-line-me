@@ -18,6 +18,31 @@ export default class QuestionsController {
     }
   }
 
+  public async answer({ request, view, session }: HttpContextContract) {
+    try {
+      const all = request.all()
+      const answer = await Database.from('answer').orderBy('created_at', 'desc')
+      for (let index = 0; index < answer.length; index++) {
+        const user = await Database.from('users').select('nickname').where('user_id', answer[index].user_id).first()
+        const question = await Database.from('questions').select('title').where('id', answer[index].relation_question_id).first()
+        answer[index].title = question.title
+        answer[index].userinfo = user
+        answer[index].photos = answer[index].photos ? JSON.parse(answer[index].photos) : []
+        answer[index].created_at = Moment(answer[index].created_at).format('YYYY-MM-DD hh:mm:ss')
+        answer[index].modified_at = Moment(answer[index].modified_at).format('YYYY-MM-DD hh:mm:ss')
+      }
+      return view.render('admin.question.answer', {
+        data: {
+          title: '问答',
+          active: 'answer',
+          answer
+        }
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   public async create({ request, view, session }: HttpContextContract) {
     try {
       const all = request.all()
