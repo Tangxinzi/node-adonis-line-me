@@ -262,9 +262,16 @@ export default class CustomerController {
     try {
       const all = request.all()
       const customer = await Database.from('customer').select('id', 'status', 'user_id', 'relation_user_id', 'relation', 'relation_log_id', 'introduction').where({ 'id': params.id, user_id: session.get('user_id'), status: 1 }).first()
-      customer.relation = RELATION[customer.relation]
+      customer.relation_text = RELATION[customer.relation]
       if (customer.relation_log_id) {
         customer.userinfo = await Database.from('customer_log').select('*').where({ 'id': customer.relation_log_id }).first()
+      }
+
+      customer.userinfo.photos = customer.userinfo.photos ? JSON.parse(customer.userinfo.photos) : []
+
+      customer.userinfo.work = customer.userinfo.work ? JSON.parse(customer.userinfo.work) : []
+      if (customer.userinfo.work.value) {
+        customer.userinfo.work.text = await zpData.data(customer.userinfo.work.value[0], customer.userinfo.work.value[1])
       }
 
       response.json({
@@ -285,17 +292,38 @@ export default class CustomerController {
   public async updateCustomerField({ params, request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      switch (all.type) {
-        case 'introduction':
-          const result = await Database.from('customer').where({ id: params.id, user_id: session.get('user_id') }).update({ introduction: all.value })
-          console.log(result);
-
+      let customer = await Database.from('customer').where({ id: params.id, user_id: session.get('user_id') }).first()
+      switch (`${ all.type }.${ all.field }`) {
+        case 'customer.relation':
+          var result = await Database.from('customer').where({ id: params.id, user_id: session.get('user_id') }).update({ relation: all.value })
+          break;
+        case 'customer.introduction':
+          var result = await Database.from('customer').where({ id: params.id, user_id: session.get('user_id') }).update({ introduction: all.value })
+          break;
+        case 'userinfo.nickname':
+          var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ nickname: all.value })
+          break;
+        case 'userinfo.avatar_url':
+          var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ avatar_url: all.value })
+          break;
+        case 'userinfo.photos':
+          var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ photos: JSON.stringify(all.value) })
+          break;
+        case 'userinfo.work':
+          var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ work: JSON.stringify(all.value) })
+          break;
+        case 'userinfo.height':
+          var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ height: all.value })
+          break;
+        case 'userinfo.birthday':
+          var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ birthday: all.value })
           break;
       }
 
       response.json({
         status: 200,
-        message: "ok"
+        message: "ok",
+        data: result
       })
     } catch (error) {
       console.log(error);
