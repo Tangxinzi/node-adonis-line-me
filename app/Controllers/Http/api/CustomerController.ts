@@ -125,11 +125,11 @@ export default class CustomerController {
   public async relationCustomerinfo({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const user_id = await Database.from('users').where('id', Jwt.verifyPublicKey(all.relation_sign)).first()
+      const user = await Database.from('users').where('id', Jwt.verifyPublicKey(all.relation_sign)).first()
       const id = await Database.table('customer').returning('id').insert({
         user_id: session.get('user_id'),
         relation: all.relation || '',
-        relation_user_id: all.user_id || '',
+        relation_user_id: user.user_id || '',
         introduction: all.introduction,
         userinfo: JSON.stringify(all.userinfo)
       })
@@ -220,12 +220,12 @@ export default class CustomerController {
   public async customerList({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const customer = await Database.from('customer').select('id', 'user_id', 'relation', 'introduction', 'relation_log_id', 'user_id', 'created_at').whereIn('status', [1, 2]).where('user_id', session.get('user_id')).orderBy('created_at', 'desc')
+      const customer = await Database.from('customer').select('id', 'user_id', 'relation', 'introduction', 'relation_log_id', 'relation_user_id', 'created_at').whereIn('status', [1, 2]).where('user_id', session.get('user_id')).orderBy('created_at', 'desc')
       for (let index = 0; index < customer.length; index++) {
         if (customer[index].relation_user_id) {
           customer[index] = {
             ...customer[index],
-            ...await Database.from('users').select('avatar_url', 'nickname', 'work', 'detail').where('user_id', customer[index].user_id).first()
+            ...await Database.from('users').select('avatar_url', 'nickname', 'work', 'detail').where('user_id', customer[index].relation_user_id).first()
           }
         } else if (customer[index].relation_log_id) {
           customer[index] = {
@@ -265,6 +265,8 @@ export default class CustomerController {
       customer.relation_text = RELATION[customer.relation]
       if (customer.relation_log_id) {
         customer.userinfo = await Database.from('customer_log').select('*').where({ 'id': customer.relation_log_id }).first()
+      } else if(customer.relation_user_id) {
+        customer.userinfo = await Database.from('users').select('*').where({ 'user_id': customer.relation_user_id }).first()
       }
 
       customer.userinfo.photos = customer.userinfo.photos ? JSON.parse(customer.userinfo.photos) : []
