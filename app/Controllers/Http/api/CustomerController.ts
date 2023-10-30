@@ -306,6 +306,9 @@ export default class CustomerController {
         case 'userinfo.avatar_url':
           var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ avatar_url: all.value })
           break;
+        case 'userinfo.contact_wechat':
+          var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ contact_wechat: all.value })
+          break;
         case 'userinfo.photos':
           var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ photos: JSON.stringify(all.value) })
           break;

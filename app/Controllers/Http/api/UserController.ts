@@ -51,6 +51,7 @@ export default class UserController {
         })
         result.user.id = id[0]
       }
+      delete result.session_key // 删除 jscode2session session key
       result.user.sign = await Jwt.signPrivateKey(result.user.id)
       return result
     } catch (error) {
