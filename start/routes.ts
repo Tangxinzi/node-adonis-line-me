@@ -68,6 +68,12 @@ Route.group(() => {
 Route.group(() => {
   Route.get('/users', 'admin/UsersController.index').as('users')
   Route.get('/customers', 'admin/CustomersController.index').as('customers')
+  Route.post('/customers/field', 'admin/CustomersController.field')
+
+  Route.get('/event/descovery', 'admin/EventController.descovery')
+  Route.post('/event/descovery/:type', 'admin/EventController.dataType')
+
+  Route.get('/files', 'admin/FilesController.index')
 
   Route.get('/questions', 'admin/QuestionsController.index').as('questions')
   Route.get('/questions/answer', 'admin/QuestionsController.answer')

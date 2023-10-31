@@ -3,16 +3,36 @@ import Moment from'moment';
 Moment.locale('zh-cn')
 
 export default class CustomersController {
+  public async field({ request, response, session }: HttpContextContract) {
+    try {
+      const all = request.all()
+      const customer = await Database.from('customer').where({ id: all.id }).first()
+
+      switch (all.button) {
+        case 'recommend':
+          await Database.from('customer').where({ id: all.id }).update({ recommend: !customer.recommend })
+          break;
+        case 'delete':
+          await Database.from('customer').where({ id: all.id }).update({ status: 0, deleted_at: Moment().format('YYYY-MM-DD hh:mm:ss') })
+          break;
+      }
+
+      return response.redirect('back')
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   public async index({ request, view, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const customer = await Database.from('customer').select('id', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id').where('status', 1).orderBy('created_at', 'desc').limit(20)
+      const customer = await Database.from('customer').select('id', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id', 'recommend').where('status', 1).orderBy('created_at', 'desc').limit(20)
       for (let index = 0; index < customer.length; index++) {
         // 红娘自行发布
         if (customer[index].relation_log_id) {
           customer[index] = {
             ...customer[index],
-            ...await Database.from('customer_log').select('*').where('id', customer[index].relation_log_id).first(),
+            ...await Database.from('customer_log').select('nickname', 'avatar_url', 'sex', 'birthday', 'contact_wechat', 'photos', 'videos', 'work', 'created_at', 'modified_at').where('id', customer[index].relation_log_id).first(),
             parent: await Database.from('users').select('nickname', 'avatar_url').where('user_id', customer[index].user_id).first()
           }
         }
@@ -21,7 +41,7 @@ export default class CustomersController {
         if (customer[index].relation_user_id) {
           customer[index] = {
             ...customer[index],
-            ...await Database.from('users').select('*').where('user_id', customer[index].relation_user_id).first(),
+            ...await Database.from('users').select('nickname', 'avatar_url', 'sex', 'birthday', 'contact_wechat', 'photos', 'videos', 'work', 'created_at', 'modified_at').where('user_id', customer[index].relation_user_id).first(),
             parent: await Database.from('users').select('nickname', 'avatar_url').where('user_id', customer[index].relation_user_id).first()
           }
         }

@@ -3,7 +3,7 @@ import Application from '@ioc:Adonis/Core/Application'
 const RandomString = require('RandomString')
 
 export default class FilesController {
-  public async upload({ request }: HttpContextContract) {
+  public async upload({ request, session }: HttpContextContract) {
     try {
       if (request.file('files')) {
         let file = {}
@@ -18,6 +18,21 @@ export default class FilesController {
           name: profileName,
           overwrite: true
         })
+
+        if (profile.state == 'moved') {
+          await Database.table('files').insert({
+            filePath: file.fileSrc,
+            clientName: profile.clientName,
+            fileName: profile.fileName,
+            fieldName: profile.fieldName,
+            size: profile.size,
+            type: profile.type,
+            subtype: profile.subtype,
+            status: profile.status,
+            extname: profile.extname,
+            related_user_id: session.get('user_id')
+          })
+        }
 
         return {
           errno: 0,

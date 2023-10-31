@@ -1,0 +1,55 @@
+@layout('components.layouts.main')
+
+@section('title')
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<title>{{ data.title }} - Hunlian</title>
+@endsection
+
+@section('style')
+<style media="screen">
+
+</style>
+@endsection
+
+@section('content')
+  <div class="ui stackable four column grid">
+    <div class="three wide column">
+      @!component('components.navbar-menus', data=data, csrf=csrfField())
+    </div>
+    <div class="thirteen wide column">
+      <div class="ui header flex-between">
+        <span>{{ data.title }}</span>
+      </div>
+      <table class="ui celled center aligned table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>关联用户</th>
+            <th>地址</th>
+            <th>时间</th>
+          </tr>
+        </thead>
+        <tbody>
+          @each(row in data.files)
+            <tr>
+              <td class="td">{{ row.id }}</td>
+              <td class="td">{{ row.related_user_id }}</td>
+              <td class="td">{{ row.filePath }}</td>
+              <td class="td">{{ row.created_at }}</td>
+            </tr>
+          @endeach
+        </tbody>
+      </table>
+    </div>
+  </div>
+@endsection
+
+@section('script')
+<script src="https://unpkg.com/@wangeditor/editor@latest/dist/index.js"></script>
+<script type="text/javascript">
+  $('.activating').popup({
+    on: 'click'
+  })
+</script>
+@endsection

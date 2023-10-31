@@ -6,8 +6,9 @@ export default class DesignerController {
   public async index({ request, response, view, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const designers = await Database.table('designers')
+      const designers = await Database.from('designers').where('status', 1)
       for (let index = 0; index < designers.length; index++) {
+        designers[index].works = designers[index].works ? designers[index].works.split(',') : []
         designers[index].labels = designers[index].labels ? designers[index].labels.split(',') : []
         designers[index].created_at = Moment(designers[index].created_at).format('YYYY-MM-DD H:mm:ss')
       }
@@ -38,7 +39,8 @@ export default class DesignerController {
       return view.render('land.admin.designer.create', {
         data: {
           title: '创建设计师',
-          active: 'designer'
+          active: 'designer',
+          works: await Database.table('works')
         }
       })
     } catch (error) {
@@ -69,7 +71,8 @@ export default class DesignerController {
       return view.render('land.admin.designer.edit', {
         data: {
           title: '编辑设计师',
-          active: 'designer'
+          active: 'designer',
+          works: await Database.table('works'),
           designer: await Database.from('designers').where('id', params.id).first()
         }
       })
@@ -97,7 +100,7 @@ export default class DesignerController {
       }
 
       if (request.method() == 'POST' && all.button == 'update') {
-        await Database.from('designers').where('id', all.id).update({ nickname: all.nickname, sex: all.sex, labels: all.labels, detail: all.detail, avatar_url })
+        await Database.from('designers').where('id', all.id).update({ nickname: all.nickname, sex: all.sex, works: all.works, labels: all.labels, detail: all.detail, avatar_url })
         session.flash('message', { type: 'success', header: '更新成功', message: `` })
         return response.redirect('back')
       }

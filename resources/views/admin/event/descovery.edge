@@ -25,11 +25,10 @@
         <thead>
           <tr>
             <th>ID</th>
-            <th>推荐人</th>
-            <th>被推荐人</th>
-            <th>关系</th>
-            <th>性别</th>
-            <th>联系</th>
+            <th>发布</th>
+            <!-- <th>性别</th> -->
+            <th>内容</th>
+            <th>类别</th>
             <th>照片</th>
             <th>时间</th>
             <th>推荐</th>
@@ -37,29 +36,29 @@
           </tr>
         </thead>
         <tbody>
-          @each(row in data.customer)
+          @each(row in data.descovery)
             <tr>
               <td class="td">{{ row.id }}</td>
-              <td class="td">
-                <img class="ui avatar image" src="{{ row.parent.avatar_url }}" />
-                {{ row.parent.nickname }}
-              </td>
               <td class="td">
                 <img class="ui avatar image" src="{{ row.avatar_url }}" />
                 {{ row.nickname }}
               </td>
-              <td class="td">{{ row.relation || '' }}</td>
-              <td class="td">{{ row.sex == 1 ? '男' : '' }}{{ row.sex == 0 ? '女' : '' }}</td>
-              <td class="td">{{ row.contact_wechat || '' }}</td>
-              <td class="td">{{ row.photos.length || '' }}</td>
+              <!-- <td class="td">{{ row.sex == 1 ? '男' : '' }}{{ row.sex == 0 ? '女' : '' }}</td> -->
+              <td class="td">{{ row.content }}</td>
+              <td class="td">
+                {{ row.title }}
+                <!-- {{ row.data_type == 'moment' ? '动态' : '' }}{{ row.data_type == 'answer' ? '问答' : '' }} -->
+              </td>
+              <td class="td">{{ row.photos.length || 0 }}</td>
               <td class="td">{{ row.created_at }}</td>
               <td class="td">
                 <i class="{{ row.recommend ? 'pink heartbeat' : 'heart outline' }} icon"></i>
               </td>
               <td class="td" style="position: relative;">
-                <a href="#" class="activating click" data-position="bottom center" data-html="<form class='ui mini basic vertical buttons' method='post' action='/admin/customers/field'>
+                <a href="#" class="activating click" data-position="bottom center" data-html="<form class='ui mini basic vertical buttons' method='post' action='/admin/event/descovery/{{ row.data_type }}'>
                   {{ csrfField() }}
                   <input type='text' name='id' value='{{ row.id }}' hidden />
+                  <input type='text' name='data_type' value='{{ row.data_type }}' hidden />
                   <button class='ui button' name='button' value='recommend'>{{ row.recommend ? '取消推荐' : '首页推荐' }}</button>
                   <button class='ui negative button' name='button' value='delete' style='color: red !important;'>删除</button>
                 </form>">
