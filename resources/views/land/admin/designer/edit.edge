@@ -60,14 +60,14 @@
         </div>
         <div class="field">
           <label>个人作品</label>
-          <div class="ui selection dropdown">
-            <input type="hidden" name="works" />
+          <div class="ui selection multiple dropdown">
+            <input type="hidden" name="works" value="{{ data.designer.works }}" />
             <i class="dropdown icon"></i>
             <div class="default text">点击关联</div>
             <div class="menu">
-              <div class="item" data-value="0">item01</div>
-              <div class="item" data-value="1">item02</div>
-              <div class="item" data-value="2">item03</div>
+              @each(row in data.works)
+                <div class="item" data-value="{{ row.id }}">{{ row.title }}</div>
+              @endeach
             </div>
           </div>
         </div>

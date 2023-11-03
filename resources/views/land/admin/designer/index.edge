@@ -28,6 +28,7 @@
             <th>ID</th>
             <th>姓名</th>
             <th>性别</th>
+            <th>作品数量</th>
             <th>标签集</th>
             <th>发布时间</th>
             <th>操作</th>
@@ -39,6 +40,7 @@
               <td class="td">{{ row.id }}</td>
               <td class="td">{{ row.nickname }}</td>
               <td class="td">{{ row.sex == 0 ? '女' : '' }} {{ row.sex == 1 ? '男' : '' }}</td>
+              <td class="td">{{ row.works.length || 0 }}</td>
               <td class="td">
                 @each(label in row.labels)
                   <div class="ui mini label">{{ label }}</div>
