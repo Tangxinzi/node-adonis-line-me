@@ -7,7 +7,7 @@
 #
 # 主机: localhost (MySQL 5.7.34)
 # 数据库: Hunlian
-# 生成时间: 2023-11-05 02:37:34 +0000
+# 生成时间: 2023-11-05 13:32:31 +0000
 # ************************************************************
 
 
@@ -115,7 +115,7 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `chatroom`;
 
 CREATE TABLE `chatroom` (
-  `id` bigint(20) unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `chat_id` varchar(50) COLLATE utf8mb4_unicode_520_ci NOT NULL COMMENT '聊天号 ID',
   `chat_users_id` varchar(500) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL COMMENT 'User IDs',
   `chat_name` varchar(120) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL COMMENT '名称',
@@ -124,7 +124,8 @@ CREATE TABLE `chatroom` (
   `status` int(2) DEFAULT '1' COMMENT '状态 0 - 删除；1 - 发布',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `modified_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `deleted_at` datetime DEFAULT NULL
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci COMMENT='聊天';
 
 LOCK TABLES `chatroom` WRITE;
@@ -132,7 +133,9 @@ LOCK TABLES `chatroom` WRITE;
 
 INSERT INTO `chatroom` (`id`, `chat_id`, `chat_users_id`, `chat_name`, `chat_description`, `type`, `status`, `created_at`, `modified_at`, `deleted_at`)
 VALUES
-	(1,'8be9e13c-bf6e-4145-996c-f3d8818221d4','hl_a90915530,hl_a45943511','测试交流','Hello World',0,1,'2022-09-08 10:22:02','2023-11-04 12:53:13',NULL);
+	(1,'8be9e13c-bf6e-4145-996c-f3d8818221d4','hl_a90915530,hl_a45943511','测试交流','Hello World',0,1,'2022-09-08 10:22:02','2023-11-04 12:53:13',NULL),
+	(2,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a90915530,hl_a77713707','测试交流','Hello World',0,1,'2022-09-08 10:42:02','2023-11-05 16:02:42',NULL),
+	(3,'8be9e13c-bf6e-4145-996c-f3d8818221d6','hl_a90915530,hl_a09087583','测试交流','Hello World',0,1,'2022-09-08 10:42:02','2023-11-05 21:30:40',NULL);
 
 /*!40000 ALTER TABLE `chatroom` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -153,7 +156,7 @@ CREATE TABLE `chats` (
   `chat_ip` varchar(15) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL COMMENT 'IP',
   `status` int(2) DEFAULT '1' COMMENT '状态 0 - 删除；1 - 发布',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `modified_at` datetime DEFAULT NULL,
+  `modified_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci COMMENT='聊天';
@@ -168,9 +171,57 @@ VALUES
 	(22,'8be9e13c-bf6e-4145-996c-f3d8818221d4','hl_a90915530','/uploads/files/iaBoS9YmGxswNtkvP6M36yUSu6keuOvw.jpg','image',0,NULL,1,'2023-11-03 23:25:42',NULL,NULL),
 	(23,'8be9e13c-bf6e-4145-996c-f3d8818221d4','hl_a90915530','/uploads/files/F8E0BQ3V3RZxcKoSJ08gemljCdg8bAkg.jpg','image',0,NULL,1,'2023-11-03 23:30:50',NULL,NULL),
 	(24,'8be9e13c-bf6e-4145-996c-f3d8818221d4','hl_a90915530','/uploads/files/0c2aQTrcisVvOfIKkX9UxiYZlTvYhHMe.jpg','image',0,NULL,1,'2023-11-03 23:31:54',NULL,NULL),
-	(25,'8be9e13c-bf6e-4145-996c-f3d8818221d4','hl_a90915530','您好呀','text',0,'223.72.87.117',1,'2023-11-04 12:53:13',NULL,NULL);
+	(25,'8be9e13c-bf6e-4145-996c-f3d8818221d4','hl_a90915530','您好呀','text',0,'223.72.87.117',1,'2023-11-04 12:53:13',NULL,NULL),
+	(26,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a90915530','hi','text',0,'223.72.87.117',1,'2023-11-05 11:27:14',NULL,NULL),
+	(27,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a77713707','围棋','text',0,'223.72.87.117',1,'2023-11-05 11:27:27',NULL,NULL),
+	(28,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a90915530','12','text',0,'223.72.87.117',1,'2023-11-05 11:27:34',NULL,NULL),
+	(29,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a77713707','💄','text',0,'223.72.87.117',1,'2023-11-05 11:30:30',NULL,NULL),
+	(30,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a90915530','12','text',0,'223.72.87.117',1,'2023-11-05 12:33:59','2023-11-05 12:33:59',NULL),
+	(31,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a90915530','abc','text',0,'223.72.87.117',1,'2023-11-05 12:34:02','2023-11-05 12:34:02',NULL),
+	(32,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a90915530','25','text',0,'223.72.37.208',1,'2023-11-05 14:28:56','2023-11-05 14:28:56',NULL),
+	(33,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a77713707','uj','text',0,'223.72.37.208',1,'2023-11-05 14:30:43','2023-11-05 14:30:43',NULL),
+	(34,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a77713707','ik','text',0,'223.72.37.208',1,'2023-11-05 14:31:18','2023-11-05 14:31:18',NULL),
+	(35,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a90915530','12','text',0,'223.72.37.208',1,'2023-11-05 14:37:52','2023-11-05 14:37:52',NULL),
+	(36,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a90915530','3','text',0,'223.72.37.208',1,'2023-11-05 15:12:29','2023-11-05 15:12:29',NULL),
+	(37,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a90915530','hi','text',0,'223.72.37.208',1,'2023-11-05 15:13:24','2023-11-05 15:13:24',NULL),
+	(38,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a90915530','hhh','text',0,'223.72.37.208',1,'2023-11-05 15:15:27','2023-11-05 15:15:27',NULL),
+	(39,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a90915530','hh','text',0,'223.72.37.208',1,'2023-11-05 15:59:31','2023-11-05 15:59:31',NULL),
+	(40,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a90915530','u','text',0,'223.72.37.208',1,'2023-11-05 16:00:44','2023-11-05 16:00:44',NULL),
+	(41,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a90915530','12','text',0,'223.72.37.208',1,'2023-11-05 16:01:52','2023-11-05 16:01:52',NULL),
+	(42,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a77713707','一','text',0,'223.72.37.208',1,'2023-11-05 16:02:29','2023-11-05 16:02:29',NULL),
+	(43,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a77713707','p','text',0,'223.72.37.208',1,'2023-11-05 16:02:33','2023-11-05 16:02:33',NULL),
+	(44,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a90915530','broadcast','text',0,'223.72.37.208',1,'2023-11-05 16:02:37','2023-11-05 16:02:37',NULL),
+	(45,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a90915530','😑','text',0,'223.72.37.208',1,'2023-11-05 16:02:42','2023-11-05 16:02:42',NULL),
+	(46,'8be9e13c-bf6e-4145-996c-f3d8818221d6','hl_a90915530','Hello World','text',0,'223.72.37.208',1,'2023-11-05 21:30:40','2023-11-05 21:30:40',NULL);
 
 /*!40000 ALTER TABLE `chats` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# 转储表 chats_log
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `chats_log`;
+
+CREATE TABLE `chats_log` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `chat_id` varchar(50) COLLATE utf8mb4_unicode_520_ci NOT NULL COMMENT '房间 ID',
+  `user_id` varchar(20) COLLATE utf8mb4_unicode_520_ci NOT NULL COMMENT '用户 ID',
+  `last_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci COMMENT='聊天日志';
+
+LOCK TABLES `chats_log` WRITE;
+/*!40000 ALTER TABLE `chats_log` DISABLE KEYS */;
+
+INSERT INTO `chats_log` (`id`, `chat_id`, `user_id`, `last_at`)
+VALUES
+	(1,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a90915530','2023-11-05 21:27:33'),
+	(2,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a77713707','2023-11-05 16:03:07'),
+	(3,'8be9e13c-bf6e-4145-996c-f3d8818221d4','hl_a90915530','2023-11-05 16:03:00'),
+	(4,'8be9e13c-bf6e-4145-996c-f3d8818221d6','hl_a90915530','2023-11-05 21:30:40');
+
+/*!40000 ALTER TABLE `chats_log` ENABLE KEYS */;
 UNLOCK TABLES;
 
 
@@ -526,8 +577,8 @@ LOCK TABLES `users` WRITE;
 
 INSERT INTO `users` (`id`, `type`, `user_id`, `nickname`, `avatar_url`, `birthday`, `height`, `sex`, `work`, `photos`, `videos`, `detail`, `contact_wechat`, `school`, `company`, `location`, `realname`, `phone`, `wechat_union_id`, `wechat_open_id`, `wechat_platform_open_id`, `parent_id`, `ip`, `online_at`, `created_at`, `modified_at`, `deleted_at`)
 VALUES
-	(25,2,'hl_a90915530','KMT 184.05','/uploads/files/TGgCSHkqsLstgkne0FuewabXMyGIrjE9.jpg','1997-02-01',173,1,'{\"key\":\"zhipin\",\"value\":[0,12]}','[\"/uploads/files/fWb1balGB2IQSWdccNXPVR44wFpyyBcR.png\",\"/uploads/files/pkfG33cwtPa2HiKpkdRhuqwufkCZaZV3.png\"]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4vhiiLffHPfdB7LKmpMdr_I',NULL,NULL,'10.0.8.14','2023-11-04 22:25:51','2023-10-24 17:48:25','2023-10-24 17:50:28',NULL),
-	(29,2,'hl_a77713707','💐','/uploads/files/iU8zhMAB2cAKEfC83YrkpJ68rA1vtWFO.jpg','1997-01-01',167,0,'{\"key\":\"zhipin\",\"value\":[5,0]}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4vkWz17jyhDWsWuzDrV41_E',NULL,NULL,'10.0.8.14','2023-10-26 18:11:27','2023-10-25 18:05:17','2023-10-25 18:06:13',NULL),
+	(25,2,'hl_a90915530','KMT 184.05','/uploads/files/TGgCSHkqsLstgkne0FuewabXMyGIrjE9.jpg','1997-02-01',173,1,'{\"key\":\"zhipin\",\"value\":[0,12]}','[\"/uploads/files/fWb1balGB2IQSWdccNXPVR44wFpyyBcR.png\",\"/uploads/files/pkfG33cwtPa2HiKpkdRhuqwufkCZaZV3.png\"]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4vhiiLffHPfdB7LKmpMdr_I',NULL,NULL,'10.0.8.14','2023-11-05 21:31:30','2023-10-24 17:48:25','2023-10-24 17:50:28',NULL),
+	(29,2,'hl_a77713707','💐','/uploads/files/iU8zhMAB2cAKEfC83YrkpJ68rA1vtWFO.jpg','1997-01-01',167,0,'{\"key\":\"zhipin\",\"value\":[5,0]}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4vkWz17jyhDWsWuzDrV41_E',NULL,NULL,'10.0.8.14','2023-11-05 16:01:37','2023-10-25 18:05:17','2023-10-25 18:06:13',NULL),
 	(30,1,'hl_a94942316',NULL,NULL,NULL,NULL,NULL,'{}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4mdlhDDXIVKQE2sg3kf_lcI',NULL,NULL,NULL,'2023-10-26 13:46:48','2023-10-26 13:46:48','2023-10-26 13:46:48',NULL),
 	(31,1,'hl_a45082499','与月亮私奔',NULL,NULL,162,NULL,'{\"key\":\"zhipin\",\"value\":[4,1]}','[]',NULL,'日落即是温柔，人间浪漫',NULL,'陕西科技大学','空军军医大学第一附属医院',NULL,NULL,'18523584230',NULL,'op02s4t9pXQZwBdxtCfToEHwIaTY',NULL,NULL,'10.0.8.14','2023-10-26 16:04:35','2023-10-26 15:17:37','2023-10-26 15:17:37',NULL),
 	(32,1,'hl_a79908519','热爱山海',NULL,NULL,165,NULL,'{\"key\":\"zhipin\",\"value\":[0,0]}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'19860918085',NULL,'op02s4gT-Hr2uxbC_vEHOjf234dE',NULL,NULL,'10.0.8.14','2023-10-26 16:02:08','2023-10-26 15:17:56','2023-10-26 15:17:56',NULL),
