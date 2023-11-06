@@ -1,6 +1,6 @@
 import Database from '@ioc:Adonis/Lucid/Database'
 import Application from '@ioc:Adonis/Core/Application'
-const RandomString = require('RandomString')
+import RandomString from 'randomstring';
 
 export default class FilesController {
   public async upload({ request, session }: HttpContextContract) {

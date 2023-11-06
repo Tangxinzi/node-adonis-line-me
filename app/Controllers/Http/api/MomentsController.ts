@@ -1,6 +1,6 @@
 import Database from '@ioc:Adonis/Lucid/Database'
 import Logger from '@ioc:Adonis/Core/Logger'
-import Moment from'moment';
+import Moment from 'moment';
 
 export default class MomentsController {
   public async index({ request, response }: HttpContextContract) {

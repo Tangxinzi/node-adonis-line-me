@@ -5,18 +5,18 @@ import Jwt from 'App/Models/Jwt';
 import Ws from 'App/Services/Ws';
 Ws.boot()
 
-const getChatroom = async (user) => {
+const getChatroom = async (user_id) => {
   try {
-    const chatroom = await Database.from('chatroom').whereILike('chat_users_id', '%' + user.user_id + '%').where({ status: 1 }).orderBy('modified_at', 'desc')
+    const chatroom = await Database.from('chatroom').whereILike('chat_users_id', '%' + user_id + '%').where({ status: 1 }).orderBy('modified_at', 'desc')
     for (let index = 0; index < chatroom.length; index++) {
-      chatroom[index].unread = await countUnread(user.user_id, chatroom[index].chat_id) // 统计未读
+      chatroom[index].unread = await countUnread(user_id, chatroom[index].chat_id) // 统计未读
       chatroom[index].created_at = Moment(chatroom[index].created_at).format('YYYY-MM-DD')
       chatroom[index].modified_at = Moment(chatroom[index].modified_at).fromNow()
       chatroom[index].message = await Database.from('chats').select('chat_content_type', 'chat_content').where({ chat_id: chatroom[index].chat_id, status: 1 }).orderBy('created_at', 'desc').first()
       chatroom[index].chat_users_id = chatroom[index].chat_users_id.split(',')
       chatroom[index].user = await new Promise((resolve) => {
         chatroom[index].chat_users_id.map(async (item, key) => {
-          if (item != user.user_id) {
+          if (item != user_id) {
             chatroom[index].user = await Database.from('users').select('avatar_url', 'nickname').where({ user_id: item }).first()
             resolve(chatroom[index].user)
           }
@@ -91,6 +91,11 @@ Ws.io.on('connection', async (socket) => {
     const { sign, chat_id } = socket.handshake.query;
     const user = await Database.from('users').where('id', Jwt.verifyPublicKey(sign)).first();
 
+    // 在线用户
+    socket.on('onlineChatroomUserID', (user_id) => {
+      socket.join(user_id)
+    })
+
     // page 进入房间
     socket.on('joinChatroom', (room) => {
       socket.join(room)
@@ -98,24 +103,29 @@ Ws.io.on('connection', async (socket) => {
 
     // tab 消息列表
     socket.on('chatroom', async (data) => {
-      socket.emit('chatroom list', await getChatroom(user))
+      socket.emit('chatroom list', await getChatroom(user.user_id))
     }
 
     // page 初次进入消息数据
-    socket.on('chat list', async (data) => {
+    socket.on('chat list', async (room, data) => {
       if (chat_id) {
         // page log 进入房间时间更新
         await lastJoinChat(user, chat_id)
 
         const chats = await getChatsMessage(data, chat_id)
-        socket.emit('messages', chats)
-        socket.broadcast.emit('messages', chats)
+        socket.to(room).emit('messages', chats)
+        socket.broadcast.to(room).emit('messages', chats)
+      }
+    }
+
+    // page 用户更新离开房间最后时间
+    socket.on('chat leave', async () => {
+      if (chat_id) {
+        await lastJoinChat(user, chat_id)
       }
     }
 
     socket.on('send message', async (room, data) => {
-      console.log(room);
-
       if (chat_id) {
         // tab 更新房间最后发送时间
         await Database.from('chatroom').where({ chat_id, status: 1 }).update({ modified_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
@@ -130,8 +140,13 @@ Ws.io.on('connection', async (socket) => {
         socket.broadcast.to(room).emit('messages lists', chats)
 
         // tab 消息列表
-        socket.to(room).emit('chatroom list', await getChatroom(user))
-        socket.broadcast.to(room).emit('chatroom list', await getChatroom(user))
+        const chatroom = await Database.from('chatroom').where({ chat_id, status: 1 }).first()
+        chatroom.chat_users_id = chatroom.chat_users_id.split(',')
+        for (let index = 0; index < chatroom.chat_users_id.length; index++) {
+          const user_id = chatroom.chat_users_id[index];
+          // socket.emit('chatroom list', await getChatroom(user_id))
+          socket.broadcast.to(user_id).emit('chatroom list', await getChatroom(user_id))
+        }
       }
     })
   } catch (error) {
