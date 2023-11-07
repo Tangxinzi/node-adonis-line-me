@@ -75,6 +75,11 @@ Route.group(() => {
 
   Route.get('/files', 'admin/FilesController.index')
 
+  Route.get('/chatroom', 'admin/ChatroomController.index')
+  Route.get('/chatroom/edit/:id', 'admin/ChatroomController.edit').as('admin.chatroom.edit')
+  Route.post('/chatroom/store', 'admin/ChatroomController.store')
+  Route.post('/chatroom/update', 'admin/ChatroomController.update')
+
   Route.get('/questions', 'admin/QuestionsController.index').as('questions')
   Route.get('/questions/answer', 'admin/QuestionsController.answer')
   Route.get('/questions/edit/:id', 'admin/QuestionsController.edit')

@@ -1,0 +1,96 @@
+@layout('components.layouts.main')
+
+@section('title')
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<title>{{ data.title }} - Hunlian</title>
+@endsection
+
+@section('style')
+<style media="screen">
+
+</style>
+@endsection
+
+@section('content')
+  <div class="ui stackable four column grid">
+    <div class="three wide column">
+      @!component('components.navbar-menus', data=data, csrf=csrfField())
+    </div>
+    <div class="thirteen wide column">
+      <div class="ui header flex-between">
+        <span>{{ data.title }}</span>
+      </div>
+      <div class="ui segment">
+        <form class="ui form" action="{{ route('admin/ChatroomController.update') }}" method="POST" enctype="multipart/form-data">
+          <div class="required disabled field">
+            <label for="id">房间 ID</label>
+            <input id="id" type="text" name="id" value="{{ data.chatroom.chat_id || '' }}" />
+          </div>
+          <div class="required field">
+            <label for="name">状态</label>
+            <div class="ui selection dropdown">
+              <input type="hidden" name="status" value="{{ data.chatroom.status }}" />
+              <i class="dropdown icon"></i>
+              <div class="default text">点击选择</div>
+              <div class="menu">
+                <div class="item" data-value="0">封禁</div>
+                <div class="item" data-value="1">正常</div>
+              </div>
+            </div>
+          </div>
+          <div class="required field">
+            <label for="name">名称</label>
+            <input id="name" type="text" name="name" value="{{ data.chatroom.chat_name || '' }}" />
+          </div>
+          <div class="required field">
+            <label for="description">描述</label>
+            <textarea name="description" rows="4" cols="80">{{ data.chatroom.chat_description || '' }}</textarea>
+          </div>
+          <div class="required field">
+            <label for="users">用户</label>
+            <p class="ui labels" style="margin: 0 0 .28571429rem 0;">
+              @each(user in data.chatroom.users)
+                <span class="ui label" title="ID: {{ user.user_id }}">{{ user.nickname }}</span>
+              @endeach
+            </p>
+            <textarea name="chat_users_id" rows="4" cols="80">{{ data.chatroom.chat_users_id || '' }}</textarea>
+          </div>
+          {{ csrfField() }}
+          <button class="ui positive button" type="submit" name="button">提交更新</button>
+        </form>
+      </div>
+      <div class="ui segments">
+        @each(chat in data.chatroom.chats)
+          <div class="ui segment">
+            <div class="flex-between">
+              <span>{{ chat.userinfo.nickname }}：{{ chat.chat_content }}</span>
+              <span>{{ chat.created_at }}</span>
+            </div>
+          </div>
+        @endeach
+      </div>
+    </div>
+  </div>
+  <form class="ui modal tiny form" action="{{ route('admin/ChatroomController.store') }}" method="POST" enctype="multipart/form-data">
+    <i class="close icon"></i>
+    <div class="header">
+      添加房间
+    </div>
+    <div class="content">
+      <div class="required field">
+        <label for="users">标签名称</label>
+        <input id="users" type="text" name="users" value="" placeholder="房间用户需要两人以上，填写用户 ID，使用英文逗号「,」分割 ID。" />
+      </div>
+      {{ csrfField() }}
+    </div>
+    <div class="actions">
+      <div class="ui black deny button">取消</div>
+      <button class="ui positive right labeled icon button" type="submit" name="button">提交<i class="checkmark icon"></i></button>
+    </div>
+  </form>
+@endsection
+
+@section('script')
+
+@endsection

@@ -1,0 +1,102 @@
+@layout('components.layouts.main')
+
+@section('title')
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<title>{{ data.title }} - Hunlian</title>
+@endsection
+
+@section('style')
+<style media="screen">
+
+</style>
+@endsection
+
+@section('content')
+  <div class="ui stackable four column grid">
+    <div class="three wide column">
+      @!component('components.navbar-menus', data=data, csrf=csrfField())
+    </div>
+    <div class="thirteen wide column">
+      <div class="ui header flex-between">
+        <span>{{ data.title }}</span>
+        <a href="#" onclick="modal()">
+          <i class="add black small icon" style="margin: 0;"></i>
+        </a>
+      </div>
+      <table class="ui celled table center aligned">
+        <thead>
+          <tr>
+            {{-- <th>房间号</th> --}}
+            <th>名称</th>
+            <th>用户</th>
+            <th>人数</th>
+            <th>类型</th>
+            <!-- <th>状态</th> -->
+            <th>更新时间</th>
+            <th>创建时间</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          @each(chatroom in data.chatroom)
+            <tr>
+              {{-- <td><span class="one-line" style="width: 130px">{{ chatroom.chat_id }}</span></td> --}}
+              <td>
+                <a href="{{ route('admin.chatroom.edit', { id: chatroom.chat_id }) }}">{{ chatroom.chat_name || '未命名' }}</a>
+              </td>
+              <td class="ui labels">
+                @each(user in chatroom.chat_users)
+                  <span class="ui mini label" title="ID: {{ user.user_id }}">{{ user.nickname }}</span>
+                @endeach
+              </td>
+              <td>{{ chatroom.chat_users.length }}</td>
+              <!-- <td>{{ chatroom.type }}</td> -->
+              <td>{{ chatroom.status == 1 ? '正常' : '' }}{{ chatroom.status == 0 ? '封禁' : '' }}</td>
+              <td>{{ chatroom.modified_at }}</td>
+              <td>{{ chatroom.created_at }}</td>
+              <td class="td" style="position: relative;">
+                <a href="#" class="activating click" data-position="bottom center" data-html="<form class='ui mini basic vertical buttons' method='post' action='/admin/customers/field'>
+                  {{ csrfField() }}
+                  <input type='text' name='id' value='{{ chatroom.id }}' hidden />
+                  <button class='ui negative button' name='button' value='delete' style='color: red !important;'>删除</button>
+                </form>">
+                  操作
+                </a>
+              </td>
+            </tr>
+          @endeach
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <form class="ui modal tiny form" action="{{ route('admin/ChatroomController.store') }}" method="POST" enctype="multipart/form-data">
+    <i class="close icon"></i>
+    <div class="header">
+      添加房间
+    </div>
+    <div class="content">
+      <div class="required field">
+        <label for="users">标签名称</label>
+        <input id="users" type="text" name="users" value="" placeholder="房间用户需要两人以上，填写用户 ID，使用英文逗号「,」分割 ID。" />
+      </div>
+      {{ csrfField() }}
+    </div>
+    <div class="actions">
+      <div class="ui black deny button">取消</div>
+      <button class="ui positive right labeled icon button" type="submit" name="button">提交<i class="checkmark icon"></i></button>
+    </div>
+  </form>
+@endsection
+
+@section('script')
+<script type="text/javascript">
+  function modal () {
+    $('.ui.modal').modal('show')
+  }
+
+  $('.activating').popup({
+    on: 'click'
+  })
+</script>
+@endsection
