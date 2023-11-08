@@ -1,5 +1,5 @@
 import Database from '@ioc:Adonis/Lucid/Database';
-import Moment from'moment';
+import Moment from 'moment';
 
 export default class QuestionsController {
   public async index({ request, view, session }: HttpContextContract) {
@@ -23,7 +23,7 @@ export default class QuestionsController {
       const all = request.all()
       const answer = await Database.from('answer').orderBy('created_at', 'desc')
       for (let index = 0; index < answer.length; index++) {
-        const user = await Database.from('users').select('nickname').where('user_id', answer[index].user_id).first()
+        const user = await Database.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', answer[index].user_id).first()
         const question = await Database.from('questions').select('title').where('id', answer[index].relation_question_id).first()
         answer[index].title = question.title
         answer[index].userinfo = user

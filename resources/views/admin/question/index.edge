@@ -15,7 +15,9 @@
 @section('content')
   <div class="ui stackable four column grid">
     <div class="three wide column">
-      @!component('components.navbar-menus', data=data, csrf=csrfField())
+      <div class="ui vertical pointing menu">
+        <a class="{{ data.active == 'answer' ? 'item active' : 'item' }}" href="{{ route('admin/QuestionsController.answer' )}}">用户个性化问答</a>
+      </div>
     </div>
     <div class="thirteen wide column">
       <div class="ui header flex-between">

@@ -9,8 +9,8 @@ export default class EventController {
   public async descovery({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const moments = await Database.from('moments').select('moments.id', 'moments.user_id', 'moments.content', 'moments.photos', 'moments.created_at', 'users.nickname', 'users.avatar_url', 'users.sex', 'users.birthday', 'users.user_id').join('users', 'moments.user_id', '=', 'users.user_id').where({ status: 1, recommend: 1 }).limit(10).orderBy('moments.created_at', 'desc')
-      const answer = await Database.from('answer').select('answer.id', 'answer.relation_question_id', 'answer.user_id', 'answer.content', 'answer.photos', 'answer.created_at', 'users.nickname', 'users.avatar_url', 'users.sex', 'users.birthday', 'users.wechat_open_id').join('users', 'answer.user_id', '=', 'users.user_id').where({ status: 1, recommend: 1 }).limit(10).orderBy('answer.created_at', 'desc')
+      const moments = await Database.from('moments').select('moments.id', 'moments.user_id', 'moments.content', 'moments.photos', 'moments.ip', 'moments.created_at', 'users.nickname', 'users.avatar_url', 'users.sex', 'users.birthday', 'users.user_id').join('users', 'moments.user_id', '=', 'users.user_id').where({ status: 1, recommend: 1 }).limit(10).orderBy('moments.created_at', 'desc')
+      const answer = await Database.from('answer').select('answer.id', 'answer.relation_question_id', 'answer.user_id', 'answer.content', 'answer.photos', 'answer.ip', 'answer.created_at', 'users.nickname', 'users.avatar_url', 'users.sex', 'users.birthday', 'users.wechat_open_id').join('users', 'answer.user_id', '=', 'users.user_id').where({ status: 1, recommend: 1 }).limit(10).orderBy('answer.created_at', 'desc')
 
       let descovery = []
       // descovery.push({
@@ -31,6 +31,19 @@ export default class EventController {
         // moment
         if (moments[index]) {
           const like = await Database.from('likes').where({ relation_type_id: moments[index].id, type: 'moment', status: 1, user_id: session.get('user_id') || '' }).first()
+          console.log(moments[index]);
+
+          if (moments[index].ip) {
+            await axios({
+              url: `http://whois.pconline.com.cn/ipJson.jsp?ip=${ moments[index].ip }&json=true`,
+              responseType: "arraybuffer"
+            }).then(function (response) {
+              const data = iconv.decode(response.data, 'gbk')
+              moments[index].ip = data ? JSON.parse(data) : ''
+            }).catch(function (error) {
+              // console.log(error)
+            })
+          }
           descovery.push({
             id: moments[index].id,
             user_id: moments[index].user_id,
@@ -54,6 +67,17 @@ export default class EventController {
         if (answer[index]) {
           const like = await Database.from('likes').where({ relation_type_id: answer[index].id, type: 'answer', status: 1, user_id: session.get('user_id') || '' }).first()
           const question = await Database.from('questions').select('title').where('id', answer[index].relation_question_id).first()
+          if (answer[index].ip) {
+            await axios({
+              url: `http://whois.pconline.com.cn/ipJson.jsp?ip=${ answer[index].ip }&json=true`,
+              responseType: "arraybuffer"
+            }).then(function (response) {
+              const data = iconv.decode(response.data, 'gbk')
+              answer[index].ip = data ? JSON.parse(data) : ''
+            }).catch(function (error) {
+              // console.log(error)
+            })
+          }
           descovery.push({
             id: answer[index].id,
             user_id: answer[index].user_id,

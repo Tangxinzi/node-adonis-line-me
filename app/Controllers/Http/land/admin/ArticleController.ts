@@ -6,7 +6,7 @@ export default class ArticleController {
   public async index({ request, view, response }: HttpContextContract) {
     try {
       const all = request.all()
-      const articles = await Database.from('articles').select('id', 'article_title', 'article_author', 'article_detail', 'article_theme_url', 'article_original_url')
+      const articles = await Database.from('land_articles').select('id', 'article_title', 'article_author', 'article_detail', 'article_theme_url', 'article_original_url')
       for (let index = 0; index < articles.length; index++) {
         articles[index]['created_at'] = Moment(articles[index]['created_at']).format('YYYY-MM-DD H:mm:ss')
       }
@@ -48,7 +48,7 @@ export default class ArticleController {
   public async show({ params, request, view, response }: HttpContextContract) {
     try {
       const all = request.all()
-      const article = await Database.from('articles').where('id', params.id).first()
+      const article = await Database.from('land_articles').where('id', params.id).first()
       article.created_at = Moment(article.created_at).format('YYYY-MM-DD H:mm:ss')
       const data = {
         status: 200,
@@ -71,7 +71,7 @@ export default class ArticleController {
   public async edit({ params, request, view, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const article = await Database.from('articles').where('id', params.id).first()
+      const article = await Database.from('land_articles').where('id', params.id).first()
       return view.render('land.admin.article.edit', {
         data: {
           title: '编辑文章',
@@ -115,12 +115,12 @@ export default class ArticleController {
       // })
 
       if (request.method() == 'POST' && all.button == 'update') {
-        await Database.from('articles').where('id', all.id).update({ article_title: all.title, article_author: all.author, article_detail: all.detail, article_original_url: all.original_url, article_theme_url })
+        await Database.from('land_articles').where('id', all.id).update({ article_title: all.title, article_author: all.author, article_detail: all.detail, article_original_url: all.original_url, article_theme_url })
         session.flash('message', { type: 'success', header: '更新成功', message: `` })
         return response.redirect('back')
       }
 
-      const id = await Database.table('articles').returning('id').insert({
+      const id = await Database.table('land_articles').returning('id').insert({
         article_title: all.title || '',
         article_author: all.author || '',
         article_detail: all.detail || '',

@@ -181,6 +181,7 @@ export default class QuestionsController {
             relation_question_id: '',
             user_id: session.get('user_id') || '',
             photos: JSON.stringify(all.photos || []),
+            ip: request.ip()
           })
           return response.json({ status: 200, message: "ok", data: id })
         }

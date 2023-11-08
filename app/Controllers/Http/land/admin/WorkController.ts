@@ -6,7 +6,7 @@ export default class WorkController {
   public async index({ request, response, view, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const works = await Database.table('works')
+      const works = await Database.table('land_works')
       for (let index = 0; index < works.length; index++) {
         works[index].created_at = Moment(works[index].created_at).format('YYYY-MM-DD H:mm:ss')
       }
@@ -48,7 +48,7 @@ export default class WorkController {
   public async show({ params, request, view, response }: HttpContextContract) {
     try {
       const all = request.all()
-      const data = await Database.from('works').where('id', params.id).first()
+      const data = await Database.from('land_works').where('id', params.id).first()
       if (all.type == 'json') {
         return response.json({
           status: 200,
@@ -68,7 +68,7 @@ export default class WorkController {
         data: {
           title: '编辑作品',
           active: 'work'
-          work: await Database.from('works').where('id', params.id).first()
+          work: await Database.from('land_works').where('id', params.id).first()
         }
       })
     } catch (error) {
@@ -95,12 +95,12 @@ export default class WorkController {
       }
 
       if (request.method() == 'POST' && all.button == 'update') {
-        await Database.from('works').where('id', all.id).update({ title: all.title, introduction: all.introduction, work_time: all.work_time, location: all.location, detail: all.detail, theme_url })
+        await Database.from('land_works').where('id', all.id).update({ title: all.title, introduction: all.introduction, work_time: all.work_time, location: all.location, detail: all.detail, theme_url })
         session.flash('message', { type: 'success', header: '更新成功', message: `` })
         return response.redirect('back')
       }
 
-      const id = await Database.table('works').returning('id').insert({
+      const id = await Database.table('land_works').returning('id').insert({
         title: all.title, area: all.area, introduction: all.introduction, work_time: all.work_time, location: all.location, detail: all.detail, theme_url
       })
 

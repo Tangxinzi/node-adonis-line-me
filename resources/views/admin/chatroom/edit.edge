@@ -14,10 +14,7 @@
 
 @section('content')
   <div class="ui stackable four column grid">
-    <div class="three wide column">
-      @!component('components.navbar-menus', data=data, csrf=csrfField())
-    </div>
-    <div class="thirteen wide column">
+    <div class="sixteen wide column">
       <div class="ui header flex-between">
         <span>{{ data.title }}</span>
       </div>
@@ -49,12 +46,18 @@
           </div>
           <div class="required field">
             <label for="users">用户</label>
-            <p class="ui labels" style="margin: 0 0 .28571429rem 0;">
-              @each(user in data.chatroom.users)
-                <span class="ui label" title="ID: {{ user.user_id }}">{{ user.nickname }}</span>
+            <div class="ui labels" style="margin-bottom: 0.5em;">
+              @each(row in data.chatroom.users)
+                <a class="ui image label" title="{{ row.user_id }}">
+                  @if(row.avatar_url)
+                  <img src="{{ row.avatar_url }}" />
+                  @endif
+                  {{ row.nickname || ('Unnamed ' + row.user_id) }}
+                  <div class="detail">{{ row.user_id }}</div>
+                </a>
               @endeach
-            </p>
-            <textarea name="chat_users_id" rows="4" cols="80">{{ data.chatroom.chat_users_id || '' }}</textarea>
+            </div>
+            <textarea name="chat_users_id" rows="8" cols="80" placeholder="房间需要 2 人以上，如需更新请插入多个 USER_ID。">{{ data.chatroom.chat_users_id || '' }}</textarea>
           </div>
           {{ csrfField() }}
           <button class="ui positive button" type="submit" name="button">提交更新</button>

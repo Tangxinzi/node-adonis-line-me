@@ -14,10 +14,7 @@
 
 @section('content')
   <div class="ui stackable four column grid">
-    <div class="three wide column">
-      @!component('components.navbar-menus', data=data, csrf=csrfField())
-    </div>
-    <div class="thirteen wide column">
+    <div class="sixteen wide column">
       <div class="ui header flex-between">
         <span>{{ data.title }}</span>
       </div>
@@ -29,6 +26,10 @@
             <th>Phone</th>
             <th>Sex</th>
             <th>Type</th>
+            <th>Photos</th>
+            <th>Birthday</th>
+            <th>IP</th>
+            <th>Online Time</th>
             <th>Create Time</th>
             <th>Action</th>
           </tr>
@@ -38,17 +39,26 @@
             <tr>
               <td class="td">{{ row.id }}</td>
               <td class="td">
-                <img class="ui avatar image" src="{{ row.avatar_url }}" />
-                {{ row.nickname }}
+                <a class="ui image label" title="{{ row.user_id }}">
+                  @if(row.avatar_url)
+                  <img src="{{ row.avatar_url }}" />
+                  @endif
+                  {{ row.nickname || ('Unnamed ' + row.user_id) }}
+                  @if(row.work.text)
+                  <div class="detail">{{ row.work.text }}</div>
+                  @endif
+                </a>
               </td>
               <td class="td">{{ row.phone || '' }}</td>
               <td class="td">{{ row.sex == 1 ? '男' : '' }}{{ row.sex == 0 ? '女' : '' }}</td>
               <td class="td">{{ row.type == 1 ? '用户' : '' }}{{ row.type == 2 ? '红娘' : '' }}</td>
+              <td class="td">{{ row.photos.length }}</td>
+              <td class="td">{{ row.birthday || '' }}</td>
+              <td class="td">{{ row.ip ? row.ip.city : (row.ip || '') }}</td>
+              <td class="td">{{ row.online_at }}</td>
               <td class="td">{{ row.created_at }}</td>
               <td class="td">
-                <a href="">查看</a>
-                &nbsp;&nbsp;
-                <a href="">删除</a>
+                <a>Action</a>
               </td>
             </tr>
           @endeach

@@ -73,7 +73,7 @@ export default class CustomersController {
 
       return view.render('admin.customer.index', {
         data: {
-          title: '推介',
+          title: '介绍',
           active: 'customers',
           customer
         }

@@ -11,14 +11,14 @@ class ChatroomController {
       const chatroom = await Database.from('chatroom').orderBy('modified_at', 'desc')
       for (var i = 0; i < chatroom.length; i++) {
         chatroom[i].chat_users_id = chatroom[i].chat_users_id.split(',')
-        chatroom[i]['chat_users'] = await Database.from('users').select('nickname', 'avatar_url').whereIn('user_id', chatroom[i].chat_users_id)
+        chatroom[i]['chat_users'] = await Database.from('users').select('user_id', 'nickname', 'avatar_url').whereIn('user_id', chatroom[i].chat_users_id)
         chatroom[i]['created_at'] = Moment(chatroom[i]['created_at']).format('YYYY-MM-DD HH:mm:ss')
         chatroom[i]['modified_at'] = Moment(chatroom[i]['modified_at']).fromNow()
       }
 
       return view.render('admin.chatroom.index', {
         data: {
-          title: '聊天室',
+          title: '聊天',
           active: 'chatroom',
           chatroom
         }
@@ -35,7 +35,7 @@ class ChatroomController {
       chatroom['users'] = await Database.from('users').whereIn('user_id', chatroom.chat_users_id.split(','))
 
       chatroom.chat_users_id = chatroom.chat_users_id.split(',')
-      const users = await Database.from('users').select('nickname', 'avatar_url').whereIn('user_id', chatroom.chat_users_id)
+      const users = await Database.from('users').select('user_id', 'nickname', 'avatar_url').whereIn('user_id', chatroom.chat_users_id)
       const chats = await Database.from('chats').select('id', 'chat_id', 'user_id', 'chat_content', 'chat_content_type', 'created_at').where({ chat_id: params.id, status: 1 }).orderBy('created_at', 'asc')
       for (let index = 0; index < chats.length; index++) {
         const indexOf = chatroom.chat_users_id.indexOf(chats[index].user_id)
@@ -50,7 +50,7 @@ class ChatroomController {
 
       return view.render('admin.chatroom.edit', {
         data: {
-          title: `${ chatroom.chat_name || '' }聊天 - 聊天室`,
+          title: `${ chatroom.chat_name || '' } - 聊天`,
           active: 'chatroom',
           chatroom,
           users

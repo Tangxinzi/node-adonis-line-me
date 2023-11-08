@@ -6,7 +6,7 @@ export default class DesignerController {
   public async index({ request, response, view, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const designers = await Database.from('designers').where('status', 1)
+      const designers = await Database.from('land_designers').where('status', 1)
       for (let index = 0; index < designers.length; index++) {
         designers[index].works = designers[index].works ? designers[index].works.split(',') : []
         designers[index].labels = designers[index].labels ? designers[index].labels.split(',') : []
@@ -51,7 +51,7 @@ export default class DesignerController {
   public async show({ params, request, view, response }: HttpContextContract) {
     try {
       const all = request.all()
-      const data = await Database.from('designers').where('id', params.id).first()
+      const data = await Database.from('land_designers').where('id', params.id).first()
       data.labels = data.labels ? data.labels.split(',') : []
       if (all.type == 'json') {
         return response.json({
@@ -73,7 +73,7 @@ export default class DesignerController {
           title: '编辑设计师',
           active: 'designer',
           works: await Database.table('works'),
-          designer: await Database.from('designers').where('id', params.id).first()
+          designer: await Database.from('land_designers').where('id', params.id).first()
         }
       })
     } catch (error) {
@@ -100,12 +100,12 @@ export default class DesignerController {
       }
 
       if (request.method() == 'POST' && all.button == 'update') {
-        await Database.from('designers').where('id', all.id).update({ nickname: all.nickname, sex: all.sex, works: all.works, labels: all.labels, detail: all.detail, avatar_url })
+        await Database.from('land_designers').where('id', all.id).update({ nickname: all.nickname, sex: all.sex, works: all.works, labels: all.labels, detail: all.detail, avatar_url })
         session.flash('message', { type: 'success', header: '更新成功', message: `` })
         return response.redirect('back')
       }
 
-      const id = await Database.table('designers').returning('id').insert({
+      const id = await Database.table('land_designers').returning('id').insert({
         nickname: all.nickname,
         sex: all.sex,
         labels: all.labels,

@@ -87,6 +87,7 @@ export default class MomentsController {
         user_id: session.get('user_id'),
         content: all.content,
         photos: JSON.stringify(all.photos || []),
+        ip: request.ip()
       })
 
       if (id[0]) {

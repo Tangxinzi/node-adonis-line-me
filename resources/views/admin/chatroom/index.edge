@@ -14,10 +14,7 @@
 
 @section('content')
   <div class="ui stackable four column grid">
-    <div class="three wide column">
-      @!component('components.navbar-menus', data=data, csrf=csrfField())
-    </div>
-    <div class="thirteen wide column">
+    <div class="sixteen wide column">
       <div class="ui header flex-between">
         <span>{{ data.title }}</span>
         <a href="#" onclick="modal()">
@@ -47,7 +44,10 @@
               </td>
               <td class="ui labels">
                 @each(user in chatroom.chat_users)
-                  <span class="ui mini label" title="ID: {{ user.user_id }}">{{ user.nickname }}</span>
+                  <span class="ui mini image label" title="ID: {{ user.user_id }}">
+                    <img src="{{ user.avatar_url }}" alt="{{ user.nickname }}" />
+                    {{ user.nickname }}
+                  </span>
                 @endeach
               </td>
               <td>{{ chatroom.chat_users.length }}</td>
