@@ -59,8 +59,8 @@ body, body.pushable>.pusher { background-color: rgba(255, 255, 255, .95); }
 .navbar {background: #fff;}
 .navbar i.icon {margin: 0;}
 .navbar .ui.container {display: flex; align-items: center;}
-.navbar .ui.container .logo {height: 45px;}
-.navbar .q-navbar {display: flex; flex: 1; justify-content: space-between; padding: 0.5rem 0;}
+.navbar .ui.container .logo {height: 35px; border-radius: 4px;}
+.navbar .q-navbar {display: flex; flex: 1; justify-content: space-between; padding: 1rem 0;}
 .navbar .q-navbar .left .item a { color: #737373; display: flex; font-size: 14px;}
 .navbar .q-navbar .left .item a:hover { color: #333; }
 .navbar .q-navbar .left .item.active a { color: #000000; display: flex; font-size: 14px;}
