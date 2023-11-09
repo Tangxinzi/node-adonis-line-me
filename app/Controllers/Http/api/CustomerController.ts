@@ -38,7 +38,7 @@ export default class CustomerController {
   public async index({ request, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const customer = await Database.from('customer').select('id', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id').where({ status: 1, recommend: 1 }).orderBy('created_at', 'desc').limit(20)
+      const customer = await Database.from('customer').select('id  as cid', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id').where({ status: 1, recommend: 1 }).orderBy('created_at', 'desc').limit(20)
       for (let index = 0; index < customer.length; index++) {
         // 红娘自行发布
         if (customer[index].relation_log_id) {
@@ -261,7 +261,9 @@ export default class CustomerController {
   public async customerShow({ params, request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const customer = await Database.from('customer').select('id', 'status', 'user_id', 'relation_user_id', 'relation', 'relation_log_id', 'introduction').where({ 'id': params.id, user_id: session.get('user_id'), status: 1 }).first()
+      const customer = await Database.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'relation', 'relation_log_id', 'introduction').where({ 'id': params.id, status: 1 }).first()
+      console.log(customer);
+
       customer.relation_text = RELATION[customer.relation]
       if (customer.relation_log_id) {
         customer.userinfo = await Database.from('customer_log').select('*').where({ 'id': customer.relation_log_id }).first()
@@ -269,6 +271,8 @@ export default class CustomerController {
         customer.userinfo = await Database.from('users').select('*').where({ 'user_id': customer.relation_user_id }).first()
       }
 
+      customer.userinfo.age = Moment().diff(customer.userinfo.birthday, 'years')
+      customer.userinfo.zodiac_sign = this.getZodiacSign(Moment(customer.userinfo.birthday).format('DD'), Moment(customer.userinfo.birthday).format('MM'))
       customer.userinfo.photos = customer.userinfo.photos ? JSON.parse(customer.userinfo.photos) : []
 
       customer.userinfo.work = customer.userinfo.work ? JSON.parse(customer.userinfo.work) : []
@@ -282,6 +286,8 @@ export default class CustomerController {
         data: customer
       })
     } catch (error) {
+      console.log(error);
+
       Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,

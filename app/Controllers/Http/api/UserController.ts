@@ -216,6 +216,51 @@ export default class UserController {
     }
   }
 
+  // 连接聊天对话
+  public async chat({ request, response, session }: HttpContextContract) {
+    try {
+      const all = request.all()
+      if (all.type == 'customer') {
+        const customer = await Database.from('customer').where('id', all.customer_id).first()
+        const chatroom_left = await Database.from('chatroom').where('chat_users_id', `${ customer.user_id },${ session.get('user_id') }`).first()
+        const chatroom_right = await Database.from('chatroom').where('chat_users_id', `${ session.get('user_id') },${ customer.user_id }`).first()
+        const chatroom = chatroom_left || chatroom_right
+        console.log(customer);
+
+
+        if (session.get('user_id') == customer.user_id) {
+          return response.json({
+            status: 500,
+            message: "internalServerError"
+          })
+        }
+
+        if (chatroom) {
+          response.json({
+            status: 200,
+            message: "ok",
+            data: {
+              chat_id: chatroom.chat_id
+            }
+          })
+        } else {
+          const chat_id = uuidv4()
+          const id = await Database.table('chatroom').insert({ chat_id, chat_users_id: `${ session.get('user_id') },${ customer.user_id }` }).returning('chat_id')
+
+          response.json({
+            status: 200,
+            message: "ok",
+            data: {
+              chat_id
+            }
+          })
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   public async qrcode({ request, session }: HttpContextContract) {
     try {
       const all = request.all()

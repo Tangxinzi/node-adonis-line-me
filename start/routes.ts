@@ -32,6 +32,7 @@ Route.group(() => {
   Route.post('/user/field', 'api/UserController.updateUserField')
   Route.post('/user/custom/create', 'api/PublishesController.create')
   Route.get('/user/qrcode', 'api/UserController.qrcode')
+  Route.get('/user/chat', 'api/UserController.chat')
 
   Route.get('/user/question', 'api/QuestionsController.index')
   Route.get('/user/question/lists', 'api/QuestionsController.questionLists')

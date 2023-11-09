@@ -31,7 +31,6 @@ export default class EventController {
         // moment
         if (moments[index]) {
           const like = await Database.from('likes').where({ relation_type_id: moments[index].id, type: 'moment', status: 1, user_id: session.get('user_id') || '' }).first()
-          console.log(moments[index]);
 
           if (moments[index].ip) {
             await axios({
