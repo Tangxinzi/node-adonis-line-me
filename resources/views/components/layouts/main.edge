@@ -65,6 +65,10 @@
       $('.ui.modal.loading').modal('setting', 'transition', 'fade up').modal('setting', 'closable', false).modal('show')
     }
 
+    $('.activating').popup({
+      on: 'click'
+    })
+    
     // $('.navbar .q-navbar').clone().appendTo('.ui.sidebar.menu')
     $('.ui.dropdown').dropdown()
     $('.navbar .item.upload').popup({

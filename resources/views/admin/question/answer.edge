@@ -44,7 +44,9 @@
                 </a>
               </td>
               <td class="td">{{ row.title }}</td>
-              <td class="td">{{ row.content }}</td>
+              <td class="td">
+                <span class="activating click" data-content="{{ row.content }}" data-position="bottom center" data-inverted="">{{ row.content }}</span>
+              </td>
               <td class="td">{{ row.photos.length }}</td>
               <td class="td">{{ row.created_at }}</td>
             </tr>

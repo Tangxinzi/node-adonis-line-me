@@ -4,13 +4,14 @@ import Moment from'moment'
 Moment.locale('zh-cn')
 import axios from "axios";
 import iconv from 'iconv-lite';
+const zpData = require('../lib/Zhipin');
 
 export default class EventController {
   public async descovery({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const moments = await Database.from('moments').select('moments.id', 'moments.user_id', 'moments.content', 'moments.photos', 'moments.ip', 'moments.created_at', 'users.nickname', 'users.avatar_url', 'users.sex', 'users.birthday', 'users.user_id').join('users', 'moments.user_id', '=', 'users.user_id').where({ status: 1, recommend: 1 }).limit(10).orderBy('moments.created_at', 'desc')
-      const answer = await Database.from('answer').select('answer.id', 'answer.relation_question_id', 'answer.user_id', 'answer.content', 'answer.photos', 'answer.ip', 'answer.created_at', 'users.nickname', 'users.avatar_url', 'users.sex', 'users.birthday', 'users.wechat_open_id').join('users', 'answer.user_id', '=', 'users.user_id').where({ status: 1, recommend: 1 }).limit(10).orderBy('answer.created_at', 'desc')
+      const moments = await Database.from('moments').select('moments.id', 'moments.user_id', 'moments.content', 'moments.photos', 'moments.ip', 'moments.created_at', 'users.nickname', 'users.avatar_url', 'users.sex', 'users.work', 'users.birthday', 'users.user_id').join('users', 'moments.user_id', '=', 'users.user_id').where({ status: 1, recommend: 1 }).limit(10).orderBy('moments.created_at', 'desc')
+      const answer = await Database.from('answer').select('answer.id', 'answer.relation_question_id', 'answer.user_id', 'answer.content', 'answer.photos', 'answer.ip', 'answer.created_at', 'users.nickname', 'users.avatar_url', 'users.sex', 'users.sex', 'users.birthday', 'users.wechat_open_id').join('users', 'answer.user_id', '=', 'users.user_id').where({ status: 1, recommend: 1 }).limit(10).orderBy('answer.created_at', 'desc')
 
       let descovery = []
       // descovery.push({
@@ -43,6 +44,12 @@ export default class EventController {
               // console.log(error)
             })
           }
+
+          moments[index]['work'] = JSON.parse(moments[index]['work'])
+          if (moments[index]['work'] && moments[index]['work']['value']) {
+            moments[index]['work']['text'] = await zpData.data(moments[index]['work']['value'][0], moments[index]['work']['value'][1])
+          }
+
           descovery.push({
             id: moments[index].id,
             user_id: moments[index].user_id,
@@ -53,6 +60,7 @@ export default class EventController {
             content: moments[index].content,
             photos: moments[index].photos ? JSON.parse(moments[index].photos) : [],
             age: Moment().diff(moments[index].birthday, 'years'),
+            work: moments[index].work,
             data_type: 'moment',
             like: like && like.id ? true : false,
             likeNum: (await Database.from('likes').where({ relation_type_id: moments[index].id, type: 'moment', status: 1 }).count('* as total'))[0].total || 0,

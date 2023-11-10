@@ -31,6 +31,7 @@ body, body.pushable>.pusher {background-color: var(--body);}
 .ui.segment.labels {padding-bottom: 0.5rem !important;}
 .ui.message .close.icon {position: absolute; margin: 0; top: 14px; right: 1.3em; z-index: 1;}
 .ui.cards {width: 100%; margin: 0em !important}
+.ui.header-title.flex-between span { font-size: 1.28571429em; font-weight: 700; line-height: 1.28571429em; color: rgba(0,0,0,.87); }
 .none {display: none !important;}
 body, body.pushable>.pusher { background-color: rgba(255, 255, 255, .95); }
 /* @media only screen and (min-width: 1400px) {

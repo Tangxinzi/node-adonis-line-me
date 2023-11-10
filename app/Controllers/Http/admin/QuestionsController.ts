@@ -8,7 +8,7 @@ export default class QuestionsController {
       const questions = await Database.rawQuery('select * from questions order by type desc')
       return view.render('admin.question.index', {
         data: {
-          title: '创建问答',
+          title: '问答',
           active: 'questions',
           questions: questions[0]
         }
@@ -61,7 +61,7 @@ export default class QuestionsController {
     const question = await Database.from('questions').where('id', params.id).first()
     return view.render('admin.question.edit', {
       data: {
-        title: '创建问答',
+        title: '编辑问答',
         active: 'questions',
         question
       }

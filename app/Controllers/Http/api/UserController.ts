@@ -9,6 +9,7 @@ import RandomString from "randomstring";
 import { v4 as uuidv4 } from 'uuid';
 import Moment from'moment';
 import * as Vibrant from 'node-vibrant'
+import GeoIP from 'geoip-lite';
 
 const zpData = require('../lib/Zhipin');
 const Avatar = require('../lib/Avatar');
@@ -67,7 +68,8 @@ export default class UserController {
 
       if (user) {
         // 格式数据
-        await Database.from('users').where('user_id', session.get('user_id')).update({ online_at: Moment().format('YYYY-MM-DD HH:mm:ss'), ip: request.ip() })
+        const _geoip = GeoIP.lookup(request.ip()) || {}
+        await Database.from('users').where('user_id', session.get('user_id')).update({ online_at: Moment().format('YYYY-MM-DD HH:mm:ss'), ip: request.ip(), ip_city: _geoip.city })
         user.photos = JSON.parse(user.photos)
         user['videos'] = JSON.parse(user['videos'])
         user['zodiac_sign'] = this.getZodiacSign(Moment(user['birthday']).format('DD'), Moment(user['birthday']).format('MM'))
@@ -225,13 +227,12 @@ export default class UserController {
         const chatroom_left = await Database.from('chatroom').where('chat_users_id', `${ customer.user_id },${ session.get('user_id') }`).first()
         const chatroom_right = await Database.from('chatroom').where('chat_users_id', `${ session.get('user_id') },${ customer.user_id }`).first()
         const chatroom = chatroom_left || chatroom_right
-        console.log(customer);
-
 
         if (session.get('user_id') == customer.user_id) {
           return response.json({
             status: 500,
-            message: "internalServerError"
+            message: "internalServerError",
+            data: 'Unable to chat with oneself'
           })
         }
 
