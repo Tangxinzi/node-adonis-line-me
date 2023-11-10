@@ -82,7 +82,7 @@ Route.group(() => {
   Route.post('/chatroom/update', 'admin/ChatroomController.update')
 
   Route.get('/questions', 'admin/QuestionsController.index').as('questions')
-  Route.get('/questions/answer', 'admin/QuestionsController.answer')
+  Route.get('/questions/answer/:type', 'admin/QuestionsController.answer')
   Route.get('/questions/edit/:id', 'admin/QuestionsController.edit')
   Route.get('/questions/create', 'admin/QuestionsController.create')
   Route.post('/questions/save', 'admin/QuestionsController.save')

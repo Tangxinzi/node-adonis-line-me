@@ -16,7 +16,8 @@
   <div class="ui stackable four column grid">
     <div class="three wide column">
       <div class="ui vertical pointing menu">
-        <a class="{{ data.active == 'answer' ? 'item active' : 'item' }}" href="{{ route('admin/QuestionsController.answer' )}}">用户个性化问答</a>
+        <a class="{{ data.active == 'answer' ? 'item active' : 'item' }}" href="{{ route('admin/QuestionsController.answer', { type: '0' }) }}">用户个性化问答</a>
+        <a class="{{ data.active == 'introduction' ? 'item active' : 'item' }}" href="{{ route('admin/QuestionsController.answer', { type: '1' }) }}">好友介绍问答</a>
       </div>
     </div>
     <div class="thirteen wide column">

@@ -7,7 +7,7 @@
 #
 # 主机: 127.0.0.1 (MySQL 5.7.26)
 # 数据库: hunlian
-# 生成时间: 2023-11-10 02:36:17 +0000
+# 生成时间: 2023-11-10 10:27:40 +0000
 # ************************************************************
 
 
@@ -135,7 +135,7 @@ LOCK TABLES `chatroom` WRITE;
 INSERT INTO `chatroom` (`id`, `chat_id`, `chat_users_id`, `chat_name`, `chat_description`, `type`, `status`, `created_at`, `modified_at`, `deleted_at`)
 VALUES
 	(1,'8be9e13c-bf6e-4145-996c-f3d8818221d4','hl_a90915530,hl_a45943511,1','测试交流','Hello World',0,1,'2022-09-08 10:22:02','2023-11-04 12:53:13',NULL),
-	(2,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a90915530,hl_a77713707','测试交流','Hello World',0,1,'2022-09-08 10:42:02','2023-11-09 17:41:41',NULL),
+	(2,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a90915530,hl_a77713707','测试交流','Hello World',0,1,'2022-09-08 10:42:02','2023-11-06 18:27:47',NULL),
 	(3,'8be9e13c-bf6e-4145-996c-f3d8818221d6','hl_a90915530,hl_a09087583','测试交流','Hello World',0,1,'2022-09-08 10:42:02','2023-11-05 21:30:40',NULL),
 	(4,'04c22a83-2428-4aba-b1eb-905446d200ff','1,2',NULL,NULL,0,1,'2023-11-07 17:35:38','2023-11-07 17:35:38',NULL);
 
@@ -175,11 +175,7 @@ VALUES
 	(24,'8be9e13c-bf6e-4145-996c-f3d8818221d4','hl_a90915530','/uploads/files/0c2aQTrcisVvOfIKkX9UxiYZlTvYhHMe.jpg','image',0,NULL,1,'2023-11-03 23:31:54',NULL,NULL),
 	(25,'8be9e13c-bf6e-4145-996c-f3d8818221d4','hl_a90915530','您好呀','text',0,'223.72.87.117',1,'2023-11-04 12:53:13',NULL,NULL),
 	(46,'8be9e13c-bf6e-4145-996c-f3d8818221d6','hl_a90915530','Hello World','text',0,'223.72.37.208',1,'2023-11-05 21:30:40','2023-11-05 21:30:40',NULL),
-	(47,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a90915530','/uploads/files/pcxSVXeWJYUdjZ8Qguo1Rd0Wn1tZL9lF.png','image',0,'1.202.45.19',1,'2023-11-06 11:15:02','2023-11-06 11:15:02',NULL),
-	(48,'90aa2708-3414-4ada-9e68-5c81536ab811','hl_a90915530','12','text',0,'1.202.45.19',1,'2023-11-09 16:59:40','2023-11-09 16:59:40',NULL),
-	(49,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a90915530','12','text',0,'1.202.45.19',1,'2023-11-09 17:33:34','2023-11-09 17:33:34',NULL),
-	(50,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a90915530','12','text',0,'1.202.45.19',1,'2023-11-09 17:41:19','2023-11-09 17:41:19',NULL),
-	(51,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a90915530','a','text',0,'1.202.45.19',1,'2023-11-09 17:41:41','2023-11-09 17:41:41',NULL);
+	(47,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a90915530','/uploads/files/pcxSVXeWJYUdjZ8Qguo1Rd0Wn1tZL9lF.png','image',0,'1.202.45.19',1,'2023-11-06 11:15:02','2023-11-06 11:15:02',NULL);
 
 /*!40000 ALTER TABLE `chats` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -203,13 +199,12 @@ LOCK TABLES `chats_log` WRITE;
 
 INSERT INTO `chats_log` (`id`, `chat_id`, `user_id`, `last_at`)
 VALUES
-	(1,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a90915530','2023-11-09 18:08:00'),
+	(1,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a90915530','2023-11-06 17:38:46'),
 	(2,'8be9e13c-bf6e-4145-996c-f3d8818221d5','hl_a77713707','2023-11-06 18:27:47'),
-	(3,'8be9e13c-bf6e-4145-996c-f3d8818221d4','hl_a90915530','2023-11-09 17:56:52'),
-	(4,'8be9e13c-bf6e-4145-996c-f3d8818221d6','hl_a90915530','2023-11-09 18:07:55'),
-	(5,'undefined','hl_a90915530','2023-11-09 18:02:11'),
-	(6,'90aa2708-3414-4ada-9e68-5c81536ab811','hl_a90915530','2023-11-09 16:59:58'),
-	(7,'52554b28-8864-4496-b93d-4750b9b60b46','hl_a90915530','2023-11-09 18:11:10');
+	(3,'8be9e13c-bf6e-4145-996c-f3d8818221d4','hl_a90915530','2023-11-06 17:19:17'),
+	(4,'8be9e13c-bf6e-4145-996c-f3d8818221d6','hl_a90915530','2023-11-06 17:05:18'),
+	(5,'undefined','hl_a68726129','2023-11-09 09:07:31'),
+	(6,'undefined','hl_a68726129','2023-11-09 09:07:31');
 
 /*!40000 ALTER TABLE `chats_log` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -406,10 +401,10 @@ VALUES
 	(19,1,'hl_a90915530','tmp_ae7dd779feea6a09d75b5446ca63cd9d.jpg','F8E0BQ3V3RZxcKoSJ08gemljCdg8bAkg.jpg','/uploads/files/F8E0BQ3V3RZxcKoSJ08gemljCdg8bAkg.jpg','files','387139','image','jpeg',NULL,'jpg','','2023-11-03 23:30:50',NULL,NULL),
 	(20,1,'hl_a90915530','tmp_f4a0bf9f3eeaf7efa8644c08e748c671.jpg','0c2aQTrcisVvOfIKkX9UxiYZlTvYhHMe.jpg','/uploads/files/0c2aQTrcisVvOfIKkX9UxiYZlTvYhHMe.jpg','files','260385','image','jpeg',NULL,'jpg','','2023-11-03 23:31:53',NULL,NULL),
 	(21,1,'hl_a90915530','D60W0lE6CnhO74ef14d44c3d6c5156310fc2dc553a88.png','pcxSVXeWJYUdjZ8Qguo1Rd0Wn1tZL9lF.png','/uploads/files/pcxSVXeWJYUdjZ8Qguo1Rd0Wn1tZL9lF.png','files','68127','image','png',NULL,'png','','2023-11-06 11:15:02',NULL,NULL),
-	(22,1,'hl_a90915530','hCezhugknQHJ2025e264425a0e6547902567da7a35d8.jpeg','DMvmLnRUrMrZuJEgxdSN4NxM2L3K9qrn.jpeg','/uploads/files/DMvmLnRUrMrZuJEgxdSN4NxM2L3K9qrn.jpeg','files','238109','image','jpeg',NULL,'jpeg','','2023-11-09 10:52:53',NULL,NULL),
-	(23,1,'hl_a90915530','4giKkKnjHq2f2025e264425a0e6547902567da7a35d8.jpg','CtVJghb4ARb0wX06C6Sby5rmtzrC1rOk.jpg','/uploads/files/CtVJghb4ARb0wX06C6Sby5rmtzrC1rOk.jpg','files','238109','image','jpeg',NULL,'jpg','','2023-11-09 10:52:53',NULL,NULL),
-	(24,1,'hl_a90915530','xgECxzwhSsNF74ef14d44c3d6c5156310fc2dc553a88.png','6Xw4rscv39bUFv0LocjRcxCNn9iiefyN.png','/uploads/files/6Xw4rscv39bUFv0LocjRcxCNn9iiefyN.png','files','68127','image','png',NULL,'png','','2023-11-09 10:52:53',NULL,NULL),
-	(25,1,'hl_a90915530','tmp_91b9bf23d7e950a8cea06820f8a76406.jpg','F2Q0ly8rvoZJF6w3Wsk0CvQfBkFtpB8n.jpg','/uploads/files/F2Q0ly8rvoZJF6w3Wsk0CvQfBkFtpB8n.jpg','files','97221','image','jpeg',NULL,'jpg','','2023-11-09 18:22:06',NULL,NULL);
+	(22,1,'hl_a20353909','tmp_b2a8d5356eb6b4f9e1e65fbae0f602c6.jpg','2pOGyuRXYSxx0pgb2h3fWKgogufYsqjx.jpg','/uploads/files/2pOGyuRXYSxx0pgb2h3fWKgogufYsqjx.jpg','files','2604','image','jpeg',NULL,'jpg','','2023-11-09 08:35:34',NULL,NULL),
+	(23,1,'hl_a20353909','tmp_408555bb084e9d2359360fe9b0e6099a.jpg','yHaHKlWhZmgEHbhqhIUuM262QrnWTE6q.jpg','/uploads/files/yHaHKlWhZmgEHbhqhIUuM262QrnWTE6q.jpg','files','296067','image','jpeg',NULL,'jpg','','2023-11-09 08:36:14',NULL,NULL),
+	(24,1,'hl_a20353909','tmp_486ad5327adf69efde48bd5861285957.jpg','fo6RJtXjjje4EDPps4zg49tB1lZNbsI6.jpg','/uploads/files/fo6RJtXjjje4EDPps4zg49tB1lZNbsI6.jpg','files','268274','image','jpeg',NULL,'jpg','','2023-11-09 08:36:38',NULL,NULL),
+	(25,1,'hl_a90915530','tmp_69391e17f5ccc0fb5a2ef4b36cb03d88.jpg','XJw47YeEk5J1BlnjkDsEdd99yk4p9TkN.jpg','/uploads/files/XJw47YeEk5J1BlnjkDsEdd99yk4p9TkN.jpg','files','97221','image','jpeg',NULL,'jpg','','2023-11-09 18:34:49',NULL,NULL);
 
 /*!40000 ALTER TABLE `files` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -558,7 +553,7 @@ CREATE TABLE `moments` (
   `status` bigint(1) DEFAULT '1' COMMENT '发布状态 0 - 删除；1 - 发布；2 - 草稿',
   `recommend` bigint(1) DEFAULT '0' COMMENT '推荐状态 0 - 默认；1 - 推荐',
   `user_id` varchar(50) CHARACTER SET utf8mb4 NOT NULL COMMENT '发布 User ID',
-  `content` varchar(128) CHARACTER SET utf8mb4 NOT NULL COMMENT '描述',
+  `content` longtext CHARACTER SET utf8mb4 NOT NULL COMMENT '描述',
   `photos` longtext CHARACTER SET utf8mb4 NOT NULL COMMENT '照片',
   `ip` varchar(16) CHARACTER SET utf8mb4 NOT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
@@ -579,7 +574,8 @@ VALUES
 	(6,1,0,'hl_a75816652','你好………','[]','','2023-10-26 15:34:18','2023-10-26 15:34:18',NULL),
 	(7,1,0,'hl_a88076879','咕噜咕噜冒个泡','[]','','2023-10-26 16:02:14','2023-10-26 16:02:14',NULL),
 	(8,1,0,'hl_a35324426','今天天气很不错','[]','','2023-10-26 16:09:12','2023-10-26 16:09:12',NULL),
-	(9,1,0,'hl_a12419437','你好，秋天🍂','[]','','2023-10-26 16:24:43','2023-10-26 16:24:43',NULL);
+	(9,1,0,'hl_a12419437','你好，秋天🍂','[]','','2023-10-26 16:24:43','2023-10-26 16:24:43',NULL),
+	(10,1,1,'hl_a90915530','分手后没多久\n我收到了前男友的一条信息\n他发给我一个表格\n里面罗列着在一起时\n他花在我身上的每一笔钱\n从情人节52的红包到爆米花5折券\n他要我把这些全都还给他\n更让我震惊的是\n他在朋友圈公然诽谤我\n让我彻底看清了他的心\n是烂的：\ns lan der\n是烂 的\nslander\nv.','[\"/uploads/files/XJw47YeEk5J1BlnjkDsEdd99yk4p9TkN.jpg\"]','1.202.45.19','2023-11-09 18:34:50','2023-11-09 18:34:50',NULL);
 
 /*!40000 ALTER TABLE `moments` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -652,6 +648,7 @@ CREATE TABLE `users` (
   `wechat_platform_open_id` varchar(255) DEFAULT NULL COMMENT '公号 OPEN ID',
   `parent_id` int(11) DEFAULT NULL COMMENT '父级红娘 ID',
   `ip` varchar(16) DEFAULT NULL COMMENT 'IP 地址',
+  `ip_city` varchar(50) NOT NULL,
   `online_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '最近上线时间',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `modified_at` datetime DEFAULT CURRENT_TIMESTAMP,
@@ -662,29 +659,30 @@ CREATE TABLE `users` (
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
 
-INSERT INTO `users` (`id`, `type`, `user_id`, `nickname`, `avatar_url`, `birthday`, `height`, `sex`, `work`, `photos`, `videos`, `detail`, `contact_wechat`, `school`, `company`, `location`, `realname`, `phone`, `wechat_union_id`, `wechat_open_id`, `wechat_platform_open_id`, `parent_id`, `ip`, `online_at`, `created_at`, `modified_at`, `deleted_at`)
+INSERT INTO `users` (`id`, `type`, `user_id`, `nickname`, `avatar_url`, `birthday`, `height`, `sex`, `work`, `photos`, `videos`, `detail`, `contact_wechat`, `school`, `company`, `location`, `realname`, `phone`, `wechat_union_id`, `wechat_open_id`, `wechat_platform_open_id`, `parent_id`, `ip`, `ip_city`, `online_at`, `created_at`, `modified_at`, `deleted_at`)
 VALUES
-	(25,2,'hl_a90915530','KMT 184.05','/uploads/files/TGgCSHkqsLstgkne0FuewabXMyGIrjE9.jpg','1997-02-01',173,1,'{\"key\":\"zhipin\",\"value\":[0,12]}','[\"/uploads/files/fWb1balGB2IQSWdccNXPVR44wFpyyBcR.png\",\"/uploads/files/pkfG33cwtPa2HiKpkdRhuqwufkCZaZV3.png\"]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4vhiiLffHPfdB7LKmpMdr_I',NULL,NULL,'10.0.8.14','2023-11-10 10:35:56','2023-10-24 17:48:25','2023-10-24 17:50:28',NULL),
-	(29,2,'hl_a77713707','💐','/uploads/files/iU8zhMAB2cAKEfC83YrkpJ68rA1vtWFO.jpg','1997-01-01',167,0,'{\"key\":\"zhipin\",\"value\":[5,0]}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4vkWz17jyhDWsWuzDrV41_E',NULL,NULL,'10.0.8.14','2023-11-06 17:59:05','2023-10-25 18:05:17','2023-10-25 18:06:13',NULL),
-	(30,1,'hl_a94942316',NULL,NULL,NULL,NULL,NULL,'{}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4mdlhDDXIVKQE2sg3kf_lcI',NULL,NULL,NULL,'2023-10-26 13:46:48','2023-10-26 13:46:48','2023-10-26 13:46:48',NULL),
-	(31,1,'hl_a45082499','与月亮私奔',NULL,NULL,162,NULL,'{\"key\":\"zhipin\",\"value\":[4,1]}','[]',NULL,'日落即是温柔，人间浪漫',NULL,'陕西科技大学','空军军医大学第一附属医院',NULL,NULL,'18523584230',NULL,'op02s4t9pXQZwBdxtCfToEHwIaTY',NULL,NULL,'10.0.8.14','2023-10-26 16:04:35','2023-10-26 15:17:37','2023-10-26 15:17:37',NULL),
-	(32,1,'hl_a79908519','热爱山海',NULL,NULL,165,NULL,'{\"key\":\"zhipin\",\"value\":[0,0]}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'19860918085',NULL,'op02s4gT-Hr2uxbC_vEHOjf234dE',NULL,NULL,'10.0.8.14','2023-10-26 16:02:08','2023-10-26 15:17:56','2023-10-26 15:17:56',NULL),
-	(33,1,'hl_a18254325','南浔',NULL,NULL,170,NULL,'{}','[]',NULL,'众你寻他千百度',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4n4Vhg4zFvnVbKzSC6bnf1Y',NULL,NULL,'10.0.8.14','2023-10-30 11:32:28','2023-10-26 15:18:15','2023-10-26 15:18:15',NULL),
-	(34,1,'hl_a64615905',NULL,NULL,NULL,NULL,NULL,'{}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4qcZqUCpoYq75ny0h8-EV_E',NULL,NULL,'10.0.8.14','2023-10-26 16:04:10','2023-10-26 15:18:49','2023-10-26 15:18:49',NULL),
-	(35,1,'hl_a10140140','babada','/uploads/normal-avatars/sex-017.png','1999-02-25',155,0,'{\"key\":\"zhipin\",\"value\":[6,3]}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4gGwaOLEdT2Asy2fI87RhLg',NULL,NULL,'10.0.8.14','2023-10-26 15:41:52','2023-10-26 15:19:50','2023-10-26 15:24:04',NULL),
-	(36,1,'hl_a28939076',NULL,NULL,NULL,NULL,NULL,'{}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4iEsvekWPMwPAXKjkAxAbYM',NULL,NULL,NULL,'2023-10-26 15:20:01','2023-10-26 15:20:01','2023-10-26 15:20:01',NULL),
-	(37,1,'hl_a19680457','绿洲','/uploads/normal-avatars/sex-011.png','1999-01-01',166,0,'{\"key\":\"zhipin\",\"value\":[3,3]}','[]',NULL,'日照金山',NULL,'南京大学','华为',NULL,NULL,'18822073831',NULL,'op02s4jp3Cncjf5YZjraTnHLkDmQ',NULL,NULL,'10.0.8.14','2023-10-26 15:42:17','2023-10-26 15:24:37','2023-10-26 15:26:09',NULL),
-	(38,1,'hl_a75816652','bsa','/uploads/normal-avatars/sex-015.png','2001-01-04',164,0,'{\"key\":\"zhipin\",\"value\":[2,0]}','[]',NULL,'寻找一片云',NULL,'山东科技大学','兴业银行',NULL,NULL,'19906405498',NULL,'op02s4npunh0azL11_2Yg_BEy8Mg',NULL,NULL,'10.0.8.14','2023-10-27 16:58:27','2023-10-26 15:27:57','2023-10-27 16:53:58',NULL),
-	(39,1,'hl_a16846511','pumpkin','/uploads/normal-avatars/sex-015.png','2000-01-29',168,0,'{\"key\":\"zhipin\",\"value\":[2,0]}','[]',NULL,'11',NULL,'0','无',NULL,NULL,'13820328675',NULL,'op02s4merBxXTrbYLriYPcIffJHg',NULL,NULL,'10.0.8.14','2023-10-27 10:26:28','2023-10-26 15:34:11','2023-10-26 15:35:14',NULL),
-	(40,1,'hl_a34770909','耶','/uploads/normal-avatars/sex-015.png','1999-11-13',159,0,'{\"key\":\"zhipin\",\"value\":[3,1]}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4tlL5X5oLEim4T-j5r43tpE',NULL,NULL,'10.0.8.14','2023-10-26 17:16:07','2023-10-26 15:35:01','2023-10-26 15:36:58',NULL),
-	(41,1,'hl_a88076879','Ostrich','/uploads/normal-avatars/sex-015.png','2001-02-01',161,0,'{\"key\":\"zhipin\",\"value\":[1,0]}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4i2kATw38yViGlJE_pYkchs',NULL,NULL,'10.0.8.14','2023-10-26 18:02:05','2023-10-26 15:45:53','2023-10-26 15:47:35',NULL),
-	(42,2,'hl_a35324426','一颗盐粒子','/uploads/normal-avatars/sex-013.png',NULL,NULL,0,'{\"key\":\"zhipin\",\"value\":[0,20]}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4tpkddBtuQFf8TKWFKtKVuQ',NULL,NULL,'10.0.8.14','2023-10-26 16:11:42','2023-10-26 16:06:59','2023-10-26 16:07:52',NULL),
-	(43,1,'hl_a12419437','晴天','/uploads/normal-avatars/sex-013.png','1994-03-22',160,0,'{\"key\":\"zhipin\",\"value\":[11,0]}','[]',NULL,'两岸猿声啼不住 轻舟已过万重山',NULL,'0','机器人',NULL,NULL,'13134109977',NULL,'op02s4hqkkfbDD1quIULQ8E9TwRU',NULL,NULL,'10.0.8.14','2023-10-27 14:47:31','2023-10-26 16:11:03','2023-10-26 16:13:12',NULL),
-	(44,1,'hl_a56624573',NULL,NULL,NULL,NULL,NULL,'{}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4szQy1a_qqnDNBIt643bih4',NULL,NULL,NULL,'2023-10-30 10:08:33','2023-10-30 10:08:33','2023-10-30 10:08:33',NULL),
-	(45,2,'hl_a54461571','111','/uploads/normal-avatars/sex-012.png',NULL,NULL,0,'{\"key\":\"zhipin\",\"value\":[2,0]}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4nmSNPbmJ8iwqcCRl-H74dI',NULL,NULL,'10.0.8.14','2023-10-31 15:24:31','2023-10-30 17:39:42','2023-10-30 17:40:04',NULL),
-	(46,2,'hl_a09087583','Charles正泉','/uploads/normal-avatars/sex-115.png',NULL,NULL,1,'{\"key\":\"zhipin\",\"value\":[0,2]}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4vllnME96C7JPHus0K0IjGE',NULL,NULL,'223.104.41.22','2023-10-30 20:08:55','2023-10-30 20:06:32','2023-10-30 20:07:31',NULL),
-	(47,2,'hl_a45943511','槙岛圣护','/uploads/files/JA3Sc2RocqrGEZKyMwZbJFyqxsxKamYj.jpg','2001-08-13',158,0,'{\"key\":\"zhipin\",\"value\":[0,0]}','[\"/uploads/files/evSh5Md7ALlm6zGXjjasO693d7xHcBsu.jpg\"]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4vK7NqYrMGoluds8GWRCt0c',NULL,NULL,'10.0.8.14','2023-11-01 09:15:03','2023-10-31 18:02:55','2023-10-31 18:04:11',NULL),
-	(49,1,'hl_a20353909',NULL,NULL,NULL,NULL,NULL,'{}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4m3WJxRN50cI5oOuyH8gijI',NULL,NULL,NULL,'2023-11-08 14:28:42','2023-11-08 14:28:42','2023-11-08 14:28:42',NULL);
+	(25,1,'hl_a90915530','KMT 184.05','/uploads/files/TGgCSHkqsLstgkne0FuewabXMyGIrjE9.jpg','1997-02-01',173,1,'{\"key\":\"zhipin\",\"value\":[0,12]}','[\"/uploads/files/fWb1balGB2IQSWdccNXPVR44wFpyyBcR.png\",\"/uploads/files/pkfG33cwtPa2HiKpkdRhuqwufkCZaZV3.png\"]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4vhiiLffHPfdB7LKmpMdr_I',NULL,NULL,'10.0.8.14','ip_city','2023-11-10 10:49:06','2023-10-24 17:48:25','2023-10-24 17:50:28',NULL),
+	(29,2,'hl_a77713707','💐','/uploads/files/iU8zhMAB2cAKEfC83YrkpJ68rA1vtWFO.jpg','1997-01-01',167,0,'{\"key\":\"zhipin\",\"value\":[5,0]}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4vkWz17jyhDWsWuzDrV41_E',NULL,NULL,'1.202.45.19','','2023-11-09 08:32:00','2023-10-25 18:05:17','2023-10-25 18:06:13',NULL),
+	(30,1,'hl_a94942316',NULL,NULL,NULL,NULL,NULL,'{}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4mdlhDDXIVKQE2sg3kf_lcI',NULL,NULL,NULL,'','2023-10-26 13:46:48','2023-10-26 13:46:48','2023-10-26 13:46:48',NULL),
+	(31,1,'hl_a45082499','与月亮私奔',NULL,NULL,162,NULL,'{\"key\":\"zhipin\",\"value\":[4,1]}','[]',NULL,'日落即是温柔，人间浪漫',NULL,'陕西科技大学','空军军医大学第一附属医院',NULL,NULL,'18523584230',NULL,'op02s4t9pXQZwBdxtCfToEHwIaTY',NULL,NULL,'10.0.8.14','','2023-10-26 16:04:35','2023-10-26 15:17:37','2023-10-26 15:17:37',NULL),
+	(32,1,'hl_a79908519','热爱山海',NULL,NULL,165,NULL,'{\"key\":\"zhipin\",\"value\":[0,0]}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'19860918085',NULL,'op02s4gT-Hr2uxbC_vEHOjf234dE',NULL,NULL,'10.0.8.14','','2023-10-26 16:02:08','2023-10-26 15:17:56','2023-10-26 15:17:56',NULL),
+	(33,1,'hl_a18254325','南浔',NULL,NULL,170,NULL,'{}','[]',NULL,'众你寻他千百度',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4n4Vhg4zFvnVbKzSC6bnf1Y',NULL,NULL,'10.0.8.14','','2023-10-30 11:32:28','2023-10-26 15:18:15','2023-10-26 15:18:15',NULL),
+	(34,1,'hl_a64615905',NULL,NULL,NULL,NULL,NULL,'{}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4qcZqUCpoYq75ny0h8-EV_E',NULL,NULL,'10.0.8.14','','2023-10-26 16:04:10','2023-10-26 15:18:49','2023-10-26 15:18:49',NULL),
+	(35,1,'hl_a10140140','babada','/uploads/normal-avatars/sex-017.png','1999-02-25',155,0,'{\"key\":\"zhipin\",\"value\":[6,3]}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4gGwaOLEdT2Asy2fI87RhLg',NULL,NULL,'10.0.8.14','','2023-10-26 15:41:52','2023-10-26 15:19:50','2023-10-26 15:24:04',NULL),
+	(36,1,'hl_a28939076',NULL,NULL,NULL,NULL,NULL,'{}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4iEsvekWPMwPAXKjkAxAbYM',NULL,NULL,NULL,'','2023-10-26 15:20:01','2023-10-26 15:20:01','2023-10-26 15:20:01',NULL),
+	(37,1,'hl_a19680457','绿洲','/uploads/normal-avatars/sex-011.png','1999-01-01',166,0,'{\"key\":\"zhipin\",\"value\":[3,3]}','[]',NULL,'日照金山',NULL,'南京大学','华为',NULL,NULL,'18822073831',NULL,'op02s4jp3Cncjf5YZjraTnHLkDmQ',NULL,NULL,'10.0.8.14','','2023-10-26 15:42:17','2023-10-26 15:24:37','2023-10-26 15:26:09',NULL),
+	(38,1,'hl_a75816652','bsa','/uploads/normal-avatars/sex-015.png','2001-01-04',164,0,'{\"key\":\"zhipin\",\"value\":[2,0]}','[]',NULL,'寻找一片云',NULL,'山东科技大学','兴业银行',NULL,NULL,'19906405498',NULL,'op02s4npunh0azL11_2Yg_BEy8Mg',NULL,NULL,'10.0.8.14','','2023-10-27 16:58:27','2023-10-26 15:27:57','2023-10-27 16:53:58',NULL),
+	(39,1,'hl_a16846511','pumpkin','/uploads/normal-avatars/sex-015.png','2000-01-29',168,0,'{\"key\":\"zhipin\",\"value\":[2,0]}','[]',NULL,'11',NULL,'0','无',NULL,NULL,'13820328675',NULL,'op02s4merBxXTrbYLriYPcIffJHg',NULL,NULL,'10.0.8.14','','2023-10-27 10:26:28','2023-10-26 15:34:11','2023-10-26 15:35:14',NULL),
+	(40,1,'hl_a34770909','耶','/uploads/normal-avatars/sex-015.png','1999-11-13',159,0,'{\"key\":\"zhipin\",\"value\":[3,1]}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4tlL5X5oLEim4T-j5r43tpE',NULL,NULL,'10.0.8.14','','2023-10-26 17:16:07','2023-10-26 15:35:01','2023-10-26 15:36:58',NULL),
+	(41,1,'hl_a88076879','Ostrich','/uploads/normal-avatars/sex-015.png','2001-02-01',161,0,'{\"key\":\"zhipin\",\"value\":[1,0]}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4i2kATw38yViGlJE_pYkchs',NULL,NULL,'10.0.8.14','','2023-10-26 18:02:05','2023-10-26 15:45:53','2023-10-26 15:47:35',NULL),
+	(42,2,'hl_a35324426','一颗盐粒子','/uploads/normal-avatars/sex-013.png',NULL,NULL,0,'{\"key\":\"zhipin\",\"value\":[0,20]}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4tpkddBtuQFf8TKWFKtKVuQ',NULL,NULL,'10.0.8.14','','2023-10-26 16:11:42','2023-10-26 16:06:59','2023-10-26 16:07:52',NULL),
+	(43,1,'hl_a12419437','晴天','/uploads/normal-avatars/sex-013.png','1994-03-22',160,0,'{\"key\":\"zhipin\",\"value\":[11,0]}','[]',NULL,'两岸猿声啼不住 轻舟已过万重山',NULL,'0','机器人',NULL,NULL,'13134109977',NULL,'op02s4hqkkfbDD1quIULQ8E9TwRU',NULL,NULL,'10.0.8.14','','2023-10-27 14:47:31','2023-10-26 16:11:03','2023-10-26 16:13:12',NULL),
+	(44,1,'hl_a56624573',NULL,NULL,NULL,NULL,NULL,'{}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4szQy1a_qqnDNBIt643bih4',NULL,NULL,NULL,'','2023-10-30 10:08:33','2023-10-30 10:08:33','2023-10-30 10:08:33',NULL),
+	(45,2,'hl_a54461571','111','/uploads/normal-avatars/sex-012.png',NULL,NULL,0,'{\"key\":\"zhipin\",\"value\":[2,0]}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4nmSNPbmJ8iwqcCRl-H74dI',NULL,NULL,'10.0.8.14','','2023-10-31 15:24:31','2023-10-30 17:39:42','2023-10-30 17:40:04',NULL),
+	(46,2,'hl_a09087583','Charles正泉','/uploads/normal-avatars/sex-115.png',NULL,NULL,1,'{\"key\":\"zhipin\",\"value\":[0,2]}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4vllnME96C7JPHus0K0IjGE',NULL,NULL,'223.104.41.22','','2023-10-30 20:08:55','2023-10-30 20:06:32','2023-10-30 20:07:31',NULL),
+	(47,2,'hl_a45943511','槙岛圣护','/uploads/files/JA3Sc2RocqrGEZKyMwZbJFyqxsxKamYj.jpg','2001-08-13',158,0,'{\"key\":\"zhipin\",\"value\":[0,0]}','[\"/uploads/files/evSh5Md7ALlm6zGXjjasO693d7xHcBsu.jpg\"]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4vK7NqYrMGoluds8GWRCt0c',NULL,NULL,'10.0.8.14','','2023-11-01 09:15:03','2023-10-31 18:02:55','2023-10-31 18:04:11',NULL),
+	(49,2,'hl_a20353909','雅齐','/uploads/files/2pOGyuRXYSxx0pgb2h3fWKgogufYsqjx.jpg',NULL,NULL,0,'{\"key\":\"zhipin\",\"value\":[7,5]}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4m3WJxRN50cI5oOuyH8gijI',NULL,NULL,'103.216.43.147','','2023-11-09 08:35:50','2023-11-08 14:28:42','2023-11-09 08:35:45',NULL),
+	(50,1,'hl_a68726129',NULL,NULL,NULL,NULL,NULL,'{}','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'op02s4m4Nr1PEtStJ7w17Bq1D7-I',NULL,NULL,'223.104.159.174','','2023-11-09 09:35:41','2023-11-09 08:41:38','2023-11-09 08:41:38',NULL);
 
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;

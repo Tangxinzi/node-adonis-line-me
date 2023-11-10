@@ -16,7 +16,8 @@
   <div class="ui stackable four column grid">
     <div class="three wide column">
       <div class="ui vertical pointing menu">
-        <a class="{{ data.active == 'answer' ? 'item active' : 'item' }}" href="{{ route('admin/QuestionsController.answer' )}}">用户个性化问答</a>
+        <a class="{{ data.active == 'answer' ? 'item active' : 'item' }}" href="{{ route('admin/QuestionsController.answer', { type: '0' }) }}">用户个性化问答</a>
+        <a class="{{ data.active == 'introduction' ? 'item active' : 'item' }}" href="{{ route('admin/QuestionsController.answer', { type: '1' }) }}">好友介绍问答</a>
       </div>
     </div>
     <div class="thirteen wide column">
@@ -36,12 +37,16 @@
             <tr>
               <td class="td">{{ row.id }}</td>
               <td class="td">
-                <a class="ui image label" title="{{ row.userinfo.user_id }}">
-                  @if(row.userinfo.avatar_url)
-                  <img src="{{ row.userinfo.avatar_url }}" />
-                  @endif
-                  {{ row.userinfo.nickname || ('Unnamed ' + row.user_id) }}
-                </a>
+                @if(data.active == 'introduction')
+                  {{ row.introduce_name || '' }}
+                @else
+                  <a class="ui image label" title="{{ row.userinfo.user_id }}">
+                    @if(row.userinfo.avatar_url)
+                    <img src="{{ row.userinfo.avatar_url }}" />
+                    @endif
+                    {{ row.userinfo.nickname || ('Unnamed ' + row.user_id) }}
+                  </a>
+                @endif
               </td>
               <td class="td">{{ row.title }}</td>
               <td class="td">

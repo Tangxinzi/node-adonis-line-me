@@ -18,10 +18,10 @@ export default class QuestionsController {
     }
   }
 
-  public async answer({ request, view, session }: HttpContextContract) {
+  public async answer({ params, request, view, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const answer = await Database.from('answer').orderBy('created_at', 'desc')
+      const answer = await Database.from('answer').where('type', params.type || 0).orderBy('created_at', 'desc')
       for (let index = 0; index < answer.length; index++) {
         const user = await Database.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', answer[index].user_id).first()
         const question = await Database.from('questions').select('title').where('id', answer[index].relation_question_id).first()
@@ -34,7 +34,7 @@ export default class QuestionsController {
       return view.render('admin.question.answer', {
         data: {
           title: '问答',
-          active: 'answer',
+          active: params.type == '1' ? 'introduction' : 'answer',
           answer
         }
       })
