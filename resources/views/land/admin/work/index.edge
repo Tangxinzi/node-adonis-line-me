@@ -26,6 +26,7 @@
         <thead>
           <tr>
             <th>ID</th>
+            <th>目录</th>
             <th>名称</th>
             <th>地点</th>
             <th>面积</th>
@@ -37,6 +38,7 @@
           @each(row in data.works)
             <tr>
               <td class="td">{{ row.id }}</td>
+              <td class="td">{{ row.catalog || '' }}</td>
               <td class="td">{{ row.title }}</td>
               <td class="td">{{ row.location }}</td>
               <td class="td">{{ row.area || '' }}</td>

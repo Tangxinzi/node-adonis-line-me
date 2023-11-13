@@ -6,7 +6,7 @@ export default class CustomersController {
   public async field({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const customer = await Database.from('customer').where({ id: all.id }).first()
+      const customer = await Database.from('customer').where({ id: all.id }).orderBy('id', 'desc').first()
 
       switch (all.button) {
         case 'recommend':
@@ -26,7 +26,7 @@ export default class CustomersController {
   public async index({ request, view, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const customer = await Database.from('customer').select('id', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id', 'recommend').where('status', 1).orderBy('recommend', 'desc').orderBy('created_at', 'desc').limit(20)
+      const customer = await Database.from('customer').select('id', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id', 'recommend').where('status', 1).orderBy('recommend', 'desc').orderBy('id', 'desc')
       for (let index = 0; index < customer.length; index++) {
         // 红娘自行发布
         if (customer[index].relation_log_id) {

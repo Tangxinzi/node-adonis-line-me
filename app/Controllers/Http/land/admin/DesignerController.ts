@@ -51,6 +51,8 @@ export default class DesignerController {
   public async show({ params, request, view, response }: HttpContextContract) {
     try {
       const all = request.all()
+      console.log(all);
+
       const data = await Database.from('land_designers').where('id', params.id).first()
       data.labels = data.labels ? data.labels.split(',') : []
       if (all.type == 'json') {

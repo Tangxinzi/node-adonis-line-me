@@ -24,6 +24,7 @@
             <th>ID</th>
             <th>推荐人</th>
             <th>被推荐人</th>
+            <th class="five wide">介绍内容</th>
             <th>关系</th>
             <th>性别</th>
             <th>联系</th>
@@ -55,6 +56,9 @@
                   <div class="detail" title="该用户已注册 {{ row.relation_user_id }}">已注册</div>
                   @endif
                 </a>
+              </td>
+              <td class="td" style="position: relative;">
+                <span class="activating click one-line" data-content="{{ row.introduction }}" data-position="bottom center" data-inverted="">{{ row.introduction }}</span>
               </td>
               <td class="td">{{ row.relation || '' }}</td>
               <td class="td">{{ row.sex == 1 ? '男' : '' }}{{ row.sex == 0 ? '女' : '' }}</td>

@@ -38,7 +38,7 @@ export default class CustomerController {
   public async index({ request, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const customer = await Database.from('customer').select('id  as cid', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id').where({ status: 1, recommend: 1 }).orderBy('created_at', 'desc').limit(20)
+      const customer = await Database.from('customer').select('id  as cid', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id').where({ status: 1, recommend: 1 }).orderBy('created_at', 'desc').limit(10)
       for (let index = 0; index < customer.length; index++) {
         // 红娘自行发布
         if (customer[index].relation_log_id) {
@@ -262,7 +262,6 @@ export default class CustomerController {
     try {
       const all = request.all()
       const customer = await Database.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'relation', 'relation_log_id', 'introduction').where({ 'id': params.id, status: 1 }).first()
-      console.log(customer);
 
       customer.relation_text = RELATION[customer.relation]
       if (customer.relation_log_id) {
@@ -270,6 +269,8 @@ export default class CustomerController {
       } else if(customer.relation_user_id) {
         customer.userinfo = await Database.from('users').select('*').where({ 'user_id': customer.relation_user_id }).first()
       }
+
+      customer.parent = await Database.from('users').select('nickname', 'avatar_url').where('user_id', customer.user_id).first()
 
       customer.userinfo.age = Moment().diff(customer.userinfo.birthday, 'years')
       customer.userinfo.zodiac_sign = this.getZodiacSign(Moment(customer.userinfo.birthday).format('DD'), Moment(customer.userinfo.birthday).format('MM'))

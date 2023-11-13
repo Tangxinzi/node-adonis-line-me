@@ -29,6 +29,21 @@
         <b>{{ data.title }}</b>
       </div>
       <form class="ui segment form" method="post" action="{{ route('land/admin/WorkController.save') }}" enctype="multipart/form-data">
+        <div class="field">
+          <div class="field">
+            <label>类型</label>
+            <div class="ui selection dropdown">
+              <input type="hidden" name="catalog" value="" />
+              <i class="dropdown icon"></i>
+              <div class="default text">点击选择</div>
+              <div class="menu">
+                <div class="item" data-value="1">办公室项目分享</div>
+                <div class="item" data-value="2">优秀案例</div>
+                <div class="item" data-value="0">其它</div>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="field" hidden>
           <label>ID</label>
           <input type="text" name="id" value="{{ data.work.id || '' }}" placeholder="" />

@@ -5,9 +5,10 @@ import Moment from 'moment';
 export default class WorkController {
   public async index({ request, response, view, session }: HttpContextContract) {
     try {
-      const all = request.all()
+      const all = request.all(), catalog = ['其它', '办公室项目分享', '优秀案例']
       const works = await Database.table('land_works')
       for (let index = 0; index < works.length; index++) {
+        works[index].catalog = catalog[works[index].catalog]
         works[index].created_at = Moment(works[index].created_at).format('YYYY-MM-DD H:mm:ss')
       }
 
@@ -95,13 +96,13 @@ export default class WorkController {
       }
 
       if (request.method() == 'POST' && all.button == 'update') {
-        await Database.from('land_works').where('id', all.id).update({ title: all.title, introduction: all.introduction, work_time: all.work_time, location: all.location, detail: all.detail, theme_url })
+        await Database.from('land_works').where('id', all.id).update({ catalog: all.catalog, title: all.title, introduction: all.introduction, work_time: all.work_time, location: all.location, detail: all.detail, theme_url })
         session.flash('message', { type: 'success', header: '更新成功', message: `` })
         return response.redirect('back')
       }
 
       const id = await Database.table('land_works').returning('id').insert({
-        title: all.title, area: all.area, introduction: all.introduction, work_time: all.work_time, location: all.location, detail: all.detail, theme_url
+        catalog: all.catalog, title: all.title, area: all.area, introduction: all.introduction, work_time: all.work_time, location: all.location, detail: all.detail, theme_url
       })
 
       session.flash('message', { type: 'success', header: '创建成功', message: `` })

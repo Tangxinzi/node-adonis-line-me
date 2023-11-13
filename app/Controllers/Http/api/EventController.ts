@@ -11,7 +11,7 @@ export default class EventController {
     try {
       const all = request.all()
       const moments = await Database.from('moments').select('moments.id', 'moments.user_id', 'moments.content', 'moments.photos', 'moments.ip', 'moments.created_at', 'users.nickname', 'users.avatar_url', 'users.sex', 'users.work', 'users.birthday', 'users.user_id').join('users', 'moments.user_id', '=', 'users.user_id').where({ status: 1, recommend: 1 }).limit(10).orderBy('moments.created_at', 'desc')
-      const answer = await Database.from('answer').select('answer.id', 'answer.relation_question_id', 'answer.user_id', 'answer.content', 'answer.photos', 'answer.ip', 'answer.created_at', 'users.nickname', 'users.avatar_url', 'users.sex', 'users.sex', 'users.birthday', 'users.wechat_open_id').join('users', 'answer.user_id', '=', 'users.user_id').where({ status: 1, recommend: 1 }).limit(10).orderBy('answer.created_at', 'desc')
+      const answer = await Database.from('answer').select('answer.id', 'answer.relation_question_id', 'answer.user_id', 'answer.content', 'answer.photos', 'answer.ip', 'answer.created_at', 'users.nickname', 'users.avatar_url', 'users.sex', 'users.work', 'users.birthday', 'users.wechat_open_id').join('users', 'answer.user_id', '=', 'users.user_id').where({ status: 1, recommend: 1 }).limit(10).orderBy('answer.created_at', 'desc')
 
       let descovery = []
       // descovery.push({
@@ -74,6 +74,7 @@ export default class EventController {
         if (answer[index]) {
           const like = await Database.from('likes').where({ relation_type_id: answer[index].id, type: 'answer', status: 1, user_id: session.get('user_id') || '' }).first()
           const question = await Database.from('questions').select('title').where('id', answer[index].relation_question_id).first()
+
           if (answer[index].ip) {
             await axios({
               url: `http://whois.pconline.com.cn/ipJson.jsp?ip=${ answer[index].ip }&json=true`,
@@ -85,16 +86,23 @@ export default class EventController {
               // console.log(error)
             })
           }
+
+          answer[index]['work'] = JSON.parse(answer[index]['work'])
+          if (answer[index]['work'] && answer[index]['work']['value']) {
+            answer[index]['work']['text'] = await zpData.data(answer[index]['work']['value'][0], answer[index]['work']['value'][1])
+          }
+
           descovery.push({
             id: answer[index].id,
             user_id: answer[index].user_id,
             nickname: answer[index].nickname,
             avatar_url: answer[index].avatar_url,
             sex: answer[index].sex,,
-            title: '回答了「' + question.title + '」',
+            title: question.title,
             content: answer[index].content,
             photos: answer[index].photos ? JSON.parse(answer[index].photos) : [],
             age: Moment().diff(answer[index].birthday, 'years'),
+            work: answer[index].work,
             data_type: 'answer',
             like: like && like.id ? true : false,
             likeNum: (await Database.from('likes').where({ relation_type_id: answer[index].id, type: 'answer', status: 1 }).count('* as total'))[0].total || 0,
@@ -111,6 +119,8 @@ export default class EventController {
         data: descovery
       })
     } catch (error) {
+      console.log(error);
+
       Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
@@ -169,6 +179,8 @@ export default class EventController {
         case 'moment':
           let moment = await Database.from('moments').where('id', params.id).first() || {}
 
+          moment.data_type = 'moment'
+
           moment.like = like && like.id ? true : false
           moment.likeNum =(await Database.from('likes').where({ relation_type_id: params.id, type: 'moment', status: 1 }).count('* as total'))[0].total || 0
           moment.commentNum = (await Database.from('comments').where({ relation_type_id: params.id, type: 'moment', status: 1 }).count('* as total'))[0].total || 0
@@ -189,6 +201,8 @@ export default class EventController {
         case 'answer'
           let answer = await Database.from('answer').where('id', params.id).first() || {}
 
+          answer.data_type = 'answer'
+
           answer.like = like && like.id ? true : false
           answer.likeNum =(await Database.from('likes').where({ relation_type_id: params.id, type: 'answer', status: 1 }).count('* as total'))[0].total || 0
           answer.commentNum = (await Database.from('comments').where({ relation_type_id: params.id, type: 'answer', status: 1 }).count('* as total'))[0].total || 0
@@ -202,7 +216,7 @@ export default class EventController {
           // answer.modified_at = Moment(answer.modified_at).format('YYYY-MM-DD HH:mm:ss')
 
           const question = await Database.from('questions').select('title').where('id', answer.relation_question_id).first()
-          answer.title = '回答了问题「' + question.title + '」'
+          answer.title = question.title
 
           return response.json({ status: 200, message: "ok", data: answer })
           break;

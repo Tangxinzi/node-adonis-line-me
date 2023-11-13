@@ -90,6 +90,15 @@ Route.group(() => {
 }).prefix('/admin')
 
 Route.group(() => {
+  Route.get('/user/wx-login', 'land/admin/UserController.wxLogin')
+  Route.get('/user/info', 'land/admin/UserController.userinfo')
+  Route.get('/user/collection', 'land/admin/UserController.collection')
+  Route.post('/user/info/upload', 'land/admin/UserController.userinfo')
+  Route.get('/user/like/:id', 'land/admin/UserController.like')
+  Route.post('/user/like/:id', 'land/admin/UserController.like')
+
+  Route.post('/file/upload', 'api/FilesController.upload')
+
   Route.get('/designer', 'land/admin/DesignerController.index')
   Route.get('/designer/create', 'land/admin/DesignerController.create')
   Route.get('/designer/show/:id', 'land/admin/DesignerController.show')
