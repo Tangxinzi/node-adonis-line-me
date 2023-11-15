@@ -33,7 +33,7 @@
           <div class="field">
             <label>类型</label>
             <div class="ui selection dropdown">
-              <input type="hidden" name="catalog" value="" />
+              <input type="hidden" name="catalog" value="{{ data.work.catalog }}" />
               <i class="dropdown icon"></i>
               <div class="default text">点击选择</div>
               <div class="menu">
@@ -50,15 +50,27 @@
         </div>
         <div class="field" hidden>
           <label>主题 URL</label>
-          <input type="text" name="avatar_url" value="{{ data.work.theme_url || '' }}" placeholder="" />
+          <input type="text" name="theme" value="{{ data.work.theme_url || '' }}" placeholder="" />
         </div>
         <div class="field">
           <label>名称</label>
           <input type="text" name="title" value="{{ data.work.title || '' }}" placeholder="" />
         </div>
         <div class="field">
+          <label>主题图片（图片文件建议 2M 内）</label>
+            @if(data.work.theme_url)
+              <a href="{{ data.work.theme_url }}" target="_blank">查看图片</a>
+            @endif
+          </label>
+          <input type="file" name="theme" value="" placeholder="" />
+        </div>
+        <div class="field">
           <label>地点</label>
           <input type="text" name="location" value="{{ data.work.location || '' }}" placeholder="" />
+        </div>
+        <div class="field">
+          <label>团队</label>
+          <input type="text" name="team" value="{{ data.work.team || '' }}" placeholder="" />
         </div>
         <div class="field">
           <label>面积</label>
@@ -68,9 +80,13 @@
           <label>作品时间</label>
           <input type="date" name="work_time" value="{{ data.work.work_time || '' }}" placeholder="" />
         </div>
-        <div class="field">
+        <div class="field" style="display: none">
           <label>设计理念</label>
           <textarea name="introduction" rows="8" cols="80">{{ data.work.introduction || '' }}</textarea>
+        </div>
+        <div class="field">
+          <label>标签</label>
+          <input type="text" name="labels" value="{{ data.work.labels || '' }}" placeholder="标签之间以英文逗号 , 分割" />
         </div>
         <div class="field">
           <label>页面详细内容</label>
@@ -101,9 +117,15 @@
       placeholder: '请输入内容...',
       MENU_CONF: {
         uploadImage: {
-          fieldName: 'images',
-          base64LimitSize: 10 * 1024 * 1024 // 10M 以下插入 base64
-        }
+          server: '/land/file/upload',
+          fieldName: 'files',
+          maxFileSize: 10 * 1024 * 1024
+        },
+        uploadVideo: {
+          server: '/land/file/upload',
+          fieldName: 'files',
+          maxFileSize: 100 * 1024 * 1024
+        },
       },
       onChange(editor) {
         $('#detail').val(editor.getHtml())

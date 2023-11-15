@@ -73,6 +73,7 @@
                   {{ csrfField() }}
                   <input type='text' name='id' value='{{ row.id }}' hidden />
                   <button class='ui button' name='button' value='recommend'>{{ row.recommend ? '取消推荐' : '首页推荐' }}</button>
+                  <a class='ui button' name='button' value='delete' href='{{ route("admin/CustomersController.edit", { id: row.id }) }}'>编辑</a>
                   <button class='ui negative button' name='button' value='delete' style='color: red !important;'>删除</button>
                 </form>">
                   操作

@@ -46,10 +46,27 @@ export default class WorkController {
     }
   }
 
+  public async catalog({ params, request, view, response }: HttpContextContract) {
+    try {
+      const all = request.all()
+      const data = await Database.from('land_works').select('id', 'title', 'introduction', 'theme_url').where('catalog', params.catalog)
+      if (all.type == 'json') {
+        return response.json({
+          status: 200,
+          message: "ok",
+          data
+        })
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   public async show({ params, request, view, response }: HttpContextContract) {
     try {
       const all = request.all()
       const data = await Database.from('land_works').where('id', params.id).first()
+      data.labels = data.labels ? data.labels.split(',') : []
       if (all.type == 'json') {
         return response.json({
           status: 200,
@@ -81,9 +98,9 @@ export default class WorkController {
     try {
       let all = request.all()
       let theme_url = all.theme_url || ''
-      if (request.file('theme_url')) {
+      if (request.file('theme')) {
         const RandomString = require('RandomString')
-        const profile = request.file('theme_url', { type: ['image'], size: '2mb' })
+        const profile = request.file('theme', { type: ['image'], size: '2mb' })
         const profileName = `${RandomString.generate(32)}.${profile.extname}`
         const profilePath = `/uploads/theme_urls/`
 
@@ -96,13 +113,13 @@ export default class WorkController {
       }
 
       if (request.method() == 'POST' && all.button == 'update') {
-        await Database.from('land_works').where('id', all.id).update({ catalog: all.catalog, title: all.title, introduction: all.introduction, work_time: all.work_time, location: all.location, detail: all.detail, theme_url })
+        await Database.from('land_works').where('id', all.id).update({ catalog: all.catalog, labels: all.labels, title: all.title, area: all.area, team: all.team, introduction: all.introduction, work_time: all.work_time, location: all.location, detail: all.detail, theme_url })
         session.flash('message', { type: 'success', header: '更新成功', message: `` })
         return response.redirect('back')
       }
 
       const id = await Database.table('land_works').returning('id').insert({
-        catalog: all.catalog, title: all.title, area: all.area, introduction: all.introduction, work_time: all.work_time, location: all.location, detail: all.detail, theme_url
+        catalog: all.catalog, labels: all.labels, title: all.title, area: all.area, team: all.team, introduction: all.introduction, work_time: all.work_time, location: all.location, detail: all.detail, theme_url
       })
 
       session.flash('message', { type: 'success', header: '创建成功', message: `` })

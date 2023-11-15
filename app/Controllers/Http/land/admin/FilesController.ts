@@ -9,7 +9,7 @@ export default class FilesController {
         let file = {}
         const profile = request.file('files', { type: ['image', 'video'], size: '100mb' })
         const profileName = `${RandomString.generate(32)}.${profile.extname}`
-        const profilePath = `/uploads/files/wx_avatar`
+        const profilePath = `/uploads/files/land`
 
         file.fileName = profile.clientName
         file.fileSrc = profilePath + profileName

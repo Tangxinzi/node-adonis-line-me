@@ -49,8 +49,16 @@
           <input type="text" name="title" placeholder="" />
         </div>
         <div class="field">
+          <label>主题图片（图片文件建议 2M 内）</label>
+          <input type="file" name="theme" value="" placeholder="" />
+        </div>
+        <div class="field">
           <label>地点</label>
           <input type="text" name="location" value="" placeholder="" />
+        </div>
+        <div class="field">
+          <label>团队</label>
+          <input type="number" name="team" value="" placeholder="" />
         </div>
         <div class="field">
           <label>面积</label>
@@ -60,9 +68,13 @@
           <label>作品时间</label>
           <input type="date" name="work_time" value="" placeholder="" />
         </div>
-        <div class="field">
+        <div class="field" style="display: none">
           <label>设计理念</label>
           <textarea name="introduction" rows="8" cols="80"></textarea>
+        </div>
+        <div class="field">
+          <label>标签</label>
+          <input type="text" name="labels" placeholder="标签之间以英文逗号 , 分割" />
         </div>
         <div class="field">
           <label>页面详细内容</label>
@@ -93,9 +105,15 @@
       placeholder: '请输入内容...',
       MENU_CONF: {
         uploadImage: {
-          fieldName: 'images',
-          base64LimitSize: 10 * 1024 * 1024 // 10M 以下插入 base64
-        }
+          server: '/land/file/upload',
+          fieldName: 'files',
+          maxFileSize: 10 * 1024 * 1024
+        },
+        uploadVideo: {
+          server: '/land/file/upload',
+          fieldName: 'files',
+          maxFileSize: 100 * 1024 * 1024
+        },
       },
       onChange(editor) {
         $('#detail').val(editor.getHtml())

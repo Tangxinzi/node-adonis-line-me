@@ -1,0 +1,180 @@
+@layout('components.layouts.main')
+
+@section('title')
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<title>{{ data.title }} - Hunlian</title>
+@endsection
+
+@section('style')
+<style media="screen">
+  .ui.images .ui.image { height: 80px; background-size: cover; background-position: center; background-repeat: no-repeat; }
+  .draggable { cursor: move; }
+</style>
+@endsection
+
+@section('content')
+  <div class="ui stackable four column grid">
+    <div class="sixteen wide column">
+      <div class="ui header-title flex-between">
+        <span>编辑</span>
+      </div>
+      <form class="ui segments form" method="post" action="{{ route('admin/CustomersController.update') }}">
+        <div class="ui segment">
+          <h3 class="ui header">介绍人</h3>
+          <div class="four fields">
+            <div class="field">
+              <label>昵称 {{ data.customer.parent.nickname }}</label>
+              <input type="text" name="parent.user_id" value="{{ data.customer.parent.user_id }}" placeholder="" />
+            </div>
+            <div class="field">
+              <label>关系</label>
+              <input type="text" name="" value="{{ data.customer.relation_text }}" placeholder="" />
+            </div>
+            <div class="field">
+              <label>主页推荐</label>
+              <div class="ui selection dropdown">
+                <input type="hidden" name="recommend" value="{{ data.customer.recommend }}" />
+                <i class="dropdown icon"></i>
+                <div class="default text">点击选择</div>
+                <div class="menu">
+                  <div class="item" data-value="0">否</div>
+                  <div class="item" data-value="1">是</div>
+                </div>
+              </div>
+            </div>
+            <div class="field">
+              <label>删除</label>
+              <div class="ui selection dropdown">
+                <input type="hidden" name="status" value="{{ data.customer.status }}" />
+                <i class="dropdown icon"></i>
+                <div class="default text">点击选择</div>
+                <div class="menu">
+                  <div class="item" data-value="0">是</div>
+                  <div class="item" data-value="1">否</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label>介绍信息</label>
+            <textarea name="description" rows="8" cols="80">{{ data.customer.introduction }}</textarea>
+          </div>
+        </div>
+        <div class="ui segment">
+          <h3 class="ui header">被推荐人信息</h3>
+          <div class="four fields">
+            <div class="field">
+              <label>被推荐人</label>
+              <input type="text" name="userinfo.user_id" value="{{ data.customer.userinfo.nickname }}" placeholder="" />
+            </div>
+            <div class="field">
+              <label>头像</label>
+                <div class="ui action input">
+                  <input type="text" name="userinfo.avatar_url" value="{{ data.customer.userinfo.avatar_url }}" placeholder="" />
+                  <a class="ui icon button" target="_blank" href="{{ data.customer.userinfo.avatar_url }}">
+                    <i class="eye icon"></i>
+                  </a>
+                </div>
+            </div>
+            <div class="field">
+              <label>生日</label>
+              <input type="text" name="userinfo.birthday" value="{{ data.customer.userinfo.birthday }}" placeholder="" />
+            </div>
+            <div class="field">
+              <label>身高</label>
+              <div class="ui right labeled input">
+                <input type="text" name="userinfo.height" value="{{ data.customer.userinfo.height }}" placeholder="" />
+                <div class="ui basic label">cm</div>
+              </div>
+            </div>
+          </div>
+          <div class="four fields">
+            <div class="field">
+              <label>性别</label>
+              <div class="ui selection dropdown">
+                <input type="hidden" name="status" value="{{ data.customer.userinfo.sex }}" />
+                <i class="dropdown icon"></i>
+                <div class="default text">点击选择</div>
+                <div class="menu">
+                  <div class="item" data-value="0">女</div>
+                  <div class="item" data-value="1">男</div>
+                </div>
+              </div>
+            </div>
+            <div class="field">
+              <label>手机号验证</label>
+              <div class="ui left icon input">
+                <input type="text" name="userinfo.phone" value="{{ data.customer.userinfo.phone || '' }}" placeholder="" />
+                <i class="mobile icon"></i>
+              </div>
+            </div>
+            <div class="field">
+              <label>微信号</label>
+              <div class="ui left icon input">
+                <input type="text" name="userinfo.contact_wechat" value="{{ data.customer.userinfo.contact_wechat || '' }}" placeholder="" />
+                <i class="wechat icon"></i>
+              </div>
+            </div>
+            <div class="field">
+              <label>地址</label>
+              <div class="ui left icon input">
+                <input type="text" name="userinfo.location" value="{{ data.customer.userinfo.location || '' }}" placeholder="" />
+                <i class="home icon"></i>
+              </div>
+            </div>
+          </div>
+          <div class="four fields">
+            <div class="field">
+              <label>职业 - {{ data.customer.userinfo.work.text }}</label>
+              <input type="text" name="userinfo.work" value="{{ data.customer.userinfo.work }}" placeholder="" />
+            </div>
+          </div>
+          <div class="field">
+            <label>照片</label>
+            <div class="ui tiny rounded bordered images" id="container" ondrop="drop(event)" ondragover="allowDrop(event)">
+              @each((row, index) in data.customer.userinfo.photos)
+              <div class="ui image draggable" style="background-image: url({{ row }})" id="image{{ index }}" draggable="true" ondragstart="drag(event)">
+                <input type="text" name="userinfo.photos[]" value="{{ row }}" hidden />
+              </div>
+              @endeach
+            </div>
+          </div>
+
+        </div>
+        <div class="ui segment">
+          {{ csrfField() }}
+          <button class="ui tiny button" type="submit" name="button" value="save">提交</button>
+        </div>
+      </form>
+    </div>
+  </div>
+@endsection
+
+@section('script')
+<script src="https://unpkg.com/@wangeditor/editor@latest/dist/index.js"></script>
+<script type="text/javascript">
+  function allowDrop(ev) {
+    ev.preventDefault();
+  }
+
+  function drop(ev) {
+    ev.preventDefault();
+    var data = ev.dataTransfer.getData("text");
+    var draggedElement = document.getElementById(data);
+    var container = document.getElementById("container");
+
+    // 如果容器中已经有一个拖动的元素，则将其插入被拖动的元素的前面
+    if (container.contains(draggedElement)) {
+      container.insertBefore(draggedElement, ev.target);
+    } else {
+      // 否则，将元素添加到容器中
+      container.appendChild(draggedElement);
+    }
+  }
+
+  function drag(ev) {
+    ev.dataTransfer.setData("text", ev.target.id);
+  }
+</script>
+@endsection

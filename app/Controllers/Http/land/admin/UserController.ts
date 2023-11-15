@@ -48,6 +48,14 @@ export default class UserController {
         }
         return response.json({ status: 200, message: "ok", data })
       }
+      if (all.type == 'work') {
+        const data = await Database.from('land_collection').where({ type: all.type, wechat_open_id: all.openid, status: 1 })
+        for (let index = 0; index < data.length; index++) {
+          data[index].content = await Database.from('land_works').where('id', data[index].relation_type_id).first()
+          data[index].content.labels = data[index].content.labels ? data[index].content.labels.split(',') : []
+        }
+        return response.json({ status: 200, message: "ok", data })
+      }
     } catch (error) {
       console.log(error)
     }

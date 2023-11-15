@@ -45,7 +45,7 @@ export default class CustomerController {
           customer[index] = {
             ...customer[index],
             ...await Database.from('customer_log').select('*').where('id', customer[index].relation_log_id).first(),
-            parent: await Database.from('users').select('nickname', 'avatar_url').where('user_id', customer[index].user_id).first()
+            parent: await Database.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].user_id).first()
           }
         }
 
@@ -54,7 +54,7 @@ export default class CustomerController {
           customer[index] = {
             ...customer[index],
             ...await Database.from('users').select('*').where('user_id', customer[index].relation_user_id).first(),
-            parent: await Database.from('users').select('nickname', 'avatar_url').where('user_id', customer[index].relation_user_id).first()
+            parent: await Database.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].relation_user_id).first()
           }
         }
 
@@ -220,7 +220,7 @@ export default class CustomerController {
   public async customerList({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const customer = await Database.from('customer').select('id', 'user_id', 'relation', 'introduction', 'relation_log_id', 'relation_user_id', 'created_at').whereIn('status', [1, 2]).where('user_id', session.get('user_id')).orderBy('created_at', 'desc')
+      const customer = await Database.from('customer').select('id', 'user_id', 'relation', 'introduction', 'relation_log_id', 'relation_user_id', 'created_at').whereIn('status', [1, 2]).where('user_id', all.user_id || session.get('user_id')).orderBy('created_at', 'desc')
       for (let index = 0; index < customer.length; index++) {
         if (customer[index].relation_user_id) {
           customer[index] = {
@@ -246,7 +246,10 @@ export default class CustomerController {
       response.json({
         status: 200,
         message: "ok",
-        data: customer
+        data: {
+          user: await Database.from('users').select('avatar_url', 'nickname', 'detail').where('user_id', all.user_id || session.get('user_id')).first(),
+          customer
+        }
       })
     } catch (error) {
       Logger.error("error 获取失败 %s", JSON.stringify(error));
@@ -270,7 +273,8 @@ export default class CustomerController {
         customer.userinfo = await Database.from('users').select('*').where({ 'user_id': customer.relation_user_id }).first()
       }
 
-      customer.parent = await Database.from('users').select('nickname', 'avatar_url').where('user_id', customer.user_id).first()
+      customer.parent = await Database.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer.user_id).first()
+      customer.introduces = await Database.from('answer').where({ type: 1, status: 1, user_id: customer.relation_user_id })
 
       customer.userinfo.age = Moment().diff(customer.userinfo.birthday, 'years')
       customer.userinfo.zodiac_sign = this.getZodiacSign(Moment(customer.userinfo.birthday).format('DD'), Moment(customer.userinfo.birthday).format('MM'))

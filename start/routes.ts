@@ -69,6 +69,8 @@ Route.group(() => {
 Route.group(() => {
   Route.get('/users', 'admin/UsersController.index').as('users')
   Route.get('/customers', 'admin/CustomersController.index').as('customers')
+  Route.get('/customers/edit/:id', 'admin/CustomersController.edit')
+  Route.post('/customers/update', 'admin/CustomersController.update')
   Route.post('/customers/field', 'admin/CustomersController.field')
 
   Route.get('/event/descovery', 'admin/EventController.descovery')
@@ -97,7 +99,7 @@ Route.group(() => {
   Route.get('/user/like/:id', 'land/admin/UserController.like')
   Route.post('/user/like/:id', 'land/admin/UserController.like')
 
-  Route.post('/file/upload', 'api/FilesController.upload')
+  Route.post('/file/upload', 'land/admin/FilesController.upload')
 
   Route.get('/designer', 'land/admin/DesignerController.index')
   Route.get('/designer/create', 'land/admin/DesignerController.create')
@@ -106,6 +108,7 @@ Route.group(() => {
   Route.post('/designer/save', 'land/admin/DesignerController.save')
 
   Route.get('/work', 'land/admin/WorkController.index')
+  Route.get('/work/catalog/:catalog', 'land/admin/WorkController.catalog')
   Route.get('/work/create', 'land/admin/WorkController.create')
   Route.get('/work/show/:id', 'land/admin/WorkController.show')
   Route.get('/work/edit/:id', 'land/admin/WorkController.edit')

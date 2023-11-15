@@ -86,9 +86,15 @@
       placeholder: '请输入内容...',
       MENU_CONF: {
         uploadImage: {
-          fieldName: 'images',
-          base64LimitSize: 10 * 1024 * 1024 // 10M 以下插入 base64
-        }
+          server: '/land/file/upload',
+          fieldName: 'files',
+          maxFileSize: 10 * 1024 * 1024
+        },
+        uploadVideo: {
+          server: '/land/file/upload',
+          fieldName: 'files',
+          maxFileSize: 100 * 1024 * 1024
+        },
       },
       onChange(editor) {
         $('#detail').val(editor.getHtml())
