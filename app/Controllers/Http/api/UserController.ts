@@ -80,14 +80,12 @@ export default class UserController {
           user['work']['text'] = await zpData.data(user['work']['value'][0], user['work']['value'][1])
         }
 
-        const introduces =
-
         user['number'] = {
           message: 0,
           introduction: (await Database.from('answer').where({ type: 1, status: 1, user_id: session.get('user_id') }).count('* as total'))[0].total,
           visitor: 0,
           moment: (await Database.from('moments').where('user_id', session.get('user_id')).count('* as total'))[0].total,
-          answer: (await Database.from('answer').where('user_id', session.get('user_id')).count('* as total'))[0].total,
+          answer: (await Database.from('answer').where({ type: 0, status: 1, user_id: session.get('user_id') }).count('* as total'))[0].total,
           customer: (await Database.from('customer').where({ status: 1, user_id: session.get('user_id') }).count('* as total'))[0].total,
         }
 

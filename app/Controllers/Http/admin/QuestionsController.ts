@@ -1,4 +1,5 @@
 import Database from '@ioc:Adonis/Lucid/Database';
+import Logger from '@ioc:Adonis/Core/Logger';
 import Moment from 'moment';
 
 export default class QuestionsController {
@@ -6,7 +7,7 @@ export default class QuestionsController {
     try {
       const all = request.all()
       const questions = await Database.rawQuery('select * from questions order by type desc')
-      return view.render('admin.question.index', {
+      return view.render('admin/question/index', {
         data: {
           title: '问答',
           active: 'questions',
@@ -21,21 +22,22 @@ export default class QuestionsController {
   public async answer({ params, request, view, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const answer = await Database.from('answer').where('type', params.type || 0).orderBy('created_at', 'desc')
+      const answer = await Database.from('answer').where('type', params.type || 0).orderBy('id', 'desc').forPage(request.input('page', 1), 20)
       for (let index = 0; index < answer.length; index++) {
         const user = await Database.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', answer[index].user_id).first()
-        const question = await Database.from('questions').select('title').where('id', answer[index].relation_question_id).first()
-        answer[index].title = question.title
+        const question = await Database.from('questions').select('title').where('id', answer[index].relation_question_id).first() || {}
+        answer[index].title = question.title || ''
         answer[index].userinfo = user
         answer[index].photos = answer[index].photos ? JSON.parse(answer[index].photos) : []
         answer[index].created_at = Moment(answer[index].created_at).format('YYYY-MM-DD hh:mm:ss')
         answer[index].modified_at = Moment(answer[index].modified_at).format('YYYY-MM-DD hh:mm:ss')
       }
-      return view.render('admin.question.answer', {
+      return view.render('admin/question/answer', {
         data: {
           title: '问答',
           active: params.type == '1' ? 'introduction' : 'answer',
-          answer
+          answer,
+          all
         }
       })
     } catch (error) {
@@ -46,7 +48,7 @@ export default class QuestionsController {
   public async create({ request, view, session }: HttpContextContract) {
     try {
       const all = request.all()
-      return view.render('admin.question.create', {
+      return view.render('admin/question/create', {
         data: {
           title: '创建问答',
           active: 'questions'
@@ -59,7 +61,7 @@ export default class QuestionsController {
 
   public async edit({ params, view }: HttpContextContract) {
     const question = await Database.from('questions').where('id', params.id).first()
-    return view.render('admin.question.edit', {
+    return view.render('admin/question/edit', {
       data: {
         title: '编辑问答',
         active: 'questions',

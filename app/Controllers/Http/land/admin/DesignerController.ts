@@ -6,7 +6,7 @@ export default class DesignerController {
   public async index({ request, response, view, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const designers = await Database.from('land_designers').where('status', 1)
+      const designers = await Database.from('land_designers').where('status', 1).orderBy('created_at', 'desc').limit(8)
       for (let index = 0; index < designers.length; index++) {
         designers[index].works = designers[index].works ? designers[index].works.split(',') : []
         designers[index].labels = designers[index].labels ? designers[index].labels.split(',') : []
@@ -21,7 +21,7 @@ export default class DesignerController {
         })
       }
 
-      return view.render('land.admin.designer.index', {
+      return view.render('land/admin/designer/index', {
         data: {
           title: '设计师',
           active: 'designer',
@@ -36,11 +36,11 @@ export default class DesignerController {
   public async create({ request, view, session }: HttpContextContract) {
     try {
       const all = request.all()
-      return view.render('land.admin.designer.create', {
+      return view.render('land/admin/designer/create', {
         data: {
           title: '创建设计师',
           active: 'designer',
-          works: await Database.table('works')
+          works: await Database.table('land_works')
         }
       })
     } catch (error) {
@@ -51,10 +51,10 @@ export default class DesignerController {
   public async show({ params, request, view, response }: HttpContextContract) {
     try {
       const all = request.all()
-      console.log(all);
-
       const data = await Database.from('land_designers').where('id', params.id).first()
       data.labels = data.labels ? data.labels.split(',') : []
+      data.works = await Database.from('land_works').select('id', 'title', 'theme_url').where('status', 1).whereIn('id', data.works.split(','))
+
       if (all.type == 'json') {
         return response.json({
           status: 200,
@@ -70,11 +70,11 @@ export default class DesignerController {
   public async edit({ params, request, view, session }: HttpContextContract) {
     try {
       const all = request.all()
-      return view.render('land.admin.designer.edit', {
+      return view.render('land/admin/designer/edit', {
         data: {
           title: '编辑设计师',
           active: 'designer',
-          works: await Database.table('works'),
+          works: await Database.table('land_works'),
           designer: await Database.from('land_designers').where('id', params.id).first()
         }
       })
@@ -120,6 +120,17 @@ export default class DesignerController {
     } catch (error) {
       console.log(error)
       session.flash('message', { type: 'error', header: '提交失败', message: `捕获错误信息 ${ JSON.stringify(error) }。` })
+    }
+  }
+
+  public async delete({ session, request, response }: HttpContextContract) {
+    try {
+      const all = request.all()
+      await Database.from('land_designers').where('id', all.id).update({ status: 0, deleted_at: Moment().format('YYYY-MM-DD hh:mm:ss') })
+      session.flash('message', { type: 'success', header: '设计师已删除成功！', message: `` })
+      return response.redirect('back')
+    } catch (error) {
+      console.log(error);
     }
   }
 }

@@ -29,6 +29,10 @@
         <b>{{ data.title }}</b>
       </div>
       <form class="ui segment form" method="post" action="{{ route('land/admin/WorkController.save') }}" enctype="multipart/form-data">
+        <div class="field" hidden>
+          <label>ID</label>
+          <input type="text" name="id" value="{{ data.work.id || '' }}" placeholder="" />
+        </div>
         <div class="field">
           <div class="field">
             <label>类型</label>
@@ -44,17 +48,13 @@
             </div>
           </div>
         </div>
-        <div class="field" hidden>
-          <label>ID</label>
-          <input type="text" name="id" value="{{ data.work.id || '' }}" placeholder="" />
+        <div class="field">
+          <label>作品名称</label>
+          <input type="text" name="title" value="{{ data.work.title || '' }}" placeholder="" />
         </div>
         <div class="field" hidden>
           <label>主题 URL</label>
           <input type="text" name="theme" value="{{ data.work.theme_url || '' }}" placeholder="" />
-        </div>
-        <div class="field">
-          <label>名称</label>
-          <input type="text" name="title" value="{{ data.work.title || '' }}" placeholder="" />
         </div>
         <div class="field">
           <label>主题图片（图片文件建议 2M 内）</label>
@@ -65,16 +65,16 @@
           <input type="file" name="theme" value="" placeholder="" />
         </div>
         <div class="field">
-          <label>地点</label>
+          <label>项目地址</label>
           <input type="text" name="location" value="{{ data.work.location || '' }}" placeholder="" />
-        </div>
-        <div class="field">
-          <label>团队</label>
-          <input type="text" name="team" value="{{ data.work.team || '' }}" placeholder="" />
         </div>
         <div class="field">
           <label>面积</label>
           <input type="number" name="area" value="{{ data.work.area || '' }}" placeholder="" />
+        </div>
+        <div class="field">
+          <label>设计团队</label>
+          <input type="text" name="team" value="{{ data.work.team || '' }}" placeholder="" />
         </div>
         <div class="field">
           <label>作品时间</label>

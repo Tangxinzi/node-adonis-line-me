@@ -22,16 +22,16 @@
         <thead>
           <tr>
             <th>ID</th>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Sex</th>
-            <th>Type</th>
-            <th>Photos</th>
-            <th>Birthday</th>
-            <th>IP</th>
-            <th>Online Time</th>
-            <th>Create Time</th>
-            <th>Action</th>
+            <th>头像昵称</th>
+            <th>手机</th>
+            <th>性别</th>
+            <th>类别</th>
+            <th>照片</th>
+            <th>出生</th>
+            <th>IP 属地</th>
+            <th>上线</th>
+            <th>创建</th>
+            <th>操作</th>
           </tr>
         </thead>
         <tbody>
@@ -58,12 +58,13 @@
               <td class="td">{{ row.online_at }}</td>
               <td class="td">{{ row.created_at }}</td>
               <td class="td">
-                <a>Action</a>
+                <a href="{{ route('admin/UsersController.edit', { user_id: row.user_id }) }}">编辑</a>
               </td>
             </tr>
           @endeach
         </tbody>
       </table>
+      @!component('components.pagination', all=data.all)
     </div>
   </div>
 @endsection

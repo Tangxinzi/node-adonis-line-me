@@ -1,6 +1,7 @@
 'use strict'
 
 import Database from '@ioc:Adonis/Lucid/Database';
+import Logger from '@ioc:Adonis/Core/Logger'
 import Moment from 'moment';
 Moment.locale('zh-cn');
 import { v4 as uuidv4 } from 'uuid';
@@ -16,7 +17,7 @@ class ChatroomController {
         chatroom[i]['modified_at'] = Moment(chatroom[i]['modified_at']).fromNow()
       }
 
-      return view.render('admin.chatroom.index', {
+      return view.render('admin/chatroom/index', {
         data: {
           title: '聊天',
           active: 'chatroom',
@@ -48,7 +49,7 @@ class ChatroomController {
 
       chatroom['chats'] = chats
 
-      return view.render('admin.chatroom.edit', {
+      return view.render('admin/chatroom/edit', {
         data: {
           title: `${ chatroom.chat_name || '' } - 聊天`,
           active: 'chatroom',

@@ -1,7 +1,7 @@
 import Database from '@ioc:Adonis/Lucid/Database';
 import Application from '@ioc:Adonis/Core/Application';
 import Moment from 'moment';
-const { jscode2session, getuserphonenumber } = require('./Weixin');
+const { jscode2session, token, getUserPhoneNumber } = require('./Weixin');
 
 export default class UserController {
   public async wxLogin({ request, response, view, session }: HttpContextContract) {
@@ -64,9 +64,10 @@ export default class UserController {
   public async getPhoneNumber({ request, response, view, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const result = await jscode2session(all.code)
-      console.log(result);
-
+      const result = await token()
+      const phone = await getUserPhoneNumber(result.access_token, { code: all.code, openid: all.openid })
+      await Database.from('land_users').where('wechat_open_id', all.openid).update({ phone: phone.phone_info.phoneNumber })
+      return response.json({ status: 200, message: "ok", data: phone.phone_info })
     } catch (error) {
       console.log(error)
     }

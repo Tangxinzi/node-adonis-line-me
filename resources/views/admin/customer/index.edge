@@ -37,9 +37,11 @@
         <tbody>
           @each(row in data.customer)
             <tr>
-              <td class="td">{{ row.id }}</td>
               <td class="td">
-                <a class="ui image label" title="{{ row.parent.user_id }}">
+                <a href="{{ route('admin/CustomersController.edit', { id: row.id }) }}">{{ row.id }}</a>
+              </td>
+              <td class="td">
+                <a class="ui image label" title="{{ row.parent.user_id }}" href="{{ route('admin/UsersController.edit', { user_id: row.parent.user_id }) }}">
                   @if(row.parent.avatar_url)
                     <img class="ui avatar image" src="{{ row.parent.avatar_url }}" />
                   @endif
@@ -47,13 +49,13 @@
                 </a>
               </td>
               <td class="td">
-                <a class="ui image label basic">
+                <a class="ui image label basic" href="{{ route('admin/CustomersController.edit', { id: row.id }) }}">
                   @if(row.avatar_url)
                     <img class="ui avatar image" src="{{ row.avatar_url }}" />
                   @endif
                   {{ row.nickname || ('Unnamed ' + row.user_id) }}
                   @if(row.relation_user_id)
-                  <div class="detail" title="该用户已注册 {{ row.relation_user_id }}">已注册</div>
+                    <div class="detail" title="该用户已注册 {{ row.relation_user_id }}">已注册</div>
                   @endif
                 </a>
               </td>
@@ -63,7 +65,13 @@
               <td class="td">{{ row.relation || '' }}</td>
               <td class="td">{{ row.sex == 1 ? '男' : '' }}{{ row.sex == 0 ? '女' : '' }}</td>
               <td class="td">{{ row.contact_wechat || '' }}</td>
-              <td class="td">{{ row.photos.length || '' }}</td>
+              <td class="td">
+                <span class="activating fluid click one-line" data-variation="small" data-html="
+                  @each(photo in row.photos)
+                    <image class='ui small image' src='{{ photo }}' />
+                  @endeach
+                " data-position="bottom center" data-inverted="">{{ row.photos.length || '' }}</span>
+              </td>
               <td class="td">{{ row.created_at }}</td>
               <td class="td">
                 <i class="{{ row.recommend ? 'pink heartbeat' : 'heart outline' }} icon"></i>
@@ -83,6 +91,7 @@
           @endeach
         </tbody>
       </table>
+      @!component('components.pagination', all=data.all)
     </div>
   </div>
   <form class="ui modal form" action="" method="post">

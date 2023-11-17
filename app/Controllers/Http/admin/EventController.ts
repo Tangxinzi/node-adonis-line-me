@@ -91,7 +91,7 @@ export default class EventController {
         // answer
         if (data.answer.length && data.answer[index]) {
           const like = await Database.from('likes').where({ relation_type_id: data.answer[index].id, type: 'answer', status: 1, user_id: session.get('user_id') || '' }).first()
-          const question = await Database.from('questions').select('title').where('id', data.answer[index].relation_question_id).first()
+          const question = await Database.from('questions').select('title').where('id', data.answer[index].relation_question_id).first() || {}
           descovery.push({
             id: data.answer[index].id,
             recommend: data.answer[index].recommend,
@@ -99,7 +99,7 @@ export default class EventController {
             nickname: data.answer[index].nickname,
             avatar_url: data.answer[index].avatar_url,
             sex: data.answer[index].sex,,
-            title: question.title,
+            title: question.title || '',
             content: data.answer[index].content,
             photos: data.answer[index].photos ? JSON.parse(data.answer[index].photos) : [],
             age: Moment().diff(data.answer[index].birthday, 'years'),
@@ -113,7 +113,7 @@ export default class EventController {
         }
       }
 
-      return view.render('admin.event.descovery', {
+      return view.render('admin/event/descovery', {
         data: {
           title: '论坛',
           subtitle,

@@ -10,8 +10,8 @@ export default class EventController {
   public async descovery({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const moments = await Database.from('moments').select('moments.id', 'moments.user_id', 'moments.content', 'moments.photos', 'moments.ip', 'moments.created_at', 'users.nickname', 'users.avatar_url', 'users.sex', 'users.work', 'users.birthday', 'users.user_id').join('users', 'moments.user_id', '=', 'users.user_id').where({ status: 1, recommend: 1 }).limit(10).orderBy('moments.created_at', 'desc')
-      const answer = await Database.from('answer').select('answer.id', 'answer.relation_question_id', 'answer.user_id', 'answer.content', 'answer.photos', 'answer.ip', 'answer.created_at', 'users.nickname', 'users.avatar_url', 'users.sex', 'users.work', 'users.birthday', 'users.wechat_open_id').join('users', 'answer.user_id', '=', 'users.user_id').where({ status: 1, recommend: 1 }).limit(10).orderBy('answer.created_at', 'desc')
+      const moments = await Database.from('moments').select('moments.id', 'moments.user_id', 'moments.content', 'moments.photos', 'moments.ip', 'moments.created_at', 'users.nickname', 'users.avatar_url', 'users.sex', 'users.work', 'users.birthday', 'users.user_id').join('users', 'moments.user_id', '=', 'users.user_id').where({ 'moments.status': 1, recommend: 1 }).limit(10).orderBy('moments.created_at', 'desc')
+      const answer = await Database.from('answer').select('answer.id', 'answer.relation_question_id', 'answer.user_id', 'answer.content', 'answer.photos', 'answer.ip', 'answer.created_at', 'users.nickname', 'users.avatar_url', 'users.sex', 'users.work', 'users.birthday', 'users.wechat_open_id').join('users', 'answer.user_id', '=', 'users.user_id').where({ 'answer.type': 0, 'answer.status': 1, recommend: 1 }).limit(10).orderBy('answer.created_at', 'desc')
 
       let descovery = []
       // descovery.push({
@@ -73,7 +73,7 @@ export default class EventController {
         // answer
         if (answer[index]) {
           const like = await Database.from('likes').where({ relation_type_id: answer[index].id, type: 'answer', status: 1, user_id: session.get('user_id') || '' }).first()
-          const question = await Database.from('questions').select('title').where('id', answer[index].relation_question_id).first()
+          const question = await Database.from('questions').select('title').where('id', answer[index].relation_question_id).first() || {}
 
           if (answer[index].ip) {
             await axios({
@@ -97,8 +97,8 @@ export default class EventController {
             user_id: answer[index].user_id,
             nickname: answer[index].nickname,
             avatar_url: answer[index].avatar_url,
-            sex: answer[index].sex,,
-            title: question.title,
+            sex: answer[index].sex,
+            title: question.title || '',
             content: answer[index].content,
             photos: answer[index].photos ? JSON.parse(answer[index].photos) : [],
             age: Moment().diff(answer[index].birthday, 'years'),
