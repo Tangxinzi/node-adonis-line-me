@@ -67,6 +67,8 @@ Route.group(() => {
 }).prefix('/api').middleware('apicheck')
 
 Route.group(() => {
+  Route.get('/operates', 'admin/OperatesController.index')
+
   Route.get('/users', 'admin/UsersController.index')
   Route.get('/users/edit/:user_id', 'admin/UsersController.edit')
   Route.get('/users/update', 'admin/UsersController.update')

@@ -1,0 +1,47 @@
+@layout('components.layouts.main')
+
+@section('title')
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<title>{{ data.title }} - Hunlian</title>
+@endsection
+
+@section('style')
+<style media="screen">
+
+</style>
+@endsection
+
+@section('content')
+  <div class="ui stackable four column grid">
+    <div class="three wide column">
+      <div class="ui vertical pointing menu">
+        <a class="{{ data.subActive == 'users' ? 'active' : '' }} item" href="">特邀用户</a>
+        <a class="item" href="">激励下发</a>
+        <a class="item" href="">内容分发</a>
+      </div>
+    </div>
+    <div class="thirteen wide column">
+      <div class="ui header-title flex-between">
+        <span>{{ data.title }}</span>
+        <a class="ui tiny button" href="">添加用户</a>
+      </div>
+      <table class="ui celled center aligned table">
+        <thead>
+          <tr>
+            <th class="one wide">用户</th>
+            <th class="one wide">添加时间</th>
+            <th class="two wide">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+@endsection
+
+@section('script')
+
+@endsection
