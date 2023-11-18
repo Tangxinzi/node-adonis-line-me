@@ -31,7 +31,7 @@ body, body.pushable>.pusher {background-color: var(--body);}
 .ui.segment.labels {padding-bottom: 0.5rem !important;}
 .ui.message .close.icon {position: absolute; margin: 0; top: 14px; right: 1.3em; z-index: 1;}
 .ui.cards {width: 100%; margin: 0em !important}
-.ui.header-title.flex-between span { font-size: 1.28571429em; font-weight: 700; line-height: 1.28571429em; color: rgba(0,0,0,.87); }
+.ui.header-title.flex-between span, .ui.header-title.flex-between .span { font-size: 1.28571429em; font-weight: 700; line-height: 1.28571429em; color: rgba(0,0,0,.87); }
 .none {display: none !important;}
 body, body.pushable>.pusher { background-color: rgba(255, 255, 255, .95); }
 /* @media only screen and (min-width: 1400px) {
@@ -70,7 +70,9 @@ body, body.pushable>.pusher { background-color: rgba(255, 255, 255, .95); }
 .navbar .items .item {color: rgba(0, 0, 0, 0.65); font-size: 1rem; text-decoration: none; cursor: pointer;}
 .navbar .items .item:hover {color: rgba(0, 0, 0, 1);}
 .navbar .q-navbar .left .item {margin-right: 3.5rem; display: flex; align-items: center;}
-.navbar .q-navbar .right .item {margin-left: 3.5rem; display: flex; align-items: center;}
+.navbar .q-navbar .right .item { color: #999; margin-left: 3.5rem; display: flex; align-items: center;}
+.navbar .q-navbar .right .item:hover { color: #333; }
+.navbar .q-navbar .right .item.active { color: #000000; font-weight: 400; display: flex; font-size: 14px;}
 .navbar .q-navbar .right .item.flag-value {display: flex; justify-content: space-between; margin-left: 0;}
 .navbar .q-navbar .item.flag-value i.flag {margin: 0;}
 .main .item {position: relative; border: 0 solid #CCC; margin-bottom: 40px; overflow: hidden;}

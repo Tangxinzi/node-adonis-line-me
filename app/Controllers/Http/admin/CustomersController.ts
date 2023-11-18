@@ -1,6 +1,9 @@
 import Database from '@ioc:Adonis/Lucid/Database';
+import Logger from '@ioc:Adonis/Core/Logger'
 import Moment from 'moment';
 Moment.locale('zh-cn')
+const zpData = require('../lib/Zhipin');
+const RELATION = ["朋友", "亲戚", "伙伴", "同事", "其他"]
 
 export default class CustomersController {
   public async field({ request, response, session }: HttpContextContract) {
@@ -26,14 +29,14 @@ export default class CustomersController {
   public async index({ request, view, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const customer = await Database.from('customer').select('id', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id', 'recommend').where('status', 1).orderBy('recommend', 'desc').orderBy('id', 'desc')
+      const customer = await Database.from('customer').select('id', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id', 'recommend').where('status', 1).orderBy('recommend', 'desc').orderBy('id', 'desc').forPage(request.input('page', 1), 20)
       for (let index = 0; index < customer.length; index++) {
         // 红娘自行发布
         if (customer[index].relation_log_id) {
           customer[index] = {
             ...customer[index],
             ...await Database.from('customer_log').select('nickname', 'avatar_url', 'sex', 'birthday', 'contact_wechat', 'photos', 'videos', 'work', 'created_at', 'modified_at').where('id', customer[index].relation_log_id).first(),
-            parent: await Database.from('users').select('nickname', 'avatar_url').where('user_id', customer[index].user_id).first()
+            parent: await Database.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].user_id).first()
           }
         }
 
@@ -42,7 +45,7 @@ export default class CustomersController {
           customer[index] = {
             ...customer[index],
             ...await Database.from('users').select('nickname', 'avatar_url', 'sex', 'birthday', 'contact_wechat', 'photos', 'videos', 'work', 'created_at', 'modified_at').where('user_id', customer[index].relation_user_id).first(),
-            parent: await Database.from('users').select('nickname', 'avatar_url').where('user_id', customer[index].relation_user_id).first()
+            parent: await Database.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].relation_user_id).first()
           }
         }
 
@@ -71,7 +74,51 @@ export default class CustomersController {
         }
       }
 
-      return view.render('admin.customer.index', {
+      return view.render('admin/customer/index', {
+        data: {
+          title: '介绍',
+          active: 'customers',
+          customer,
+          all
+        }
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  public async update({ params, request, response, session, view }: HttpContextContract) {
+    try {
+      const all = request.all()
+      // const customer = await Database.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'relation', 'relation_log_id', 'introduction', 'recommend', 'created_at').where({ 'id': params.id, status: 1 }).first()
+
+      return response.redirect('back')
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  public async edit({ params, request, response, session, view }: HttpContextContract) {
+    try {
+      const all = request.all()
+      const customer = await Database.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'relation', 'relation_log_id', 'introduction', 'recommend', 'created_at').where({ 'id': params.id, status: 1 }).first()
+
+      customer.relation_text = RELATION[customer.relation]
+      if (customer.relation_log_id) {
+        customer.userinfo = await Database.from('customer_log').select('*').where({ 'id': customer.relation_log_id }).first()
+      } else if(customer.relation_user_id) {
+        customer.userinfo = await Database.from('users').select('*').where({ 'user_id': customer.relation_user_id }).first()
+      }
+
+      customer.parent = await Database.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer.user_id).first()
+      customer.userinfo.photos = customer.userinfo.photos ? JSON.parse(customer.userinfo.photos) : []
+      customer.userinfo.work = customer.userinfo.work ? JSON.parse(customer.userinfo.work) : []
+      if (customer.userinfo.work.value) {
+        customer.userinfo.work.text = await zpData.data(customer.userinfo.work.value[0], customer.userinfo.work.value[1])
+      }
+      customer.created_at = Moment(customer.created_at).format('YYYY-MM-DD hh:mm:ss')
+
+      return view.render('admin/customer/edit', {
         data: {
           title: '介绍',
           active: 'customers',
@@ -79,7 +126,14 @@ export default class CustomersController {
         }
       })
     } catch (error) {
-      console.log(error)
+      console.log(error);
+
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
+      response.json({
+        status: 500,
+        message: "internalServerError",
+        data: error
+      })
     }
   }
 }

@@ -6,7 +6,7 @@ export default class ArticleController {
   public async index({ request, view, response }: HttpContextContract) {
     try {
       const all = request.all()
-      const articles = await Database.from('land_articles').select('id', 'article_title', 'article_author', 'article_detail', 'article_theme_url', 'article_original_url')
+      const articles = await Database.from('land_articles').select('id', 'article_title', 'article_author', 'article_detail', 'article_theme_url', 'article_original_url').where('status', 1)
       for (let index = 0; index < articles.length; index++) {
         articles[index]['created_at'] = Moment(articles[index]['created_at']).format('YYYY-MM-DD H:mm:ss')
       }
@@ -19,7 +19,7 @@ export default class ArticleController {
         })
       }
 
-      return view.render('land.admin.article.index', {
+      return view.render('land/admin/article/index', {
         data: {
           title: '文章',
           active: 'article',
@@ -34,7 +34,7 @@ export default class ArticleController {
   public async create({ request, view, session }: HttpContextContract) {
     try {
       const all = request.all()
-      return view.render('land.admin.article.create', {
+      return view.render('land/admin/article/create', {
         data: {
           title: '创建文章',
           active: 'article'
@@ -60,7 +60,7 @@ export default class ArticleController {
         return response.json(data)
       }
 
-      return view.render('land.admin.article.edit', {
+      return view.render('land/admin/article/edit', {
         data
       })
     } catch (error) {
@@ -72,7 +72,7 @@ export default class ArticleController {
     try {
       const all = request.all()
       const article = await Database.from('land_articles').where('id', params.id).first()
-      return view.render('land.admin.article.edit', {
+      return view.render('land/admin/article/edit', {
         data: {
           title: '编辑文章',
           active: 'article'
@@ -133,6 +133,17 @@ export default class ArticleController {
     } catch (error) {
       console.log(error)
       session.flash('message', { type: 'error', header: '提交失败', message: `捕获错误信息 ${ JSON.stringify(error) }。` })
+    }
+  }
+
+  public async delete({ session, request, response }: HttpContextContract) {
+    try {
+      const all = request.all()
+      await Database.from('land_articles').where('id', all.id).update({ status: 0, deleted_at: Moment().format('YYYY-MM-DD hh:mm:ss') })
+      session.flash('message', { type: 'success', header: '文章已删除成功！', message: `` })
+      return response.redirect('back')
+    } catch (error) {
+      console.log(error);
     }
   }
 }

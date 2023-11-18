@@ -82,10 +82,10 @@ export default class UserController {
 
         user['number'] = {
           message: 0,
-          introduction: 0,
+          introduction: (await Database.from('answer').where({ type: 1, status: 1, user_id: session.get('user_id') }).count('* as total'))[0].total,
           visitor: 0,
           moment: (await Database.from('moments').where('user_id', session.get('user_id')).count('* as total'))[0].total,
-          answer: (await Database.from('answer').where('user_id', session.get('user_id')).count('* as total'))[0].total,
+          answer: (await Database.from('answer').where({ type: 0, status: 1, user_id: session.get('user_id') }).count('* as total'))[0].total,
           customer: (await Database.from('customer').where({ status: 1, user_id: session.get('user_id') }).count('* as total'))[0].total,
         }
 
@@ -223,7 +223,10 @@ export default class UserController {
     try {
       const all = request.all()
       if (all.type == 'customer') {
-        const customer = await Database.from('customer').where('id', all.customer_id).first()
+        const customer = await Database.from('customer').where('id', all.customer_id).first() || await Database.from('users').where('user_id', all.customer_id).first()
+        console.log(customer);
+
+
         const chatroom_left = await Database.from('chatroom').where('chat_users_id', `${ customer.user_id },${ session.get('user_id') }`).first()
         const chatroom_right = await Database.from('chatroom').where('chat_users_id', `${ session.get('user_id') },${ customer.user_id }`).first()
         const chatroom = chatroom_left || chatroom_right

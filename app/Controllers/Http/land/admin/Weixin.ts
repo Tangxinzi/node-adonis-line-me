@@ -13,9 +13,24 @@ function jscode2session(code) {
   });
 }
 
-function getuserphonenumber(access_token, code, openid) {
+function token() {
   return new Promise((resolve, reject) => {
-    return axios.get(`https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=${ access_token }`)
+    return axios.get(`https://api.weixin.qq.com/cgi-bin/token?appid=${'wx8f18e8f9cc9c49f2' }&secret=${ 'd27c32f434eb5685cc10dd381976bf93' }&grant_type=client_credential`)
+      .then((response) => {
+        resolve(response.data)
+      })
+      .catch((error) => {
+        reject(error)
+      })
+  });
+}
+
+function getUserPhoneNumber(access_token, data) {
+  return new Promise((resolve, reject) => {
+    return axios.post(`https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=${ access_token }`, {
+      code: data.code,
+      openid: data.openid
+    })
       .then((response) => {
         resolve(response.data)
       })
@@ -27,5 +42,6 @@ function getuserphonenumber(access_token, code, openid) {
 
 module.exports = {
   jscode2session,
-  getuserphonenumber
+  token,
+  getUserPhoneNumber
 }

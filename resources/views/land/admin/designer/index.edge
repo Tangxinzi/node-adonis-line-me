@@ -27,7 +27,7 @@
           <tr>
             <th>ID</th>
             <th>姓名</th>
-            <th>性别</th>
+            <!-- <th>性别</th> -->
             <th>作品数量</th>
             <th>标签集</th>
             <th>发布时间</th>
@@ -39,7 +39,7 @@
             <tr>
               <td class="td">{{ row.id }}</td>
               <td class="td">{{ row.nickname }}</td>
-              <td class="td">{{ row.sex == 0 ? '女' : '' }} {{ row.sex == 1 ? '男' : '' }}</td>
+              <!-- <td class="td">{{ row.sex == 0 ? '女' : '' }} {{ row.sex == 1 ? '男' : '' }}</td> -->
               <td class="td">{{ row.works.length || 0 }}</td>
               <td class="td">
                 @each(label in row.labels)
@@ -50,7 +50,7 @@
               <td class="td">
                 <a href="{{ route('land/admin/DesignerController.edit', { id: row.id }) }}">编辑</a>
                 &nbsp;&nbsp;
-                <a href="">删除</a>
+                <a onclick="modalDelete({{ row.id }})">删除</a>
               </td>
             </tr>
           @endeach
@@ -58,10 +58,28 @@
       </table>
     </div>
   </div>
+  <form class="ui mini modal form" action="{{ route('land/admin/DesignerController.delete') }}" method="post">
+    <i class="close icon"></i>
+    <h3 class="header">确定删除后内容将无法恢复！</h3>
+    <input type="number" id="id" name="id" value="" hidden />
+    {{ csrfField() }}
+    <div class="actions">
+      <div class="ui black deny button">
+        取消
+      </div>
+      <button class="ui red right labeled icon button">
+        确认
+        <i class="checkmark icon"></i>
+      </button>
+    </div>
+  </form>
 @endsection
 
 @section('script')
-<script src="https://unpkg.com/@wangeditor/editor@latest/dist/index.js"></script>
 <script type="text/javascript">
-
+  function modalDelete(id) {
+    $('#id').val(id)
+    $('.ui.modal.form').modal('show')
+  }
+</script>
 @endsection

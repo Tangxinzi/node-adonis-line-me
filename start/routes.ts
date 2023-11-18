@@ -67,8 +67,15 @@ Route.group(() => {
 }).prefix('/api').middleware('apicheck')
 
 Route.group(() => {
-  Route.get('/users', 'admin/UsersController.index').as('users')
-  Route.get('/customers', 'admin/CustomersController.index').as('customers')
+  Route.get('/operates', 'admin/OperatesController.index')
+
+  Route.get('/users', 'admin/UsersController.index')
+  Route.get('/users/edit/:user_id', 'admin/UsersController.edit')
+  Route.get('/users/update', 'admin/UsersController.update')
+
+  Route.get('/customers', 'admin/CustomersController.index')
+  Route.get('/customers/edit/:id', 'admin/CustomersController.edit')
+  Route.post('/customers/update', 'admin/CustomersController.update')
   Route.post('/customers/field', 'admin/CustomersController.field')
 
   Route.get('/event/descovery', 'admin/EventController.descovery')
@@ -91,29 +98,34 @@ Route.group(() => {
 
 Route.group(() => {
   Route.get('/user/wx-login', 'land/admin/UserController.wxLogin')
+  Route.get('/user/get-phone-number', 'land/admin/UserController.getPhoneNumber')
   Route.get('/user/info', 'land/admin/UserController.userinfo')
   Route.get('/user/collection', 'land/admin/UserController.collection')
   Route.post('/user/info/upload', 'land/admin/UserController.userinfo')
   Route.get('/user/like/:id', 'land/admin/UserController.like')
   Route.post('/user/like/:id', 'land/admin/UserController.like')
 
-  Route.post('/file/upload', 'api/FilesController.upload')
+  Route.post('/file/upload', 'land/admin/FilesController.upload')
 
   Route.get('/designer', 'land/admin/DesignerController.index')
   Route.get('/designer/create', 'land/admin/DesignerController.create')
   Route.get('/designer/show/:id', 'land/admin/DesignerController.show')
   Route.get('/designer/edit/:id', 'land/admin/DesignerController.edit')
   Route.post('/designer/save', 'land/admin/DesignerController.save')
+  Route.post('/designer/delete', 'land/admin/DesignerController.delete')
 
   Route.get('/work', 'land/admin/WorkController.index')
+  Route.get('/work/catalog/:catalog', 'land/admin/WorkController.catalog')
   Route.get('/work/create', 'land/admin/WorkController.create')
   Route.get('/work/show/:id', 'land/admin/WorkController.show')
   Route.get('/work/edit/:id', 'land/admin/WorkController.edit')
   Route.post('/work/save', 'land/admin/WorkController.save')
+  Route.post('/work/delete', 'land/admin/WorkController.delete')
 
   Route.get('/article', 'land/admin/ArticleController.index')
   Route.get('/article/create', 'land/admin/ArticleController.create')
   Route.get('/article/show/:id', 'land/admin/ArticleController.show')
   Route.get('/article/edit/:id', 'land/admin/ArticleController.edit')
   Route.post('/article/save', 'land/admin/ArticleController.save')
+  Route.post('/article/delete', 'land/admin/ArticleController.delete')
 }).prefix('/land')
