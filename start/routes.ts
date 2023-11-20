@@ -67,7 +67,13 @@ Route.group(() => {
 }).prefix('/api').middleware('apicheck')
 
 Route.group(() => {
+  Route.get('/login', 'admin/UsersController.login')
+  Route.post('/login', 'admin/UsersController.login')
+}).prefix('/manager')
+
+Route.group(() => {
   Route.get('/operates', 'admin/OperatesController.index')
+  Route.post('/operates', 'admin/OperatesController.save')
 
   Route.get('/users', 'admin/UsersController.index')
   Route.get('/users/edit/:user_id', 'admin/UsersController.edit')
@@ -94,7 +100,7 @@ Route.group(() => {
   Route.get('/questions/create', 'admin/QuestionsController.create')
   Route.post('/questions/save', 'admin/QuestionsController.save')
   Route.post('/questions/update', 'admin/QuestionsController.update')
-}).prefix('/admin')
+}).prefix('/admin').middleware('admincheck')
 
 Route.group(() => {
   Route.get('/user/wx-login', 'land/admin/UserController.wxLogin')
@@ -108,6 +114,7 @@ Route.group(() => {
   Route.post('/file/upload', 'land/admin/FilesController.upload')
 
   Route.get('/designer', 'land/admin/DesignerController.index')
+  Route.get('/designer/catalog/:catalog', 'land/admin/DesignerController.catalog')
   Route.get('/designer/create', 'land/admin/DesignerController.create')
   Route.get('/designer/show/:id', 'land/admin/DesignerController.show')
   Route.get('/designer/edit/:id', 'land/admin/DesignerController.edit')

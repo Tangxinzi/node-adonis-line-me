@@ -24,24 +24,75 @@
     <div class="thirteen wide column">
       <div class="ui header-title flex-between">
         <span>{{ data.title }}</span>
-        <a class="ui tiny button" href="">添加用户</a>
+        <a class="ui tiny button" onclick="add()">添加用户</a>
       </div>
       <table class="ui celled center aligned table">
         <thead>
           <tr>
             <th class="one wide">用户</th>
-            <th class="one wide">添加时间</th>
-            <th class="two wide">操作</th>
+            <th class="one wide">手机</th>
+            <th class="one wide">介绍数量</th>
+            <th class="one wide">价格</th>
+            <th class="one wide">时间</th>
+            <th class="one wide">操作</th>
           </tr>
         </thead>
         <tbody>
-
+          @each(row in data.operates)
+            <tr>
+              <td class="td">
+                <a class="ui image label" title="{{ row.user_id }}">
+                  @if(row.userinfo.avatar_url)
+                  <img src="{{ row.userinfo.avatar_url }}" />
+                  @endif
+                  {{ row.userinfo.nickname }}
+                </a>
+              </td>
+              <td class="td">{{ row.phone || '' }}</td>
+              <td class="td">{{ row.customerTotal || 0 }}</td>
+              <td class="td">{{ row.price || 0 }}</td>
+              <td class="td">{{ row.created_at }}</td>
+              <td class="td" style="position: relative;">
+                <a class="activating click" data-position="bottom center" data-html="<form class='ui mini basic vertical buttons' method='post' action='/admin/customers/field'>
+                  {{ csrfField() }}
+                  <input type='text' name='id' value='{{ row.id }}' hidden />
+                  <button class='ui negative button' name='button' value='delete' style='color: red !important;'>删除</button>
+                </form>">
+                  操作
+                </a>
+              </td>
+            </tr>
+          @endeach
         </tbody>
       </table>
     </div>
   </div>
+  <form class="ui modal form" action="{{ route('admin/OperatesController.save') }}" method="post">
+    <i class="close icon"></i>
+    <h3 class="header">添加特邀用户</h3>
+    <div class="content">
+      <div class="field">
+        <label for="user_id">用户 User ID</label>
+        <input type="text" id="user_id" name="user_id" value="" />
+      </div>
+      {{ csrfField() }}
+    </div>
+    <div class="actions">
+      <div class="ui black deny button">
+        取消
+      </div>
+      <button class="ui right labeled icon button" name="button" value="insert">
+        添加
+        <i class="checkmark icon"></i>
+      </button>
+    </div>
+  </form>
 @endsection
 
 @section('script')
-
+<script type="text/javascript">
+  function add() {
+    $('.ui.modal.form').modal('show')
+  }
+</script>
 @endsection

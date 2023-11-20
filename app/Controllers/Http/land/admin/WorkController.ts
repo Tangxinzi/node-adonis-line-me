@@ -58,7 +58,7 @@ export default class WorkController {
   public async catalog({ params, request, view, response }: HttpContextContract) {
     try {
       const all = request.all()
-      const data = await Database.from('land_works').select('id', 'title', 'introduction', 'theme_url', 'labels').where('catalog', params.catalog).limit(10)
+      const data = await Database.from('land_works').select('id', 'title', 'introduction', 'theme_url', 'labels').where({ status: 1, catalog: params.catalog}).orderBy('created_at', 'desc').limit(8)
       for (let index = 0; index < data.length; index++) {
         data[index].labels = data[index].labels ? data[index].labels.split(',') : []
       }

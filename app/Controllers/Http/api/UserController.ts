@@ -7,7 +7,7 @@ import iconv from 'iconv-lite';
 import Jwt from 'App/Models/Jwt';
 import RandomString from "randomstring";
 import { v4 as uuidv4 } from 'uuid';
-import Moment from'moment';
+import Moment from 'moment';
 import * as Vibrant from 'node-vibrant'
 import GeoIP from 'geoip-lite';
 
@@ -224,9 +224,6 @@ export default class UserController {
       const all = request.all()
       if (all.type == 'customer') {
         const customer = await Database.from('customer').where('id', all.customer_id).first() || await Database.from('users').where('user_id', all.customer_id).first()
-        console.log(customer);
-
-
         const chatroom_left = await Database.from('chatroom').where('chat_users_id', `${ customer.user_id },${ session.get('user_id') }`).first()
         const chatroom_right = await Database.from('chatroom').where('chat_users_id', `${ session.get('user_id') },${ customer.user_id }`).first()
         const chatroom = chatroom_left || chatroom_right
@@ -250,6 +247,13 @@ export default class UserController {
         } else {
           const chat_id = uuidv4()
           const id = await Database.table('chatroom').insert({ chat_id, chat_users_id: `${ session.get('user_id') },${ customer.user_id }` }).returning('chat_id')
+          await Database.table('chats').insert({
+            chat_id,
+            user_id: session.get('user_id'),
+            chat_content: all.customer_id,
+            chat_content_type: 'customer',
+            chat_ip: request.ip()
+          })
 
           response.json({
             status: 200,
@@ -271,7 +275,7 @@ export default class UserController {
       const user = await Database.from('users').where('user_id', session.get('user_id')).first()
 
       const QrCode = require('qrcode');
-      return await QrCode.toDataURL(user.user_id, { width: 100 })
+      return await QrCode.toDataURL(await Jwt.signPrivateKey(user.id), { width: 180 })
     } catch (error) {
       Logger.error("error 获取失败 %s", JSON.stringify(error));
     }

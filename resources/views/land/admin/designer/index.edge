@@ -26,6 +26,7 @@
         <thead>
           <tr>
             <th>ID</th>
+            <th>类型</th>
             <th>姓名</th>
             <!-- <th>性别</th> -->
             <th>作品数量</th>
@@ -38,6 +39,7 @@
           @each(row in data.designers)
             <tr>
               <td class="td">{{ row.id }}</td>
+              <td class="td">{{ row.catalog || '' }}</td>
               <td class="td">{{ row.nickname }}</td>
               <!-- <td class="td">{{ row.sex == 0 ? '女' : '' }} {{ row.sex == 1 ? '男' : '' }}</td> -->
               <td class="td">{{ row.works.length || 0 }}</td>

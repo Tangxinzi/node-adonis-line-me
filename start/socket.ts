@@ -12,7 +12,7 @@ const getChatroom = async (user_id) => {
       chatroom[index].unread = await countUnread(user_id, chatroom[index].chat_id) // 统计未读
       chatroom[index].created_at = Moment(chatroom[index].created_at).format('YYYY-MM-DD')
       chatroom[index].modified_at = Moment(chatroom[index].modified_at).fromNow()
-      chatroom[index].message = await Database.from('chats').select('chat_content_type', 'chat_content').where({ chat_id: chatroom[index].chat_id, status: 1 }).orderBy('created_at', 'desc').first()
+      chatroom[index].message = await Database.from('chats').select('user_id', 'chat_content_type', 'chat_content').where({ chat_id: chatroom[index].chat_id, status: 1 }).orderBy('created_at', 'desc').first()
       chatroom[index].chat_users_id = chatroom[index].chat_users_id.split(',')
       chatroom[index].user = await new Promise((resolve) => {
         chatroom[index].chat_users_id.map(async (item, key) => {
@@ -41,6 +41,20 @@ const getChatsMessage = async (data, chat_id) => {
       const indexOf = chatroom.chat_users_id.indexOf(chats[index].user_id)
       if (indexOf != -1) {
         chats[index].userinfo = users[indexOf]
+      }
+
+      if (chats[index].chat_content_type == 'customer') {
+        chats[index].chat_content_type = 'text'
+        const customer = await Database.from('customer').select('relation_user_id', 'relation_log_id').where({ id: chats[index].chat_content }).first()
+
+        // 红娘自行发布 / 关联已存在用户
+        if (customer.relation_log_id) {
+          const customer_log = await Database.from('customer_log').select('avatar_url', 'nickname').where('id', customer.relation_log_id).first()
+          chats[index].chat_content = `Hi，我想认识下您介绍的好友「${ customer_log.nickname }」😄`
+        } else if (customer.relation_user_id) {
+          const user = await Database.from('users').select('*').where('user_id', customer.relation_user_id).first()
+          chats[index].chat_content = `Hi，我想认识下您介绍的好友「${ user.nickname }」😄`
+        }
       }
 
       chats[index].created_at = Moment(chats[index].created_at).format('YYYY-MM-DD HH:mm:ss')

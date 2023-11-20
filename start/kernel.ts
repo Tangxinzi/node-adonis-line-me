@@ -25,6 +25,7 @@ Server.middleware.register([
   () => import('@ioc:Adonis/Addons/Shield'),
   () => import('App/Middleware/Check'),
   () => import('App/Middleware/ApiCheck'),
+  () => import('App/Middleware/AdminCheck'),
 ])
 
 /*
@@ -46,4 +47,5 @@ Server.middleware.register([
 Server.middleware.registerNamed({
   check: () => import('App/Middleware/Check'),
   apicheck: () => import('App/Middleware/ApiCheck'),
+  admincheck: () => import('App/Middleware/AdminCheck'),
 })

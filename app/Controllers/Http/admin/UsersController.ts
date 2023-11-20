@@ -2,9 +2,38 @@ import Database from '@ioc:Adonis/Lucid/Database';
 import Logger from '@ioc:Adonis/Core/Logger';
 import Moment from 'moment';
 import GeoIP from 'geoip-lite';
+import Jwt from 'App/Models/Jwt';
 const zpData = require('../lib/Zhipin');
 
 export default class UsersController {
+  public async login({ request, response, view, session }: HttpContextContract) {
+    try {
+      if (request.method() == 'POST') {
+        const all = request.all()
+        if (all.phone == '17725386753' && all.password == '55555jkl') {
+          const user = await Database.from('users').where({ phone: all.phone }).first()
+          if (user.user_id) {
+            console.log(user);
+
+            session.put('adonis-cookie-sign', await Jwt.signPrivateKey(user.id))
+            return response.redirect().status(301).toRoute('admin/CustomersController.index')
+          } else {
+            return response.redirect().status(301).toRoute('admin/UsersController.login')
+          }
+        }
+      } else {
+        session.forget('adonis-cookie-sign')
+        return view.render('admin/user/login', {
+          data: {
+            title: '登录'
+          }
+        })
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   public async index({ request, view, session }: HttpContextContract) {
     try {
       const all = request.all()

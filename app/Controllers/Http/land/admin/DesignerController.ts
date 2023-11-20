@@ -5,11 +5,12 @@ import Moment from 'moment';
 export default class DesignerController {
   public async index({ request, response, view, session }: HttpContextContract) {
     try {
-      const all = request.all()
+      const all = request.all(), catalog = ['其它', '设计团队', '工程管理团队']
       const designers = await Database.from('land_designers').where('status', 1).orderBy('created_at', 'desc').limit(8)
       for (let index = 0; index < designers.length; index++) {
         designers[index].works = designers[index].works ? designers[index].works.split(',') : []
         designers[index].labels = designers[index].labels ? designers[index].labels.split(',') : []
+        designers[index].catalog = catalog[designers[index].catalog]
         designers[index].created_at = Moment(designers[index].created_at).format('YYYY-MM-DD H:mm:ss')
       }
 
@@ -43,6 +44,26 @@ export default class DesignerController {
           works: await Database.table('land_works')
         }
       })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  public async catalog({ params, request, view, response }: HttpContextContract) {
+    try {
+      const all = request.all()
+      const data = await Database.from('land_designers').where({ status: 1, catalog: params.catalog}).orderBy('created_at', 'desc').limit(8)
+      for (let index = 0; index < data.length; index++) {
+        data[index].labels = data[index].labels ? data[index].labels.split(',') : []
+      }
+
+      if (all.type == 'json') {
+        return response.json({
+          status: 200,
+          message: "ok",
+          data
+        })
+      }
     } catch (error) {
       console.log(error)
     }
@@ -102,12 +123,13 @@ export default class DesignerController {
       }
 
       if (request.method() == 'POST' && all.button == 'update') {
-        await Database.from('land_designers').where('id', all.id).update({ nickname: all.nickname, sex: all.sex, works: all.works, labels: all.labels, detail: all.detail, avatar_url })
+        await Database.from('land_designers').where('id', all.id).update({ catalog: all.catalog, nickname: all.nickname, sex: all.sex, works: all.works, labels: all.labels, detail: all.detail, avatar_url })
         session.flash('message', { type: 'success', header: '更新成功', message: `` })
         return response.redirect('back')
       }
 
       const id = await Database.table('land_designers').returning('id').insert({
+        catalog: all.catalog,
         nickname: all.nickname,
         sex: all.sex,
         labels: all.labels,
