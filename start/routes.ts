@@ -55,6 +55,9 @@ Route.group(() => {
   Route.post('/customer/create', 'api/CustomerController.createCustomerinfo')
   Route.post('/customer/create/relation', 'api/CustomerController.relationCustomerinfo')
   Route.post('/customer/delete/:id', 'api/CustomerController.deleteCustomer')
+  Route.get('/customer/verify/phone', 'api/CustomerController.verifyPhone')
+
+  Route.get('/aliyun/SendSms', 'api/AliyunController.SendSms')
 
   Route.post('/file/upload', 'api/FilesController.upload')
 

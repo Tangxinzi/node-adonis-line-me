@@ -118,6 +118,15 @@ export const http: ServerConfig = {
 |--------------------------------------------------------------------------
 */
 export const logger: LoggerConfig = {
+  transport: 'console',
+  console: {
+    driver: 'console'
+  },
+  file: {
+    driver: 'file',
+    filename: 'adonis.log'
+  }
+  
   /*
   |--------------------------------------------------------------------------
   | Application name
@@ -152,7 +161,7 @@ export const logger: LoggerConfig = {
   | at deployment level and not code level.
   |
   */
-  level: Env.get('LOG_LEVEL', 'error'),
+  level: Env.get('LOG_LEVEL', 'info'),
 
   /*
   |--------------------------------------------------------------------------

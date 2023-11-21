@@ -17,24 +17,16 @@
     <div class="sixteen wide column">
       <div class="ui header-title flex-between">
         <span>{{ data.title }}</span>
-        <div class="ui tiny labeled icon dropdown button">
-          <i class="filter icon"></i>
-          <span class="text">Filter</span>
-          <div class="menu">
-            <div class="header">
-              <i class="tags icon"></i>
-              Filter by tag
-            </div>
-            <div class="item">
-              Important
-            </div>
-            <div class="item">
-              Announcement
-            </div>
-            <div class="item">
-              Discussion
-            </div>
-          </div>
+        <div class="ui small action input">
+          <input type="text" placeholder="搜索...">
+          <!-- <select class="ui compact selection dropdown">
+            <option value="all">All</option>
+            <option selected="" value="articles">文章</option>
+            <option value="products">Products</option>
+          </select> -->
+          <button class="ui icon button">
+            <i class="search icon"></i>
+          </button>
         </div>
       </div>
       <table class="ui celled center aligned table">
@@ -43,10 +35,11 @@
             <th>ID</th>
             <th>推荐人</th>
             <th>被推荐人</th>
-            <th class="five wide">介绍内容</th>
+            <th class="three wide">介绍内容</th>
             <th>关系</th>
             <th>性别</th>
             <th>联系</th>
+            <th>手机验证</th>
             <th>照片</th>
             <th>时间</th>
             <th>推荐</th>
@@ -84,6 +77,7 @@
               <td class="td">{{ row.relation || '' }}</td>
               <td class="td">{{ row.sex == 1 ? '男' : '' }}{{ row.sex == 0 ? '女' : '' }}</td>
               <td class="td">{{ row.contact_wechat || '' }}</td>
+              <td class="td">{{ row.phone || '' }}</td>
               <td class="td">
                 <span class="activating fluid click one-line" data-variation="small" data-html="
                   @each(photo in row.photos)

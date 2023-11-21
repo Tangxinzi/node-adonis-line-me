@@ -6,7 +6,7 @@ export default class DesignerController {
   public async index({ request, response, view, session }: HttpContextContract) {
     try {
       const all = request.all(), catalog = ['其它', '设计团队', '工程管理团队']
-      const designers = await Database.from('land_designers').where('status', 1).orderBy('created_at', 'desc').limit(8)
+      const designers = await Database.from('land_designers').where('status', 1).orderBy('created_at', 'desc').forPage(request.input('page', 1), 20)
       for (let index = 0; index < designers.length; index++) {
         designers[index].works = designers[index].works ? designers[index].works.split(',') : []
         designers[index].labels = designers[index].labels ? designers[index].labels.split(',') : []
@@ -15,6 +15,14 @@ export default class DesignerController {
       }
 
       if (all.type == 'json') {
+        const designers = await Database.from('land_designers').where('status', 1).orderBy('created_at', 'desc').forPage(request.input('page', 1), 8)
+        for (let index = 0; index < designers.length; index++) {
+          designers[index].works = designers[index].works ? designers[index].works.split(',') : []
+          designers[index].labels = designers[index].labels ? designers[index].labels.split(',') : []
+          designers[index].catalog = catalog[designers[index].catalog]
+          designers[index].created_at = Moment(designers[index].created_at).format('YYYY-MM-DD H:mm:ss')
+        }
+
         return response.json({
           status: 200,
           message: "ok",
@@ -26,7 +34,8 @@ export default class DesignerController {
         data: {
           title: '设计师',
           active: 'designer',
-          designers
+          designers,
+          all
         }
       })
     } catch (error) {

@@ -58,6 +58,7 @@
           @endeach
         </tbody>
       </table>
+      @!component('land.components.pagination', all=data.all)
     </div>
   </div>
   <form class="ui mini modal form" action="{{ route('land/admin/DesignerController.delete') }}" method="post">

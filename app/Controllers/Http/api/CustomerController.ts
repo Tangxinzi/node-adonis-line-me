@@ -134,12 +134,12 @@ export default class CustomerController {
         userinfo: JSON.stringify(all.userinfo)
       })
 
-      response.json({ status: 200, message: "ok" })
+      response.json({ status: 200, sms: "ok" })
     } catch (error) {
       Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
-        message: "internalServerError",
+        sms: "internalServerError",
         data: error
       })
     }
@@ -167,15 +167,49 @@ export default class CustomerController {
       }
       response.json({
         status: 200,
-        message: "ok",
+        sms: "ok",
         data: customer
       })
     } catch (error) {
       Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
-        message: "internalServerError",
+        sms: "internalServerError",
         data: error
+      })
+    }
+  }
+
+  public async verifyPhone({ session, request, response }: HttpContextContract) {
+    try {
+      const all = request.all()
+      const userPhone = (await Database.from('users').where({ phone: all.phone }).count('* as total'))[0].total, customerPhone = (await Database.from('customer_log').where({ phone: all.phone }).count('* as total'))[0].total
+      if (userPhone || customerPhone) {
+        response.json({ status: 200, message: "error", data: '您验证的手机号当前被占用' })
+      }
+
+      let sms = await Database.from('sms').where({ code: all.code, phone: all.phone, user_id: session.get('user_id') }).orderBy('created_at', 'desc').first()
+      if (sms) {
+        const seconds = Moment().diff(sms.created_at, 'seconds')
+        if (seconds > 300) {
+          response.json({ status: 200, message: "timeout", data: '当前验证码已失效' })
+        } else {
+          const customer = await Database.from('customer').where({ relation_log_id: all.id, user_id: session.get('user_id') }).first()
+          if (customer.id) {
+            const result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ phone: all.phone })
+            response.json({ status: 200, message: "ok", data: '已验证' })
+          }
+        }
+      } else {
+        response.json({ status: 200, message: "error", data: '手机号或者验证码填写错误' })
+      }
+    } catch (error) {
+      console.log(error);
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
+      response.json({
+        status: 500,
+        messages: "internalServerError",
+        data: JSON.stringify(error)
       })
     }
   }
@@ -204,14 +238,14 @@ export default class CustomerController {
 
       response.json({
         status: 200,
-        message: "ok",
+        sms: "ok",
         data: customer
       })
     } catch (error) {
       Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
-        message: "ok",
+        sms: "ok",
         data: error
       })
     }
@@ -225,12 +259,12 @@ export default class CustomerController {
         if (customer[index].relation_user_id) {
           customer[index] = {
             ...customer[index],
-            ...await Database.from('users').select('avatar_url', 'nickname', 'work', 'detail').where('user_id', customer[index].relation_user_id).first()
+            ...await Database.from('users').select('avatar_url', 'nickname', 'work', 'detail', 'phone').where('user_id', customer[index].relation_user_id).first()
           }
         } else if (customer[index].relation_log_id) {
           customer[index] = {
             ...customer[index],
-            ...await Database.from('customer_log').select('avatar_url', 'nickname', 'work', 'detail').where('id', customer[index].relation_log_id).first()
+            ...await Database.from('customer_log').select('avatar_url', 'nickname', 'work', 'detail', 'phone').where('id', customer[index].relation_log_id).first()
           }
         }
 
@@ -245,7 +279,7 @@ export default class CustomerController {
 
       response.json({
         status: 200,
-        message: "ok",
+        sms: "ok",
         data: {
           user: await Database.from('users').select('avatar_url', 'nickname', 'detail').where('user_id', all.user_id || session.get('user_id')).first(),
           customer
@@ -255,7 +289,7 @@ export default class CustomerController {
       Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
-        message: "internalServerError",
+        sms: "internalServerError",
         data: error
       })
     }
@@ -287,7 +321,7 @@ export default class CustomerController {
 
       response.json({
         status: 200,
-        message: "ok",
+        sms: "ok",
         data: customer
       })
     } catch (error) {
@@ -296,7 +330,7 @@ export default class CustomerController {
       Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
-        message: "internalServerError",
+        sms: "internalServerError",
         data: error
       })
     }
@@ -338,7 +372,7 @@ export default class CustomerController {
 
       response.json({
         status: 200,
-        message: "ok",
+        sms: "ok",
         data: result
       })
     } catch (error) {
@@ -347,7 +381,7 @@ export default class CustomerController {
       Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
-        message: "ok",
+        sms: "ok",
         data: error
       })
     }
@@ -363,13 +397,13 @@ export default class CustomerController {
 
       response.json({
         status: 200,
-        message: "ok"
+        sms: "ok"
       })
     } catch (error) {
       Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
-        message: "internalServerError",
+        sms: "internalServerError",
         data: error
       })
     }

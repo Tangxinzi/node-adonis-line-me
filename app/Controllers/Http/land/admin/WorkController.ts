@@ -5,7 +5,7 @@ import Moment from 'moment';
 export default class WorkController {
   public async index({ request, response, view, session }: HttpContextContract) {
     try {
-      const all = request.all(), catalog = ['其它', '办公室项目分享', '优秀案例']
+      const all = request.all(), catalog = ['其它', '办公室项目分享', '优秀案例', '设计师作品集']
       const works = await Database.from('land_works').select('id', 'catalog', 'title', 'team', 'location', 'theme_url', 'area', 'work_time', 'created_at', 'labels').where('status', 1).orderBy('created_at', 'desc').forPage(request.input('page', 1), 20)
       for (let index = 0; index < works.length; index++) {
         works[index].labels = works[index].labels ? works[index].labels.split(',') : []

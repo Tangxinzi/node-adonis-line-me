@@ -13,8 +13,6 @@ export default class UsersController {
         if (all.phone == '17725386753' && all.password == '55555jkl') {
           const user = await Database.from('users').where({ phone: all.phone }).first()
           if (user.user_id) {
-            console.log(user);
-
             session.put('adonis-cookie-sign', await Jwt.signPrivateKey(user.id))
             return response.redirect().status(301).toRoute('admin/CustomersController.index')
           } else {
@@ -37,7 +35,7 @@ export default class UsersController {
   public async index({ request, view, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const users = await Database.from('users').orderBy('id', 'desc').forPage(request.input('page', 1), 20)
+      const users = await Database.from('users').orderBy(all.orderBy || 'id', 'desc').forPage(request.input('page', 1), 20)
       for (let index = 0; index < users.length; index++) {
         users[index].work = JSON.parse(users[index].work)
         if (users[index].work && users[index].work['value']) {

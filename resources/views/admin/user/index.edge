@@ -17,6 +17,15 @@
     <div class="sixteen wide column">
       <div class="ui header-title flex-between">
         <span>{{ data.title }}</span>
+        <div class="ui mini selection dropdown">
+          <input type="hidden" name="type" value="{{ data.all.orderBy || '' }}" />
+          <i class="dropdown icon"></i>
+          <div class="default text">排序</div>
+          <div class="menu">
+            <a href="" class="item" data-value="">默认</a>
+            <a href="?orderBy=online_at" class="item" data-value="online_at">最近上线</a>
+          </div>
+        </div>
       </div>
       <table class="ui celled center aligned table">
         <thead>
