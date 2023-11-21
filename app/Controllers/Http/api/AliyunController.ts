@@ -3,14 +3,15 @@ import Application from '@ioc:Adonis/Core/Application'
 import RandomString from 'randomstring';
 import SMSClient from '@alicloud/sms-sdk';
 import Moment from'moment';
+const Env = require('@ioc:Adonis/Core/Env');
 
 export default class AliyunController {
   public async SendSms({ response, request, session }: HttpContextContract) {
     try {
       const all = request.all()
       const client = new SMSClient({
-        accessKeyId: 'LTAI5tJnh5Cjhsu8yreRaFJW',
-        secretAccessKey: 'ZYB9J8xgfi3qjt7U2viU7WaAoAlruO',
+        accessKeyId: Env.get('accessKeyId'),
+        secretAccessKey: Env.get('secretAccessKey'),
         endpoint: 'https://dysmsapi.aliyuncs.com',
         apiVersion: '2017-05-25'
       });
