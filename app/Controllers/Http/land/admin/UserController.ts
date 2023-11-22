@@ -41,21 +41,26 @@ export default class UserController {
     try {
       const all = request.all()
       if (all.type == 'designer') {
-        const data = await Database.from('land_collection').where({ type: all.type, wechat_open_id: all.openid, status: 1 })
-        for (let index = 0; index < data.length; index++) {
-          data[index].content = await Database.from('land_designers').where('id', data[index].relation_type_id).first()
-          data[index].content.labels = data[index].content.labels ? data[index].content.labels.split(',') : []
+        if (all.search) {
+          var data = await Database.from('land_collection').join('land_designers', 'land_collection.relation_type_id', 'land_designers.id').where({ 'land_collection.type': all.type, 'land_collection.wechat_open_id': all.openid, 'land_collection.status': 1, 'land_designers.status': 1 }).select('land_designers.id', 'land_designers.avatar_url', 'land_designers.nickname', 'land_designers.labels').where('land_designers.title', 'like', `%${ all.search }%`).orderBy('land_designers.created_at', 'desc')
+        } else {
+          var data = await Database.from('land_collection').join('land_designers', 'land_collection.relation_type_id', 'land_designers.id').where({ 'land_collection.type': all.type, 'land_collection.wechat_open_id': all.openid, 'land_collection.status': 1, 'land_designers.status': 1 }).select('land_designers.id', 'land_designers.avatar_url', 'land_designers.nickname', 'land_designers.labels')
         }
-        return response.json({ status: 200, message: "ok", data })
       }
+
       if (all.type == 'work') {
-        const data = await Database.from('land_collection').where({ type: all.type, wechat_open_id: all.openid, status: 1 })
-        for (let index = 0; index < data.length; index++) {
-          data[index].content = await Database.from('land_works').where('id', data[index].relation_type_id).first()
-          data[index].content.labels = data[index].content.labels ? data[index].content.labels.split(',') : []
+        if (all.search) {
+          var data = await Database.from('land_collection').join('land_works', 'land_collection.relation_type_id', 'land_works.id').where({ 'land_collection.type': all.type, 'land_collection.wechat_open_id': all.openid, 'land_collection.status': 1, 'land_works.status': 1 }).select('land_works.id', 'land_works.theme_url', 'land_works.title', 'land_works.labels').where('land_works.title', 'like', `%${ all.search }%`).orderBy('land_works.created_at', 'desc')
+        } else {
+          var data = await Database.from('land_collection').join('land_works', 'land_collection.relation_type_id', 'land_works.id').where({ 'land_collection.type': all.type, 'land_collection.wechat_open_id': all.openid, 'land_collection.status': 1, 'land_works.status': 1 }).select('land_works.id', 'land_works.theme_url', 'land_works.title', 'land_works.labels')
         }
-        return response.json({ status: 200, message: "ok", data })
       }
+
+      for (let index = 0; index < data.length; index++) {
+        data[index].labels = data[index].labels ? data[index].labels.split(',') : []
+      }
+
+      return response.json({ status: 200, message: "ok", data })
     } catch (error) {
       console.log(error)
     }

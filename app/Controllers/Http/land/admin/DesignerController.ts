@@ -61,7 +61,12 @@ export default class DesignerController {
   public async catalog({ params, request, view, response }: HttpContextContract) {
     try {
       const all = request.all()
-      const data = await Database.from('land_designers').where({ status: 1, catalog: params.catalog}).orderBy('created_at', 'desc').limit(8)
+      if (all.search) {
+        var data = await Database.from('land_designers').where({ status: 1, catalog: params.catalog }).where('nickname', 'like', `%${ all.search }%`).orderBy('created_at', 'desc')
+      } else {
+        var data = await Database.from('land_designers').where({ status: 1, catalog: params.catalog }).orderBy('created_at', 'desc').limit(8)
+      }
+
       for (let index = 0; index < data.length; index++) {
         data[index].labels = data[index].labels ? data[index].labels.split(',') : []
       }
@@ -83,7 +88,7 @@ export default class DesignerController {
       const all = request.all()
       const data = await Database.from('land_designers').where('id', params.id).first()
       data.labels = data.labels ? data.labels.split(',') : []
-      data.works = await Database.from('land_works').select('id', 'title', 'theme_url').where('status', 1).whereIn('id', data.works.split(','))
+      data.works = await Database.from('land_works').select('id', 'title', 'theme_url').where('status', 1).whereIn('id', data.works ? data.works.split(',') : [])
 
       if (all.type == 'json') {
         return response.json({
