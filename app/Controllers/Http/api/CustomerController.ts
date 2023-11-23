@@ -185,26 +185,25 @@ export default class CustomerController {
       const all = request.all()
       const userPhone = (await Database.from('users').where({ phone: all.phone }).count('* as total'))[0].total, customerPhone = (await Database.from('customer_log').where({ phone: all.phone }).count('* as total'))[0].total
       if (userPhone || customerPhone) {
-        response.json({ status: 200, message: "error", data: '您验证的手机号当前被占用' })
+        return response.json({ status: 200, message: "error", data: '您验证的手机号当前被占用' })
       }
 
       let sms = await Database.from('sms').where({ code: all.code, phone: all.phone, user_id: session.get('user_id') }).orderBy('created_at', 'desc').first()
       if (sms) {
         const seconds = Moment().diff(sms.created_at, 'seconds')
         if (seconds > 300) {
-          response.json({ status: 200, message: "timeout", data: '当前验证码已失效' })
+          return response.json({ status: 200, message: "timeout", data: '当前验证码已失效' })
         } else {
           const customer = await Database.from('customer').where({ relation_log_id: all.id, user_id: session.get('user_id') }).first()
           if (customer.id) {
             const result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ phone: all.phone })
-            response.json({ status: 200, message: "ok", data: '已验证' })
+            return response.json({ status: 200, message: "ok", data: '已验证' })
           }
         }
       } else {
-        response.json({ status: 200, message: "error", data: '手机号或者验证码填写错误' })
+        return response.json({ status: 200, message: "error", data: '手机号或者验证码填写错误' })
       }
     } catch (error) {
-      console.log(error);
       Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,

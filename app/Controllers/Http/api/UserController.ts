@@ -13,6 +13,7 @@ import GeoIP from 'geoip-lite';
 
 const zpData = require('../lib/Zhipin');
 const Avatar = require('../lib/Avatar');
+const { percentUserinfo } = require('../lib/Percent');
 const { jscode2session } = require('../lib/Weixin');
 
 export default class UserController {
@@ -111,6 +112,8 @@ export default class UserController {
           })
         }
       }
+
+      user.percent = await percentUserinfo(session.get('user_id'))
 
       return user
     } catch (error) {

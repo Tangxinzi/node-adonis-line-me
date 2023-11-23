@@ -1,9 +1,8 @@
+import Env from '@ioc:Adonis/Core/Env';
 import Database from '@ioc:Adonis/Lucid/Database'
-import Application from '@ioc:Adonis/Core/Application'
 import RandomString from 'randomstring';
 import SMSClient from '@alicloud/sms-sdk';
-import Moment from'moment';
-const Env = require('@ioc:Adonis/Core/Env');
+import Moment from 'moment';
 
 export default class AliyunController {
   public async SendSms({ response, request, session }: HttpContextContract) {
