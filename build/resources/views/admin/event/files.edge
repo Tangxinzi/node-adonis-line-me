@@ -8,7 +8,7 @@
 
 @section('style')
 <style media="screen">
-
+  img { margin: 0 auto; display: block; }
 </style>
 @endsection
 
@@ -18,13 +18,14 @@
       <div class="ui header-title flex-between">
         <span>{{ data.title }}</span>
       </div>
-      <table class="ui celled center aligned table">
+      <table class="ui celled center aligned rounded table">
         <thead>
           <tr>
             <th>ID</th>
             <th>关联用户</th>
+            <th>关联内容</th>
             <th>地址</th>
-            <th>关联</th>
+            <th class="center aligned">内容</th>
             <th>时间类型</th>
             <th>操作</th>
           </tr>
@@ -34,13 +35,16 @@
             <tr>
               <td class="td">{{ row.id }}</td>
               <td class="td">{{ row.related_user_id }}</td>
+              <td class="td">-</td>
               <td class="td">
                 <a href="{{ row.filePath }}" target="_blank">{{ row.filePath }}</a>
               </td>
-              <td class="td">-</td>
+              <td class="td center aligned">
+                <img class="ui mini bordered image" src="{{ row.filePath }}" alt="" />
+              </td>
               <td class="td">{{ row.created_at }}</td>
               <td class="td">
-                <a>操作</a>
+                <a href="?path={{ row.filePath }}">删除</a>
               </td>
             </tr>
           @endeach

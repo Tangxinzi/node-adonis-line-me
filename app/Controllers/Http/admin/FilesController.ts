@@ -1,4 +1,5 @@
 import Database from '@ioc:Adonis/Lucid/Database';
+import Drive from '@ioc:Adonis/Core/Drive';
 import Moment from 'moment';
 Moment.locale('zh-cn')
 
