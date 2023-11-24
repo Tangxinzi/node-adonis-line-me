@@ -1,0 +1,73 @@
+@layout('components.layouts.main')
+
+@section('title')
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<title>{{ data.title }} - Hunlian</title>
+@endsection
+
+@section('style')
+<style media="screen">
+
+</style>
+@endsection
+
+@section('content')
+  <div class="ui stackable four column grid">
+    <div class="three wide column">
+      <div class="ui vertical pointing menu">
+        <a class="{{ data.active == 'answer' ? 'item active' : 'item' }}" href="{{ route('admin/QuestionsController.answer', { type: '0' }) }}">用户个性化问答</a>
+        <a class="{{ data.active == 'introduction' ? 'item active' : 'item' }}" href="{{ route('admin/QuestionsController.answer', { type: '1' }) }}">好友介绍问答</a>
+      </div>
+    </div>
+    <div class="thirteen wide column">
+      <div class="ui header-title flex-between">
+        <span>{{ data.title }}</span>
+        <a class="ui tiny button" href="{{ route('admin/QuestionsController.create') }}">添加问答</a>
+      </div>
+      <table class="ui celled center aligned table">
+        <thead>
+          <tr>
+            <th class="one wide">ID</th>
+            <th class="two wide">类型</th>
+            <th class="one wide">性别</th>
+            <th class="four wide">问题</th>
+            <th>描述</th>
+            <th class="two wide">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          @each(row in data.questions)
+            <tr>
+              <td class="td">{{ row.id }}</td>
+              <td class="td">
+                {{ row.type === '0' ? '关于我' : '' }}
+                {{ row.type === '1' ? '我的日常' : '' }}
+                {{ row.type === '2' ? '我的愿望' : '' }}
+                {{ row.type === '3' ? '对 ta 的期待' : '' }}
+              </td>
+              <td class="td">
+                {{ row.sex == '0' ? '女' : '' }}
+                {{ row.sex == '1' ? '男' : '' }}
+                {{ row.sex == '2' ? '无' : '' }}
+              </td>
+              <td class="td">{{ row.title }}</td>
+              <td class="td">{{ row.description }}</td>
+              <td class="td">
+                <a href="{{ route('admin/QuestionsController.edit', { id: row.id }) }}">编辑</a>
+                &nbsp;&nbsp;
+                <a href="">删除</a>
+              </td>
+            </tr>
+          @endeach
+        </tbody>
+      </table>
+    </div>
+  </div>
+@endsection
+
+@section('script')
+<script src="https://unpkg.com/@wangeditor/editor@latest/dist/index.js"></script>
+<script type="text/javascript">
+
+@endsection

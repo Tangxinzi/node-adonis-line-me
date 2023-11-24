@@ -1,0 +1,1 @@
+{"version":3,"file":"Check.js","sourceRoot":"","sources":["../../../app/Middleware/Check.ts"],"names":[],"mappings":";;AAEA,MAAqB,KAAK;IACjB,KAAK,CAAC,MAAM,CAAC,EAAE,OAAO,EAAE,QAAQ,EAAE,OAAO,EAAuB,EAAE,IAAyB;QAChG,IAAI;YACF,MAAM,IAAI,EAAE,CAAA;SACb;QAAC,OAAO,CAAC,EAAE;YACV,OAAO,CAAC,GAAG,CAAC,CAAC,CAAC,CAAC;SAChB;IACH,CAAC;CACF;AARD,wBAQC"}

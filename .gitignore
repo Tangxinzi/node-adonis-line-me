@@ -1,5 +1,4 @@
 node_modules
-build
 coverage
 .vscode
 .DS_STORE
@@ -7,3 +6,6 @@ coverage
 tmp
 flynat
 /public/pem
+build/node_modules
+build/public/uploads
+build/public/pem

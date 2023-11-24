@@ -1,0 +1,106 @@
+@layout('components.layouts.main')
+
+@section('title')
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<title>{{ data.title }} - Hunlian</title>
+@endsection
+
+@section('style')
+<style media="screen">
+
+</style>
+@endsection
+
+@section('content')
+  <div class="ui stackable four column grid">
+    <div class="sixteen wide column">
+      <div class="ui header-title flex-between">
+        <span>{{ data.title }}</span>
+        <div class="ui mini selection dropdown">
+          <input type="hidden" name="type" value="{{ data.subtitle.value }}" />
+          <i class="dropdown icon"></i>
+          <div class="default text">类型</div>
+          <div class="menu">
+            <a href="?" class="item" data-value="all">全部</a>
+            <a href="?type=answer" class="item" data-value="answer">问答</a>
+            <a href="?type=moment" class="item" data-value="moment">动态</a>
+          </div>
+        </div>
+      </div>
+      <table class="ui celled center aligned table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>发布</th>
+            <!-- <th>性别</th> -->
+            <th class="five wide">内容</th>
+            <th>类别</th>
+            <th>照片</th>
+            <th>IP</th>
+            <th>时间</th>
+            <th>推荐</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          @each(row in data.descovery)
+            <tr>
+              <td class="td">{{ row.id }}</td>
+              <td class="td">
+                <a class="ui image label" title="{{ row.user_id }}">
+                  @if(row.avatar_url)
+                  <img src="{{ row.avatar_url }}" />
+                  @endif
+                  {{ row.nickname || ('Unnamed ' + row.user_id) }}
+                </a>
+              </td>
+              <!-- <td class="td">{{ row.sex == 1 ? '男' : '' }}{{ row.sex == 0 ? '女' : '' }}</td> -->
+              <td class="td" style="position: relative;">
+                <span class="activating click one-line" data-content="{{ row.content }}" data-position="bottom center" data-inverted="">{{ row.content }}</span>
+              </td>
+              <td class="td">
+                {{ row.title }}
+                <!-- {{ row.data_type == 'moment' ? '动态' : '' }}{{ row.data_type == 'answer' ? '问答' : '' }} -->
+              </td>
+              <td class="td">{{ row.photos.length || 0 }}</td>
+              <td class="td">{{ row.ip ? row.ip.city : (row.ip || '') }}</td>
+              <td class="td">{{ row.created_at }}</td>
+              <td class="td">
+                <i class="{{ row.recommend ? 'pink heartbeat' : 'heart outline' }} icon"></i>
+              </td>
+              <td class="td" style="position: relative;">
+                <a class="activating click" data-position="bottom center" data-html="<form class='ui mini basic vertical buttons' method='post' action='/admin/event/descovery/{{ row.data_type }}'>
+                  {{ csrfField() }}
+                  <input type='text' name='id' value='{{ row.id }}' hidden />
+                  <input type='text' name='data_type' value='{{ row.data_type }}' hidden />
+                  <button class='ui button' name='button' value='recommend'>{{ row.recommend ? '取消推荐' : '首页推荐' }}</button>
+                  <button class='ui negative button' name='button' value='delete' style='color: red !important;'>删除</button>
+                </form>">
+                  操作
+                </a>
+              </td>
+            </tr>
+          @endeach
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <form class="ui modal form" action="" method="post">
+    <i class="close icon"></i>
+    <div class="content">
+    </div>
+    <div class="actions">
+      <div class="ui black deny button">
+        取消
+      </div>
+      <div class="ui positive right labeled icon button">
+        提交
+        <i class="checkmark icon"></i>
+      </div>
+    </div>
+  </form>
+@endsection
+
+@section('script')
+@endsection

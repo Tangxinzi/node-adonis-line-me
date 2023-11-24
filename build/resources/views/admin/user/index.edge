@@ -1,0 +1,85 @@
+@layout('components.layouts.main')
+
+@section('title')
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<title>{{ data.title }} - Hunlian</title>
+@endsection
+
+@section('style')
+<style media="screen">
+
+</style>
+@endsection
+
+@section('content')
+  <div class="ui stackable four column grid">
+    <div class="sixteen wide column">
+      <div class="ui header-title flex-between">
+        <span>{{ data.title }}</span>
+        <div class="ui mini selection dropdown">
+          <input type="hidden" name="type" value="{{ data.all.orderBy || '' }}" />
+          <i class="dropdown icon"></i>
+          <div class="default text">排序</div>
+          <div class="menu">
+            <a href="" class="item" data-value="">默认</a>
+            <a href="?orderBy=online_at" class="item" data-value="online_at">最近上线</a>
+          </div>
+        </div>
+      </div>
+      <table class="ui celled center aligned table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>头像昵称</th>
+            <th>手机</th>
+            <th>性别</th>
+            <th>类别</th>
+            <th>照片</th>
+            <th>出生</th>
+            <th>IP 属地</th>
+            <th>上线</th>
+            <th>创建</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          @each(row in data.users)
+            <tr>
+              <td class="td">{{ row.id }}</td>
+              <td class="td">
+                <a class="ui image label" title="{{ row.user_id }}">
+                  @if(row.avatar_url)
+                  <img src="{{ row.avatar_url }}" />
+                  @endif
+                  {{ row.nickname || ('Unnamed ' + row.user_id) }}
+                  @if(row.work.text)
+                  <div class="detail">{{ row.work.text }}</div>
+                  @endif
+                </a>
+              </td>
+              <td class="td">{{ row.phone || '' }}</td>
+              <td class="td">{{ row.sex == 1 ? '男' : '' }}{{ row.sex == 0 ? '女' : '' }}</td>
+              <td class="td">{{ row.type == 1 ? '用户' : '' }}{{ row.type == 2 ? '红娘' : '' }}</td>
+              <td class="td">{{ row.photos.length }}</td>
+              <td class="td">{{ row.birthday || '' }}</td>
+              <td class="td">{{ row.ip ? row.ip.city : (row.ip || '') }}</td>
+              <td class="td">{{ row.online_at }}</td>
+              <td class="td">{{ row.created_at }}</td>
+              <td class="td">
+                <a href="{{ route('admin/UsersController.edit', { user_id: row.user_id }) }}">编辑</a>
+              </td>
+            </tr>
+          @endeach
+        </tbody>
+      </table>
+      @!component('components.pagination', all=data.all)
+    </div>
+  </div>
+@endsection
+
+@section('script')
+<script src="https://unpkg.com/@wangeditor/editor@latest/dist/index.js"></script>
+<script type="text/javascript">
+
+@endsection

@@ -1,0 +1,13 @@
+<b>平台管理</b>
+<div class="ui vertical pointing menu">
+  <a class="{{ data.active == 'customers' ? 'item active' : 'item' }}" href="{{ route('admin/CustomersController.index' )}}">推介</a>
+  <a class="{{ data.active == 'users' ? 'item active' : 'item' }}" href="{{ route('admin/UsersController.index') }}">用户</a>
+  <a class="{{ data.active == 'questions' ? 'item active' : 'item' }}" href="{{ route('admin/QuestionsController.index' )}}">个性化问答</a>
+  <a class="{{ data.active == 'descovery' ? 'item active' : 'item' }}" href="{{ route('admin/EventController.descovery' )}}">发现论坛</a>
+  <a class="{{ data.active == 'chatroom' ? 'item active' : 'item' }}" href="{{ route('admin/ChatroomController.index' )}}">聊天室</a>
+  <a class="{{ data.active == 'file' ? 'item active' : 'item' }}" href="{{ route('admin/FilesController.index' )}}">文件</a>
+</div>
+<b>系统设置</b>
+<div class="ui vertical pointing menu">
+  <a class="item" href="">退出</a>
+</div>

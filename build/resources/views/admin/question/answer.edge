@@ -1,0 +1,72 @@
+@layout('components.layouts.main')
+
+@section('title')
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<title>{{ data.title }} - Hunlian</title>
+@endsection
+
+@section('style')
+<style media="screen">
+
+</style>
+@endsection
+
+@section('content')
+  <div class="ui stackable four column grid">
+    <div class="three wide column">
+      <div class="ui vertical pointing menu">
+        <a class="{{ data.active == 'answer' ? 'item active' : 'item' }}" href="{{ route('admin/QuestionsController.answer', { type: '0' }) }}">用户个性化问答</a>
+        <a class="{{ data.active == 'introduction' ? 'item active' : 'item' }}" href="{{ route('admin/QuestionsController.answer', { type: '1' }) }}">好友介绍问答</a>
+      </div>
+    </div>
+    <div class="thirteen wide column">
+      <table class="ui celled center aligned table">
+        <thead>
+          <tr>
+            <th class="one wide">ID</th>
+            <th class="wide">发布</th>
+            <th class="three wide">问题</th>
+            <th class="five wide">内容</th>
+            <th class="wide">图片</th>
+            <th class="three wide">时间</th>
+          </tr>
+        </thead>
+        <tbody>
+          @each(row in data.answer)
+            <tr>
+              <td class="td">{{ row.id }}</td>
+              <td class="td">
+                @if(data.active == 'introduction')
+                  {{ row.introduce_name || '' }}
+                @else
+                  <a class="ui image label" title="{{ row.userinfo.user_id }}">
+                    @if(row.userinfo.avatar_url)
+                    <img src="{{ row.userinfo.avatar_url }}" />
+                    @endif
+                    {{ row.userinfo.nickname || ('Unnamed ' + row.user_id) }}
+                  </a>
+                @endif
+              </td>
+              <td class="td" style="position: relative;">
+                <span class="activating click one-line" data-content="{{ row.title }}" data-position="bottom center" data-inverted="">{{ row.title }}</span>
+              </td>
+              <td class="td">
+                <span class="activating click one-line" data-content="{{ row.content }}" data-position="bottom center" data-inverted="">{{ row.content }}</span>
+              </td>
+              <td class="td">{{ row.photos.length }}</td>
+              <td class="td">{{ row.created_at }}</td>
+            </tr>
+          @endeach
+        </tbody>
+      </table>
+      @!component('components.pagination', all=data.all)
+    </div>
+  </div>
+@endsection
+
+@section('script')
+<script src="https://unpkg.com/@wangeditor/editor@latest/dist/index.js"></script>
+<script type="text/javascript">
+
+@endsection
