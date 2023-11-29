@@ -33,6 +33,7 @@ Route.group(() => {
   Route.post('/user/custom/create', 'api/PublishesController.create')
   Route.get('/user/qrcode', 'api/UserController.qrcode')
   Route.get('/user/chat', 'api/UserController.chat')
+  Route.get('/user/location', 'api/UserController.location')
 
   Route.get('/user/question', 'api/QuestionsController.index')
   Route.get('/user/question/lists', 'api/QuestionsController.questionLists')
@@ -68,6 +69,9 @@ Route.group(() => {
   Route.get('/event/descovery', 'api/EventController.descovery')
   Route.get('/event/descovery/:type/:id', 'api/EventController.type')
   Route.post('/event/like/:id', 'api/EventController.like')
+
+  Route.get('/query/school', 'api/QueryController.school')
+  Route.get('/query/company', 'api/QueryController.company')
 }).prefix('/api').middleware('apicheck')
 
 Route.group(() => {
@@ -134,9 +138,17 @@ Route.group(() => {
   Route.post('/work/delete', 'land/admin/WorkController.delete')
 
   Route.get('/article', 'land/admin/ArticleController.index')
+  Route.get('/article/catalog/:catalog', 'land/admin/ArticleController.catalog')
   Route.get('/article/create', 'land/admin/ArticleController.create')
   Route.get('/article/show/:id', 'land/admin/ArticleController.show')
   Route.get('/article/edit/:id', 'land/admin/ArticleController.edit')
   Route.post('/article/save', 'land/admin/ArticleController.save')
   Route.post('/article/delete', 'land/admin/ArticleController.delete')
+
+  Route.get('/good', 'land/admin/GoodController.index')
+  Route.get('/good/create', 'land/admin/GoodController.create')
+  Route.get('/good/show/:id', 'land/admin/GoodController.show')
+  Route.get('/good/edit/:id', 'land/admin/GoodController.edit')
+  Route.post('/good/save', 'land/admin/GoodController.save')
+  Route.post('/good/delete', 'land/admin/GoodController.delete')
 }).prefix('/land')

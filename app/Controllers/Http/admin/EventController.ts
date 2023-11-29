@@ -17,7 +17,7 @@ export default class EventController {
             await Database.from('answer').where({ id: all.id }).update({ recommend: !answer.recommend })
             break;
           case 'delete':
-            await Database.from('answer').where({ id: all.id }).update({ status: 0, deleted_at: Moment().format('YYYY-MM-DD hh:mm:ss') })
+            await Database.from('answer').where({ id: all.id }).update({ status: 0, deleted_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
             break;
         }
       }
@@ -29,7 +29,7 @@ export default class EventController {
             await Database.from('moments').where({ id: all.id }).update({ recommend: !moments.recommend })
             break;
           case 'delete':
-            await Database.from('moments').where({ id: all.id }).update({ status: 0, deleted_at: Moment().format('YYYY-MM-DD hh:mm:ss') })
+            await Database.from('moments').where({ id: all.id }).update({ status: 0, deleted_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
             break;
         }
       }

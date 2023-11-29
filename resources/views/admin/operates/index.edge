@@ -16,10 +16,10 @@
   <div class="ui stackable four column grid">
     <div class="three wide column">
       <div class="ui vertical pointing menu">
-        <a class="{{ data.subActive == 'users' ? 'active' : '' }} item" href="">特邀用户</a>
+        <a class="{{ data.subActive == 'users' ? 'active' : '' }} item" href="">特殊用户</a>
+        <a class="item" href="">内容审核</a>
         <a class="item" href="">激励下发</a>
         <a class="item" href="">内容分发</a>
-        <a class="item" href="">审核</a>
       </div>
     </div>
     <div class="thirteen wide column">
@@ -31,6 +31,7 @@
         <thead>
           <tr>
             <th class="one wide">用户</th>
+            <th class="one wide">类别</th>
             <th class="one wide">手机</th>
             <th class="one wide">介绍数量</th>
             <th class="one wide">价格</th>
@@ -48,6 +49,10 @@
                   @endif
                   {{ row.userinfo.nickname }}
                 </a>
+              </td>
+              <td class="td">
+                {{ row.type == 'inspire' ? '激励' : '' }}
+                {{ row.type == 'examine' ? '审核' : '' }}
               </td>
               <td class="td">{{ row.phone || '' }}</td>
               <td class="td">{{ row.customerTotal || 0 }}</td>
@@ -72,6 +77,18 @@
     <i class="close icon"></i>
     <h3 class="header">添加特邀用户</h3>
     <div class="content">
+      <div class="field">
+        <label>类型</label>
+        <div class="ui selection dropdown">
+          <input type="hidden" name="type" value="" />
+          <i class="dropdown icon"></i>
+          <div class="default text">点击选择</div>
+          <div class="menu">
+            <div class="item" data-value="inspire">审核</div>
+            <div class="item" data-value="examine">激励</div>
+          </div>
+        </div>
+      </div>
       <div class="field">
         <label for="user_id">用户 User ID</label>
         <input type="text" id="user_id" name="user_id" value="" />

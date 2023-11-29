@@ -13,10 +13,10 @@ export default class CustomersController {
 
       switch (all.button) {
         case 'recommend':
-          await Database.from('customer').where({ id: all.id }).update({ recommend: !customer.recommend })
+          await Database.from('customer').where({ id: all.id }).update({ recommend: !customer.recommend, recommend_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
           break;
         case 'delete':
-          await Database.from('customer').where({ id: all.id }).update({ status: 0, deleted_at: Moment().format('YYYY-MM-DD hh:mm:ss') })
+          await Database.from('customer').where({ id: all.id }).update({ status: 0, deleted_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
           break;
       }
 
@@ -30,7 +30,7 @@ export default class CustomersController {
     try {
       const all = request.all()
       Logger.info("error 获取失败 %s", JSON.stringify(all));
-      const customer = await Database.from('customer').select('id', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id', 'recommend').where('status', 1).orderBy('recommend', 'desc').orderBy('id', 'desc').forPage(request.input('page', 1), 20)
+      const customer = await Database.from('customer').select('id', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id', 'recommend').where('status', 1).orderBy('recommend', 'desc').orderBy('recommend_at', 'desc').forPage(request.input('page', 1), 20)
       for (let index = 0; index < customer.length; index++) {
         // 红娘自行发布
         if (customer[index].relation_log_id) {
@@ -55,6 +55,7 @@ export default class CustomersController {
         customer[index]['videos'] = customer[index]['videos'] ? JSON.parse(customer[index]['videos']) : []
         customer[index]['age'] = Moment().diff(customer[index]['birthday'], 'years')
         customer[index]['work'] = customer[index]['work'] ? JSON.parse(customer[index]['work']) : []
+        customer[index].recommend_at = Moment(customer[index].recommend_at).format('YYYY-MM-DD HH:mm:ss')
         customer[index].created_at = Moment(customer[index].created_at).fromNow()
         customer[index].modified_at = Moment(customer[index].modified_at).fromNow()
 
@@ -117,7 +118,7 @@ export default class CustomersController {
       if (customer.userinfo.work.value) {
         customer.userinfo.work.text = await zpData.data(customer.userinfo.work.value[0], customer.userinfo.work.value[1])
       }
-      customer.created_at = Moment(customer.created_at).format('YYYY-MM-DD hh:mm:ss')
+      customer.created_at = Moment(customer.created_at).format('YYYY-MM-DD HH:mm:ss')
 
       return view.render('admin/customer/edit', {
         data: {

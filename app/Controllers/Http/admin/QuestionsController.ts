@@ -29,8 +29,8 @@ export default class QuestionsController {
         answer[index].title = question.title || ''
         answer[index].userinfo = user
         answer[index].photos = answer[index].photos ? JSON.parse(answer[index].photos) : []
-        answer[index].created_at = Moment(answer[index].created_at).format('YYYY-MM-DD hh:mm:ss')
-        answer[index].modified_at = Moment(answer[index].modified_at).format('YYYY-MM-DD hh:mm:ss')
+        answer[index].created_at = Moment(answer[index].created_at).format('YYYY-MM-DD HH:mm:ss')
+        answer[index].modified_at = Moment(answer[index].modified_at).format('YYYY-MM-DD HH:mm:ss')
       }
       return view.render('admin/question/answer', {
         data: {

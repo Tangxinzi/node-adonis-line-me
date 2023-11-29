@@ -38,7 +38,7 @@ export default class CustomerController {
   public async index({ request, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const customer = await Database.from('customer').select('id  as cid', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id').where({ status: 1, recommend: 1 }).orderBy('created_at', 'desc').limit(10)
+      const customer = await Database.from('customer').select('id  as cid', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id').where({ status: 1, recommend: 1 }).orderBy('recommend_at', 'desc').limit(10)
       for (let index = 0; index < customer.length; index++) {
         // 红娘自行发布
         if (customer[index].relation_log_id) {

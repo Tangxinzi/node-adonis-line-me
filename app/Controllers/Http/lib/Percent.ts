@@ -40,9 +40,9 @@ function percentUserinfo(user_id) {
     if (percent > 80) {
       percentText = ''
     } else if (percent > 60) {
-      percentText = `您当前资料完善程度为 ${ percent }%，详细完善有助于更多人看到您哦`
+      percentText = `您当前资料完善程度为 ${ percent }%`
     } else {
-      percentText = `资料完善不足，补充个人信息获得更多曝光`
+      percentText = `您当前资料完善不足`
     }
 
     resolve(percentText)

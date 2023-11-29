@@ -13,8 +13,8 @@ export default class OperatesController {
       for (let index = 0; index < operates.length; index++) {
         operates[index].customerTotal = (await Database.from('customer').where({ status: 1, user_id: operates[index].user_id }).count('* as total'))[0].total
         operates[index].userinfo = await Database.from('users').select('avatar_url', 'nickname').where({ user_id: operates[index].user_id }).first()
-        operates[index].created_at = Moment(operates[index].created_at).format('YYYY-MM-DD hh:mm:ss')
-        operates[index].modified_at = Moment(operates[index].modified_at).format('YYYY-MM-DD hh:mm:ss')
+        operates[index].created_at = Moment(operates[index].created_at).format('YYYY-MM-DD HH:mm:ss')
+        operates[index].modified_at = Moment(operates[index].modified_at).format('YYYY-MM-DD HH:mm:ss')
       }
 
       return view.render('admin/operates/index', {
@@ -36,7 +36,7 @@ export default class OperatesController {
       const all = request.all()
       const user_id = all.user_id.split(',')
       for (let index = 0; index < user_id.length; index++) {
-        await Database.table('users_operates').returning('id').insert({ user_id: user_id[index] })
+        await Database.table('users_operates').returning('id').insert({ type: all.type, user_id: user_id[index] })
       }
 
       session.flash('message', { type: 'success', header: '创建成功', message: `已添加特邀用户 ${ JSON.stringify(user_id) }` })

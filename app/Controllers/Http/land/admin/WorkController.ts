@@ -151,7 +151,7 @@ export default class WorkController {
   public async delete({ session, request, response }: HttpContextContract) {
     try {
       const all = request.all()
-      await Database.from('land_works').where('id', all.id).update({ status: 0, deleted_at: Moment().format('YYYY-MM-DD hh:mm:ss') })
+      await Database.from('land_works').where('id', all.id).update({ status: 0, deleted_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
       session.flash('message', { type: 'success', header: '作品已删除成功！', message: `` })
       return response.redirect('back')
     } catch (error) {

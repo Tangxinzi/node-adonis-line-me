@@ -72,6 +72,7 @@ export default class UserController {
         const _geoip = GeoIP.lookup(request.ip()) || {}
         await Database.from('users').where('user_id', session.get('user_id')).update({ online_at: Moment().format('YYYY-MM-DD HH:mm:ss'), ip: request.ip(), ip_city: _geoip.city })
         user.photos = JSON.parse(user.photos)
+        user.location = user.location ? JSON.parse(user.location) : ''
         user['videos'] = JSON.parse(user['videos'])
         user['zodiac_sign'] = this.getZodiacSign(Moment(user['birthday']).format('DD'), Moment(user['birthday']).format('MM'))
         user['age'] = Moment().diff(user['birthday'], 'years')
@@ -186,7 +187,10 @@ export default class UserController {
           await Database.from('users').where('user_id', session.get('user_id')).update({ company: all.value })
           break;
         case 'location':
-          await Database.from('users').where('user_id', session.get('user_id')).update({ location: all.value })
+          await Database.from('users').where('user_id', session.get('user_id')).update({ location: JSON.stringify(all.value || []) })
+          break;
+        case 'salary':
+          await Database.from('users').where('user_id', session.get('user_id')).update({ salary: all.value })
           break;
       }
 
@@ -269,6 +273,40 @@ export default class UserController {
       }
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  public async location({ request, session }: HttpContextContract) {
+    try {
+      const all = request.all()
+      const location = await Database.from('users_location').where('user_id', session.get('user_id')).first() || {}
+      if (location.id) {
+        await Database.from('users_location').where('user_id', session.get('user_id')).update({ longitude: all.longitude, latitude: all.latitude })
+
+        // const axios = require('axios');
+        //
+        // const BMAP_API_URL = 'http://api.map.baidu.com/reverse_geocoding/v3/', AK = 'NvdBjR5UI5ruyioIi5O0Wqn22sseWowA';
+        // const params = {
+        //   ak: AK,
+        //   output: 'json',
+        //   location: `${ all.latitude },${ all.longitude }`
+        // };
+        //
+        // const response = await axios.get(BMAP_API_URL, { params });
+        // const result = response.data;
+        //
+        // if (result.status === 0) {
+        //   return result.result.formatted_address;
+        // } else {
+        //   console.error('地理编码API请求失败：' + result.message);
+        //   return null;
+        // }
+      } else {
+        await Database.table('users_location').insert({ user_id: session.get('user_id'), longitude: all.longitude, latitude: all.latitude, modified_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
+      }
+      return all
+    } catch (error) {
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
     }
   }
 

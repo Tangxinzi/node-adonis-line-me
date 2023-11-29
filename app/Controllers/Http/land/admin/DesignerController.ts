@@ -88,7 +88,8 @@ export default class DesignerController {
       const all = request.all()
       const data = await Database.from('land_designers').where('id', params.id).first()
       data.labels = data.labels ? data.labels.split(',') : []
-      data.works = await Database.from('land_works').select('id', 'title', 'theme_url').where('status', 1).whereIn('id', data.works ? data.works.split(',') : [])
+      data.works = await Database.from('land_works').select('id', 'title', 'labels', 'theme_url').where('status', 1).whereIn('id', data.works ? data.works.split(',') : [])
+      data.works.labels = data.works.labels ? data.works.labels.split(',') : []
 
       if (all.type == 'json') {
         return response.json({
@@ -162,7 +163,7 @@ export default class DesignerController {
   public async delete({ session, request, response }: HttpContextContract) {
     try {
       const all = request.all()
-      await Database.from('land_designers').where('id', all.id).update({ status: 0, deleted_at: Moment().format('YYYY-MM-DD hh:mm:ss') })
+      await Database.from('land_designers').where('id', all.id).update({ status: 0, deleted_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
       session.flash('message', { type: 'success', header: '设计师已删除成功！', message: `` })
       return response.redirect('back')
     } catch (error) {

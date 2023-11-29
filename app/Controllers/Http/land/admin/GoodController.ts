@@ -2,56 +2,30 @@ import Database from '@ioc:Adonis/Lucid/Database';
 import Application from '@ioc:Adonis/Core/Application';
 import Moment from 'moment';
 
-export default class ArticleController {
+export default class GoodController {
   public async index({ request, view, response }: HttpContextContract) {
     try {
-      const all = request.all(), catalog = ['其它', '活动资讯']
-      const articles = await Database.from('land_articles').select('id', 'article_catalog', 'article_title', 'article_author', 'article_detail', 'article_theme_url', 'article_original_url').where('status', 1)
-      for (let index = 0; index < articles.length; index++) {
-        articles[index].catalog = catalog[articles[index].article_catalog]
-        articles[index]['created_at'] = Moment(articles[index]['created_at']).format('YYYY-MM-DD H:mm:ss')
+      const all = request.all()
+      const goods = await Database.from('land_goods').select('id', 'good_catalog', 'good_title', 'good_author', 'good_detail', 'good_theme_url', 'good_original_url').where('status', 1)
+      for (let index = 0; index < goods.length; index++) {
+        goods[index]['created_at'] = Moment(goods[index]['created_at']).format('YYYY-MM-DD H:mm:ss')
       }
 
       if (all.type == 'json') {
         return response.json({
           status: 200,
           message: "ok",
-          data: articles
+          data: goods
         })
       }
 
-      return view.render('land/admin/article/index', {
+      return view.render('land/admin/good/index', {
         data: {
-          title: '文章',
-          active: 'article',
-          articles
+          title: '商城商品',
+          active: 'good',
+          goods
         }
       })
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  public async catalog({ params, request, view, response }: HttpContextContract) {
-    try {
-      const all = request.all()
-      if (all.search) {
-
-      } else {
-        var data = await Database.from('land_articles').select('id', 'article_catalog', 'article_title', 'article_author', 'article_detail', 'article_theme_url', 'article_original_url', 'created_at').where({ status: 1, article_catalog: params.catalog }).orderBy('created_at', 'desc').limit(8)
-      }
-
-      for (let index = 0; index < data.length; index++) {
-        data[index].created_at = Moment(data[index].created_at).format('YYYY-MM-DD')
-      }
-
-      if (all.type == 'json') {
-        return response.json({
-          status: 200,
-          message: "ok",
-          data
-        })
-      }
     } catch (error) {
       console.log(error)
     }
@@ -60,10 +34,10 @@ export default class ArticleController {
   public async create({ request, view, session }: HttpContextContract) {
     try {
       const all = request.all()
-      return view.render('land/admin/article/create', {
+      return view.render('land/admin/good/create', {
         data: {
-          title: '创建文章',
-          active: 'article'
+          title: '创建商城商品',
+          active: 'good'
         }
       })
     } catch (error) {
@@ -74,19 +48,19 @@ export default class ArticleController {
   public async show({ params, request, view, response }: HttpContextContract) {
     try {
       const all = request.all()
-      const article = await Database.from('land_articles').where('id', params.id).first()
-      article.created_at = Moment(article.created_at).format('YYYY-MM-DD H:mm:ss')
+      const good = await Database.from('land_goods').where('id', params.id).first()
+      good.created_at = Moment(good.created_at).format('YYYY-MM-DD H:mm:ss')
       const data = {
         status: 200,
         message: "ok",
-        data: article
+        data: good
       }
 
       if (all.type == 'json') {
         return response.json(data)
       }
 
-      return view.render('land/admin/article/edit', {
+      return view.render('land/admin/good/edit', {
         data
       })
     } catch (error) {
@@ -97,12 +71,12 @@ export default class ArticleController {
   public async edit({ params, request, view, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const article = await Database.from('land_articles').where('id', params.id).first()
-      return view.render('land/admin/article/edit', {
+      const good = await Database.from('land_goods').where('id', params.id).first()
+      return view.render('land/admin/good/edit', {
         data: {
-          title: '编辑文章',
-          active: 'article'
-          article
+          title: '编辑商城商品',
+          active: 'good'
+          good
         }
       })
     } catch (error) {
@@ -113,7 +87,7 @@ export default class ArticleController {
   public async save({ request, response, session }: HttpContextContract) {
     try {
       let all = request.all()
-      let article_theme_url = all.theme_url || ''
+      let good_theme_url = all.theme_url || ''
       if (request.file('theme')) {
         const RandomString = require('RandomString')
         const profile = request.file('theme', { type: ['image', 'video'], size: '10mb' })
@@ -125,7 +99,7 @@ export default class ArticleController {
         file.fileSrc = profilePath + profileName
         await profile.move(Application.publicPath(profilePath), { name: profileName, overwrite: true })
 
-        article_theme_url = file.fileSrc
+        good_theme_url = file.fileSrc
       }
 
       // await Database.from('files').insert({
@@ -141,18 +115,18 @@ export default class ArticleController {
       // })
 
       if (request.method() == 'POST' && all.button == 'update') {
-        await Database.from('land_articles').where('id', all.id).update({ article_catalog: all.catalog, article_title: all.title, article_author: all.author, article_detail: all.detail, article_original_url: all.original_url, article_theme_url })
+        await Database.from('land_goods').where('id', all.id).update({ good_catalog: all.catalog, good_title: all.title, good_author: all.author, good_detail: all.detail, good_original_url: all.original_url, good_theme_url })
         session.flash('message', { type: 'success', header: '更新成功', message: `` })
         return response.redirect('back')
       }
 
-      const id = await Database.table('land_articles').returning('id').insert({
-        article_catalog: all.catalog || '',
-        article_title: all.title || '',
-        article_author: all.author || '',
-        article_detail: all.detail || '',
-        article_original_url: all.original_url,
-        article_theme_url
+      const id = await Database.table('land_goods').returning('id').insert({
+        good_catalog: all.catalog || '',
+        good_title: all.title || '',
+        good_author: all.author || '',
+        good_detail: all.detail || '',
+        good_original_url: all.original_url,
+        good_theme_url
       })
 
       session.flash('message', { type: 'success', header: '创建成功', message: `` })
@@ -166,8 +140,8 @@ export default class ArticleController {
   public async delete({ session, request, response }: HttpContextContract) {
     try {
       const all = request.all()
-      await Database.from('land_articles').where('id', all.id).update({ status: 0, deleted_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
-      session.flash('message', { type: 'success', header: '文章已删除成功！', message: `` })
+      await Database.from('land_goods').where('id', all.id).update({ status: 0, deleted_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
+      session.flash('message', { type: 'success', header: '商城商品已删除成功！', message: `` })
       return response.redirect('back')
     } catch (error) {
       console.log(error);

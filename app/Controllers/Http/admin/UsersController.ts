@@ -44,8 +44,9 @@ export default class UsersController {
 
         users[index].photos = JSON.parse(users[index].photos)
         users[index].ip = GeoIP.lookup(users[index].ip)
-        users[index]['online_at'] = Moment(users[index]['online_at']).fromNow()
-        users[index]['created_at'] = Moment(users[index]['created_at']).format('YYYY-MM-DD hh:mm:ss')
+        users[index].online_at_fromNow = Moment(users[index].online_at_fromNow).fromNow()
+        users[index].online_at = Moment(users[index].online_at).format('YYYY-MM-DD HH:mm:ss')
+        users[index].created_at = Moment(users[index].created_at).format('YYYY-MM-DD HH:mm:ss')
       }
 
       return view.render('admin/user/index', {
@@ -73,7 +74,7 @@ export default class UsersController {
       user.photos = JSON.parse(user.photos)
       user.ip = GeoIP.lookup(user.ip) || {}
       user.online_at = Moment(user.online_at).fromNow()
-      user.created_at = Moment(user.created_at).format('YYYY-MM-DD hh:mm:ss')
+      user.created_at = Moment(user.created_at).format('YYYY-MM-DD HH:mm:ss')
 
       return view.render('admin/user/edit', {
         data: {
