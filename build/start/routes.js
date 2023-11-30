@@ -16,6 +16,9 @@ Route_1.default.group(() => {
     Route_1.default.post('/user/custom/create', 'api/PublishesController.create');
     Route_1.default.get('/user/qrcode', 'api/UserController.qrcode');
     Route_1.default.get('/user/chat', 'api/UserController.chat');
+    Route_1.default.get('/user/location', 'api/UserController.location');
+    Route_1.default.get('/user/verification', 'api/UserController.verification');
+    Route_1.default.get('/user/verification/review/:table/:field', 'api/UserController.review');
     Route_1.default.get('/user/question', 'api/QuestionsController.index');
     Route_1.default.get('/user/question/lists', 'api/QuestionsController.questionLists');
     Route_1.default.get('/user/answer/lists', 'api/QuestionsController.answerLists');
@@ -44,6 +47,8 @@ Route_1.default.group(() => {
     Route_1.default.get('/event/descovery', 'api/EventController.descovery');
     Route_1.default.get('/event/descovery/:type/:id', 'api/EventController.type');
     Route_1.default.post('/event/like/:id', 'api/EventController.like');
+    Route_1.default.get('/query/school', 'api/QueryController.school');
+    Route_1.default.get('/query/company', 'api/QueryController.company');
 }).prefix('/api').middleware('apicheck');
 Route_1.default.group(() => {
     Route_1.default.get('/login', 'admin/UsersController.login');
@@ -52,6 +57,9 @@ Route_1.default.group(() => {
 Route_1.default.group(() => {
     Route_1.default.get('/operates', 'admin/OperatesController.index');
     Route_1.default.post('/operates', 'admin/OperatesController.save');
+    Route_1.default.get('/operates/verification', 'admin/OperatesController.verification');
+    Route_1.default.get('/operates/verification/review/:id', 'admin/OperatesController.review');
+    Route_1.default.post('/operates/verification/review/:id', 'admin/OperatesController.review');
     Route_1.default.get('/users', 'admin/UsersController.index');
     Route_1.default.get('/users/edit/:user_id', 'admin/UsersController.edit');
     Route_1.default.get('/users/update', 'admin/UsersController.update');
@@ -97,10 +105,17 @@ Route_1.default.group(() => {
     Route_1.default.post('/work/save', 'land/admin/WorkController.save');
     Route_1.default.post('/work/delete', 'land/admin/WorkController.delete');
     Route_1.default.get('/article', 'land/admin/ArticleController.index');
+    Route_1.default.get('/article/catalog/:catalog', 'land/admin/ArticleController.catalog');
     Route_1.default.get('/article/create', 'land/admin/ArticleController.create');
     Route_1.default.get('/article/show/:id', 'land/admin/ArticleController.show');
     Route_1.default.get('/article/edit/:id', 'land/admin/ArticleController.edit');
     Route_1.default.post('/article/save', 'land/admin/ArticleController.save');
     Route_1.default.post('/article/delete', 'land/admin/ArticleController.delete');
+    Route_1.default.get('/good', 'land/admin/GoodController.index');
+    Route_1.default.get('/good/create', 'land/admin/GoodController.create');
+    Route_1.default.get('/good/show/:id', 'land/admin/GoodController.show');
+    Route_1.default.get('/good/edit/:id', 'land/admin/GoodController.edit');
+    Route_1.default.post('/good/save', 'land/admin/GoodController.save');
+    Route_1.default.post('/good/delete', 'land/admin/GoodController.delete');
 }).prefix('/land');
 //# sourceMappingURL=routes.js.map

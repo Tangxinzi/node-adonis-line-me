@@ -37,10 +37,11 @@
             <th>类别</th>
             <th>照片</th>
             <th>出生</th>
+            <th>资料</th>
             <th>IP 属地</th>
-            <th>上线</th>
-            <th>创建</th>
-            <th>操作</th>
+            <th>最近上线</th>
+            <th>注册时间</th>
+            <!-- <th>操作</th> -->
           </tr>
         </thead>
         <tbody>
@@ -48,7 +49,7 @@
             <tr>
               <td class="td">{{ row.id }}</td>
               <td class="td">
-                <a class="ui image label" title="{{ row.user_id }}">
+                <a class="ui image label" title="{{ row.user_id }}" href="{{ route('admin/UsersController.edit', { user_id: row.user_id }) }}">
                   @if(row.avatar_url)
                   <img src="{{ row.avatar_url }}" />
                   @endif
@@ -63,12 +64,13 @@
               <td class="td">{{ row.type == 1 ? '用户' : '' }}{{ row.type == 2 ? '红娘' : '' }}</td>
               <td class="td">{{ row.photos.length }}</td>
               <td class="td">{{ row.birthday || '' }}</td>
+              <td class="td" title="{{ row.percent.text }}">{{ row.percent.value }}</td>
               <td class="td">{{ row.ip ? row.ip.city : (row.ip || '') }}</td>
               <td class="td">{{ row.online_at }}</td>
               <td class="td">{{ row.created_at }}</td>
-              <td class="td">
+              <!-- <td class="td">
                 <a href="{{ route('admin/UsersController.edit', { user_id: row.user_id }) }}">编辑</a>
-              </td>
+              </td> -->
             </tr>
           @endeach
         </tbody>

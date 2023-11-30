@@ -28,12 +28,16 @@
       <div class="flex-between">
         <b>{{ data.title }}</b>
       </div>
-      <form class="ui segment form" method="post" action="{{ route('land/admin/ArticleController.save') }}" enctype="multipart/form-data">
+      <form class="ui segment form" method="post" action="{{ route('land/admin/GoodController.save') }}" enctype="multipart/form-data">
+        <div class="field" hidden>
+          <label>ID</label>
+          <input type="text" name="id" value="{{ data.good.id || '' }}" placeholder="" />
+        </div>
         <div class="field">
           <div class="field">
             <label>类型</label>
             <div class="ui selection dropdown">
-              <input type="hidden" name="catalog" value="" />
+              <input type="hidden" name="catalog" value="{{ data.good.good_catalog || '' }}" />
               <i class="dropdown icon"></i>
               <div class="default text">点击选择</div>
               <div class="menu">
@@ -43,21 +47,29 @@
             </div>
           </div>
         </div>
+        <div class="field" hidden>
+          <label>图片 URL</label>
+          <input type="text" name="theme_url" value="{{ data.good.good_theme_url || '' }}" placeholder="" />
+        </div>
         <div class="field">
           <label>标题</label>
-          <input type="text" name="title" placeholder="" />
+          <input type="text" name="title" value="{{ data.good.good_title || '' }}" placeholder="" />
         </div>
         <div class="field">
           <label>作者</label>
-          <input type="text" name="author" placeholder="" />
+          <input type="text" name="author" value="{{ data.good.good_author || '' }}" placeholder="" />
         </div>
         <div class="field">
           <label>原文链接</label>
-          <input type="url" name="original_url" value="" placeholder="" />
+          <input type="text" name="original_url" value="{{ data.good.good_original_url || '' }}" placeholder="" />
         </div>
         <div class="field">
-          <label>封面</label>
-          <input type="file" name="theme" value="" placeholder="" />
+          <label>封面
+            @if(data.good.good_theme_url)
+              <a href="{{ data.good.good_theme_url }}" target="_blank">查看图片</a>
+            @endif
+          </label>
+          <input type="file" name="theme" value="{{ data.good.good_theme_url }}" placeholder="" />
         </div>
         <div class="field">
           <label>页面详细内容</label>
@@ -66,11 +78,11 @@
               <div id="toolbar-container"><!-- 工具栏 --></div>
               <div id="editor-container"><!-- 编辑器 --></div>
             </div>
-            <input id="detail" type="text" name="detail" value="" hidden />
+            <input id="detail" type="text" name="detail" value="{{ data.good.good_title || '' }}" hidden />
           </div>
         </div>
         {{ csrfField() }}
-        <button class="ui tiny button" type="submit" name="button" value="save">提交</button>
+        <button class="ui tiny button" type="submit" name="button" value="update">提交</button>
       </form>
     </div>
   </div>

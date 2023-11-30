@@ -8,6 +8,7 @@ import iconv from 'iconv-lite';
 import Moment from'moment';
 const Avatar = require('../lib/Avatar');
 const zpData = require('../lib/Zhipin');
+const { percentUserinfo, percentCustomerinfo } = require('../lib/Percent');
 const RELATION = ["朋友", "亲戚", "伙伴", "同事", "其他"]
 
 export default class CustomerController {
@@ -258,11 +259,13 @@ export default class CustomerController {
         if (customer[index].relation_user_id) {
           customer[index] = {
             ...customer[index],
+            percent: await percentUserinfo(customer[index].relation_user_id),
             ...await Database.from('users').select('avatar_url', 'nickname', 'work', 'detail', 'phone').where('user_id', customer[index].relation_user_id).first()
           }
         } else if (customer[index].relation_log_id) {
           customer[index] = {
             ...customer[index],
+            percent: await percentCustomerinfo(customer[index].relation_log_id),
             ...await Database.from('customer_log').select('avatar_url', 'nickname', 'work', 'detail', 'phone').where('id', customer[index].relation_log_id).first()
           }
         }
@@ -309,6 +312,7 @@ export default class CustomerController {
       customer.parent = await Database.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer.user_id).first()
       customer.introduces = await Database.from('answer').where({ type: 1, status: 1, user_id: customer.relation_user_id })
 
+      customer.userinfo.location = customer.userinfo.location ? JSON.parse(customer.userinfo.location) : ''
       customer.userinfo.age = Moment().diff(customer.userinfo.birthday, 'years')
       customer.userinfo.zodiac_sign = this.getZodiacSign(Moment(customer.userinfo.birthday).format('DD'), Moment(customer.userinfo.birthday).format('MM'))
       customer.userinfo.photos = customer.userinfo.photos ? JSON.parse(customer.userinfo.photos) : []
@@ -366,6 +370,18 @@ export default class CustomerController {
           break;
         case 'userinfo.birthday':
           var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ birthday: all.value })
+          break;
+        case 'userinfo.location':
+          var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ location: JSON.stringify(all.value) })
+          break;
+        case 'userinfo.school':
+          var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ school: all.value })
+          break;
+        case 'userinfo.company':
+          var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ company: all.value })
+          break;
+        case 'userinfo.salary':
+          var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ salary: all.value })
           break;
       }
 

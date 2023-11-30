@@ -9,9 +9,10 @@ const moment_1 = __importDefault(require("moment"));
 class ArticleController {
     async index({ request, view, response }) {
         try {
-            const all = request.all();
-            const articles = await Database_1.default.from('land_articles').select('id', 'article_title', 'article_author', 'article_detail', 'article_theme_url', 'article_original_url').where('status', 1);
+            const all = request.all(), catalog = ['其它', '活动资讯'];
+            const articles = await Database_1.default.from('land_articles').select('id', 'article_catalog', 'article_title', 'article_author', 'article_detail', 'article_theme_url', 'article_original_url').where('status', 1);
             for (let index = 0; index < articles.length; index++) {
+                articles[index].catalog = catalog[articles[index].article_catalog];
                 articles[index]['created_at'] = (0, moment_1.default)(articles[index]['created_at']).format('YYYY-MM-DD H:mm:ss');
             }
             if (all.type == 'json') {
@@ -28,6 +29,29 @@ class ArticleController {
                     articles
                 }
             });
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+    async catalog({ params, request, view, response }) {
+        try {
+            const all = request.all();
+            if (all.search) {
+            }
+            else {
+                var data = await Database_1.default.from('land_articles').select('id', 'article_catalog', 'article_title', 'article_author', 'article_detail', 'article_theme_url', 'article_original_url', 'created_at').where({ status: 1, article_catalog: params.catalog }).orderBy('created_at', 'desc').limit(8);
+            }
+            for (let index = 0; index < data.length; index++) {
+                data[index].created_at = (0, moment_1.default)(data[index].created_at).format('YYYY-MM-DD');
+            }
+            if (all.type == 'json') {
+                return response.json({
+                    status: 200,
+                    message: "ok",
+                    data
+                });
+            }
         }
         catch (error) {
             console.log(error);
@@ -100,11 +124,12 @@ class ArticleController {
                 article_theme_url = file.fileSrc;
             }
             if (request.method() == 'POST' && all.button == 'update') {
-                await Database_1.default.from('land_articles').where('id', all.id).update({ article_title: all.title, article_author: all.author, article_detail: all.detail, article_original_url: all.original_url, article_theme_url });
+                await Database_1.default.from('land_articles').where('id', all.id).update({ article_catalog: all.catalog, article_title: all.title, article_author: all.author, article_detail: all.detail, article_original_url: all.original_url, article_theme_url });
                 session.flash('message', { type: 'success', header: '更新成功', message: `` });
                 return response.redirect('back');
             }
             const id = await Database_1.default.table('land_articles').returning('id').insert({
+                article_catalog: all.catalog || '',
                 article_title: all.title || '',
                 article_author: all.author || '',
                 article_detail: all.detail || '',
@@ -122,7 +147,7 @@ class ArticleController {
     async delete({ session, request, response }) {
         try {
             const all = request.all();
-            await Database_1.default.from('land_articles').where('id', all.id).update({ status: 0, deleted_at: (0, moment_1.default)().format('YYYY-MM-DD hh:mm:ss') });
+            await Database_1.default.from('land_articles').where('id', all.id).update({ status: 0, deleted_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss') });
             session.flash('message', { type: 'success', header: '文章已删除成功！', message: `` });
             return response.redirect('back');
         }

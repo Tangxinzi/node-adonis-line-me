@@ -4,6 +4,7 @@ import Moment from 'moment';
 import GeoIP from 'geoip-lite';
 import Jwt from 'App/Models/Jwt';
 const zpData = require('../lib/Zhipin');
+const { percentUserinfo } = require('../lib/Percent');
 
 export default class UsersController {
   public async login({ request, response, view, session }: HttpContextContract) {
@@ -42,6 +43,7 @@ export default class UsersController {
           users[index].work['text'] = await zpData.data(users[index].work['value'][0], users[index].work['value'][1])
         }
 
+        users[index].percent = await percentUserinfo(users[index].user_id)
         users[index].photos = JSON.parse(users[index].photos)
         users[index].ip = GeoIP.lookup(users[index].ip)
         users[index].online_at_fromNow = Moment(users[index].online_at_fromNow).fromNow()

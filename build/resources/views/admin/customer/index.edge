@@ -17,16 +17,27 @@
     <div class="sixteen wide column">
       <div class="ui header-title flex-between">
         <span>{{ data.title }}</span>
-        <div class="ui small action input">
-          <input type="text" placeholder="搜索...">
-          <!-- <select class="ui compact selection dropdown">
-            <option value="all">All</option>
-            <option selected="" value="articles">文章</option>
-            <option value="products">Products</option>
-          </select> -->
-          <button class="ui icon button">
-            <i class="search icon"></i>
-          </button>
+        <div class="right">
+          <div class="ui mini selection dropdown">
+            <input type="hidden" name="type" value="{{ data.all.orderBy || '' }}" />
+            <i class="dropdown icon"></i>
+            <div class="default text">排序</div>
+            <div class="menu">
+              <a href="" class="item" data-value="">默认</a>
+              <a href="?orderBy=recommend_at" class="item" data-value="online_at">推荐时间</a>
+            </div>
+          </div>
+          <div class="ui small action input">
+            <input type="text" placeholder="搜索...">
+            <!-- <select class="ui compact selection dropdown">
+              <option value="all">All</option>
+              <option selected="" value="articles">文章</option>
+              <option value="products">Products</option>
+            </select> -->
+            <button class="ui icon button">
+              <i class="search icon"></i>
+            </button>
+          </div>
         </div>
       </div>
       <table class="ui celled center aligned table">
@@ -41,6 +52,7 @@
             <th>联系</th>
             <th>手机验证</th>
             <th>照片</th>
+            <th>资料</th>
             <th>时间</th>
             <th>推荐</th>
             <th>操作</th>
@@ -85,8 +97,9 @@
                   @endeach
                 " data-position="bottom center" data-inverted="">{{ row.photos.length || '' }}</span>
               </td>
+              <td class="td" title="{{ row.percent.text }}">{{ row.percent.value }}</td>
               <td class="td">{{ row.created_at }}</td>
-              <td class="td">
+              <td class="td" title="推荐时间 {{ row.recommend_at }}">
                 <i class="{{ row.recommend ? 'pink heartbeat' : 'heart outline' }} icon"></i>
               </td>
               <td class="td" style="position: relative;">

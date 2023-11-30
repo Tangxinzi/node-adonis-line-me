@@ -9,6 +9,7 @@ const moment_1 = __importDefault(require("moment"));
 const geoip_lite_1 = __importDefault(require("geoip-lite"));
 const Jwt_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/Jwt"));
 const zpData = require('../lib/Zhipin');
+const { percentUserinfo } = require('../lib/Percent');
 class UsersController {
     async login({ request, response, view, session }) {
         try {
@@ -47,10 +48,12 @@ class UsersController {
                 if (users[index].work && users[index].work['value']) {
                     users[index].work['text'] = await zpData.data(users[index].work['value'][0], users[index].work['value'][1]);
                 }
+                users[index].percent = await percentUserinfo(users[index].user_id);
                 users[index].photos = JSON.parse(users[index].photos);
                 users[index].ip = geoip_lite_1.default.lookup(users[index].ip);
-                users[index]['online_at'] = (0, moment_1.default)(users[index]['online_at']).fromNow();
-                users[index]['created_at'] = (0, moment_1.default)(users[index]['created_at']).format('YYYY-MM-DD hh:mm:ss');
+                users[index].online_at_fromNow = (0, moment_1.default)(users[index].online_at_fromNow).fromNow();
+                users[index].online_at = (0, moment_1.default)(users[index].online_at).format('YYYY-MM-DD HH:mm:ss');
+                users[index].created_at = (0, moment_1.default)(users[index].created_at).format('YYYY-MM-DD HH:mm:ss');
             }
             return view.render('admin/user/index', {
                 data: {
@@ -76,7 +79,7 @@ class UsersController {
             user.photos = JSON.parse(user.photos);
             user.ip = geoip_lite_1.default.lookup(user.ip) || {};
             user.online_at = (0, moment_1.default)(user.online_at).fromNow();
-            user.created_at = (0, moment_1.default)(user.created_at).format('YYYY-MM-DD hh:mm:ss');
+            user.created_at = (0, moment_1.default)(user.created_at).format('YYYY-MM-DD HH:mm:ss');
             return view.render('admin/user/edit', {
                 data: {
                     title: '用户',

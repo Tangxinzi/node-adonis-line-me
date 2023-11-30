@@ -3,6 +3,7 @@ import Logger from '@ioc:Adonis/Core/Logger'
 import Moment from 'moment';
 Moment.locale('zh-cn')
 const zpData = require('../lib/Zhipin');
+const { percentUserinfo, percentCustomerinfo } = require('../lib/Percent');
 const RELATION = ["朋友", "亲戚", "伙伴", "同事", "其他"]
 
 export default class CustomersController {
@@ -37,6 +38,7 @@ export default class CustomersController {
           customer[index] = {
             ...customer[index],
             ...await Database.from('customer_log').select('nickname', 'avatar_url', 'sex', 'birthday', 'contact_wechat', 'photos', 'videos', 'work', 'phone', 'created_at', 'modified_at').where('id', customer[index].relation_log_id).first(),
+            percent: await percentCustomerinfo(customer[index].relation_log_id),
             parent: await Database.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].user_id).first()
           }
         }
@@ -46,6 +48,7 @@ export default class CustomersController {
           customer[index] = {
             ...customer[index],
             ...await Database.from('users').select('nickname', 'avatar_url', 'sex', 'birthday', 'contact_wechat', 'photos', 'videos', 'work', 'phone', 'created_at', 'modified_at').where('user_id', customer[index].relation_user_id).first(),
+            percent: await percentUserinfo(customer[index].relation_user_id),
             parent: await Database.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].relation_user_id).first()
           }
         }

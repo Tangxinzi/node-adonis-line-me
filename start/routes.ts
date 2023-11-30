@@ -34,6 +34,8 @@ Route.group(() => {
   Route.get('/user/qrcode', 'api/UserController.qrcode')
   Route.get('/user/chat', 'api/UserController.chat')
   Route.get('/user/location', 'api/UserController.location')
+  Route.get('/user/verification', 'api/UserController.verification')
+  Route.get('/user/verification/review/:table/:field', 'api/UserController.review')
 
   Route.get('/user/question', 'api/QuestionsController.index')
   Route.get('/user/question/lists', 'api/QuestionsController.questionLists')
@@ -82,6 +84,9 @@ Route.group(() => {
 Route.group(() => {
   Route.get('/operates', 'admin/OperatesController.index')
   Route.post('/operates', 'admin/OperatesController.save')
+  Route.get('/operates/verification', 'admin/OperatesController.verification')
+  Route.get('/operates/verification/review/:id', 'admin/OperatesController.review')
+  Route.post('/operates/verification/review/:id', 'admin/OperatesController.review')
 
   Route.get('/users', 'admin/UsersController.index')
   Route.get('/users/edit/:user_id', 'admin/UsersController.edit')

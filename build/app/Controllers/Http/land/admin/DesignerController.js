@@ -88,7 +88,8 @@ class DesignerController {
             const all = request.all();
             const data = await Database_1.default.from('land_designers').where('id', params.id).first();
             data.labels = data.labels ? data.labels.split(',') : [];
-            data.works = await Database_1.default.from('land_works').select('id', 'title', 'theme_url').where('status', 1).whereIn('id', data.works ? data.works.split(',') : []);
+            data.works = await Database_1.default.from('land_works').select('id', 'title', 'labels', 'theme_url').where('status', 1).whereIn('id', data.works ? data.works.split(',') : []);
+            data.works.labels = data.works.labels ? data.works.labels.split(',') : [];
             if (all.type == 'json') {
                 return response.json({
                     status: 200,
@@ -156,7 +157,7 @@ class DesignerController {
     async delete({ session, request, response }) {
         try {
             const all = request.all();
-            await Database_1.default.from('land_designers').where('id', all.id).update({ status: 0, deleted_at: (0, moment_1.default)().format('YYYY-MM-DD hh:mm:ss') });
+            await Database_1.default.from('land_designers').where('id', all.id).update({ status: 0, deleted_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss') });
             session.flash('message', { type: 'success', header: '设计师已删除成功！', message: `` });
             return response.redirect('back');
         }

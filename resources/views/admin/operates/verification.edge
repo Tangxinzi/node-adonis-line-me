@@ -1,0 +1,90 @@
+@layout('components.layouts.main')
+
+@section('title')
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<title>{{ data.title }} - Hunlian</title>
+@endsection
+
+@section('style')
+<style media="screen">
+
+</style>
+@endsection
+
+@section('content')
+  <div class="ui stackable four column grid">
+    <div class="three wide column">
+      <div class="ui vertical pointing menu">
+        <a class="{{ data.subActive == 'users' ? 'active' : '' }} item" href="{{ route('admin/OperatesController.index') }}">权限用户</a>
+        <a class="{{ data.subActive == 'verification' ? 'active' : '' }} item" href="{{ route('admin/OperatesController.verification') }}">内容审核</a>
+        <a class="item" href="">激励下发</a>
+        <a class="item" href="">内容分发</a>
+      </div>
+    </div>
+    <div class="thirteen wide column">
+      <div class="ui header-title flex-between">
+        <span>{{ data.title }}</span>
+      </div>
+      <table class="ui celled center aligned table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th class="two wide">提交用户</th>
+            <th class="two wide">数据字段</th>
+            <th>更新值</th>
+            <th class="two wide">提交时间</th>
+            <th class="two wide">审核员</th>
+            <th class="three wide">审核状态</th>
+          </tr>
+        </thead>
+        <tbody>
+          @each(row in data.verification)
+            <tr>
+              <td>
+                <a href="{{ route('admin/OperatesController.review', { id: row.id }) }}">{{ row.id }}</a>
+              </td>
+              <td>
+                <!-- <a class="ui image label" title="{{ row.user_id }}">
+                  @if(row.userinfo.avatar_url)
+                  <img src="{{ row.userinfo.avatar_url }}" />
+                  @endif
+                  {{ row.userinfo.nickname }}
+                </a> -->
+                {{ row.userinfo.nickname }}
+              </td>
+              <td>
+                {{ row.table == 'users' ? '用户信息' : '' }}
+                {{ row.field == 'avatar_url' ? '头像更新' : '' }}
+                {{ row.field == 'photos' ? '照片集' : '' }}
+              </td>
+              <td>
+                @if(row.field == 'avatar_url')
+                  <img class="ui avatar image" src="{{ row.before }}" />
+                @endif
+                @if(row.field == 'photos')
+                  @each(photo in row.value)
+                    <img class="ui avatar image" src="{{ photo }}" />
+                  @endeach
+                @endif
+              </td>
+              <td>{{ row.created_at }}</td>
+              <td>{{ row.checker.nickname || '-' }}</td>
+              <td>
+                <a class="ui label" href="{{ route('admin/OperatesController.review', { id: row.id }) }}" title="状态：pending 审核状态 / approved 通过 / rejected 拒绝 / close 关闭">
+                  <i class="{{ row.is_verified == 0 ? 'clock' : 'circle' }} {{ row.verification_status == 'PENDING' ? 'yellow' : '' }} {{ row.verification_status == 'APPROVED' ? 'green' : '' }} {{ row.verification_status == 'REJECTED' ? 'red' : '' }} icon"></i>
+                  {{ row.is_verified == 0 ? '待审核' : '' }}{{ row.is_verified == 1 ? '已审核' : '' }}
+                  <span class="detail">{{ row.verification_status }}</span>
+                </a>
+              </td>
+            </tr>
+          @endeach
+        </tbody>
+      </table>
+    </div>
+  </div>
+@endsection
+
+@section('script')
+
+@endsection

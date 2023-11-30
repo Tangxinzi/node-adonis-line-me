@@ -8,6 +8,7 @@ const Logger_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Core/Logg
 const moment_1 = __importDefault(require("moment"));
 moment_1.default.locale('zh-cn');
 const zpData = require('../lib/Zhipin');
+const { percentUserinfo, percentCustomerinfo } = require('../lib/Percent');
 const RELATION = ["朋友", "亲戚", "伙伴", "同事", "其他"];
 class CustomersController {
     async field({ request, response, session }) {
@@ -16,10 +17,10 @@ class CustomersController {
             const customer = await Database_1.default.from('customer').where({ id: all.id }).orderBy('id', 'desc').first();
             switch (all.button) {
                 case 'recommend':
-                    await Database_1.default.from('customer').where({ id: all.id }).update({ recommend: !customer.recommend });
+                    await Database_1.default.from('customer').where({ id: all.id }).update({ recommend: !customer.recommend, recommend_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss') });
                     break;
                 case 'delete':
-                    await Database_1.default.from('customer').where({ id: all.id }).update({ status: 0, deleted_at: (0, moment_1.default)().format('YYYY-MM-DD hh:mm:ss') });
+                    await Database_1.default.from('customer').where({ id: all.id }).update({ status: 0, deleted_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss') });
                     break;
             }
             return response.redirect('back');
@@ -32,12 +33,13 @@ class CustomersController {
         try {
             const all = request.all();
             Logger_1.default.info("error 获取失败 %s", JSON.stringify(all));
-            const customer = await Database_1.default.from('customer').select('id', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id', 'recommend').where('status', 1).orderBy('recommend', 'desc').orderBy('id', 'desc').forPage(request.input('page', 1), 20);
+            const customer = await Database_1.default.from('customer').select('id', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id', 'recommend').where('status', 1).orderBy('recommend', 'desc').orderBy('recommend_at', 'desc').forPage(request.input('page', 1), 20);
             for (let index = 0; index < customer.length; index++) {
                 if (customer[index].relation_log_id) {
                     customer[index] = {
                         ...customer[index],
                         ...await Database_1.default.from('customer_log').select('nickname', 'avatar_url', 'sex', 'birthday', 'contact_wechat', 'photos', 'videos', 'work', 'phone', 'created_at', 'modified_at').where('id', customer[index].relation_log_id).first(),
+                        percent: await percentCustomerinfo(customer[index].relation_log_id),
                         parent: await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].user_id).first()
                     };
                 }
@@ -45,6 +47,7 @@ class CustomersController {
                     customer[index] = {
                         ...customer[index],
                         ...await Database_1.default.from('users').select('nickname', 'avatar_url', 'sex', 'birthday', 'contact_wechat', 'photos', 'videos', 'work', 'phone', 'created_at', 'modified_at').where('user_id', customer[index].relation_user_id).first(),
+                        percent: await percentUserinfo(customer[index].relation_user_id),
                         parent: await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].relation_user_id).first()
                     };
                 }
@@ -52,6 +55,7 @@ class CustomersController {
                 customer[index]['videos'] = customer[index]['videos'] ? JSON.parse(customer[index]['videos']) : [];
                 customer[index]['age'] = (0, moment_1.default)().diff(customer[index]['birthday'], 'years');
                 customer[index]['work'] = customer[index]['work'] ? JSON.parse(customer[index]['work']) : [];
+                customer[index].recommend_at = (0, moment_1.default)(customer[index].recommend_at).format('YYYY-MM-DD HH:mm:ss');
                 customer[index].created_at = (0, moment_1.default)(customer[index].created_at).fromNow();
                 customer[index].modified_at = (0, moment_1.default)(customer[index].modified_at).fromNow();
                 let relation = ["朋友", "亲戚", "伙伴", "同事", "其他"];
@@ -106,7 +110,7 @@ class CustomersController {
             if (customer.userinfo.work.value) {
                 customer.userinfo.work.text = await zpData.data(customer.userinfo.work.value[0], customer.userinfo.work.value[1]);
             }
-            customer.created_at = (0, moment_1.default)(customer.created_at).format('YYYY-MM-DD hh:mm:ss');
+            customer.created_at = (0, moment_1.default)(customer.created_at).format('YYYY-MM-DD HH:mm:ss');
             return view.render('admin/customer/edit', {
                 data: {
                     title: '介绍',

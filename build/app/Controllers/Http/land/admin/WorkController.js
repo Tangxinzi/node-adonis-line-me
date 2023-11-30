@@ -146,7 +146,7 @@ class WorkController {
     async delete({ session, request, response }) {
         try {
             const all = request.all();
-            await Database_1.default.from('land_works').where('id', all.id).update({ status: 0, deleted_at: (0, moment_1.default)().format('YYYY-MM-DD hh:mm:ss') });
+            await Database_1.default.from('land_works').where('id', all.id).update({ status: 0, deleted_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss') });
             session.flash('message', { type: 'success', header: '作品已删除成功！', message: `` });
             return response.redirect('back');
         }

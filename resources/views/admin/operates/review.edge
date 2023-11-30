@@ -1,0 +1,149 @@
+@layout('components.layouts.main')
+
+@section('title')
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<title>{{ data.title }} - Hunlian</title>
+@endsection
+
+@section('style')
+<style media="screen">
+</style>
+@endsection
+
+@section('content')
+  <div class="ui stackable four column grid">
+    @if(!data.all.sign)
+    <div class="three wide column">
+      <div class="ui vertical pointing menu">
+        <a class="{{ data.subActive == 'users' ? 'active' : '' }} item" href="{{ route('admin/OperatesController.index') }}">权限用户</a>
+        <a class="{{ data.subActive == 'verification' ? 'active' : '' }} item" href="{{ route('admin/OperatesController.verification') }}">内容审核</a>
+        <a class="item" href="">激励下发</a>
+        <a class="item" href="">内容分发</a>
+      </div>
+    </div>
+    @endif
+    <div class="thirteen wide column">
+      <div class="ui header-title flex-between">
+        <span>{{ data.title }}</span>
+      </div>
+      <div class="ui segment">
+        <table class="ui celled center aligned table" style="margin: 0">
+          <thead>
+            <tr>
+              <th>修改前</th>
+              <th>变更内容</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if(data.verification.table == 'users' && data.verification.field == 'avatar_url')
+            <tr>
+              <td>
+                <img class="ui avatar image" src="{{ data.verification.before }}" />
+              </td>
+              <td>
+                <img class="ui avatar image" src="{{ data.verification.value }}" />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span class="one-line">{{ data.verification.before }}</span>
+              </td>
+              <td>
+                <span class="one-line">{{ data.verification.value }}</span>
+              </td>
+            </tr>
+            @endif
+            @if(data.verification.table == 'users' && data.verification.field == 'photos')
+            <tr>
+              <td>
+                @each(photo in data.verification.before)
+                  <img class="ui avatar image" src="{{ photo }}" />
+                @endeach
+              </td>
+              <td>
+                @each(photo in data.verification.value)
+                  <img class="ui avatar image" src="{{ photo }}" />
+                @endeach
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span class="one-line">{{ data.verification.before.length || 0 }} 张</span>
+              </td>
+              <td>
+                <span class="one-line">{{ data.verification.value.length || 0 }} 张</span>
+              </td>
+            </tr>
+            @endif
+          </tbody>
+        </table>
+      </div>
+      <form class="ui segment form disable" method="post" action="{{ route('admin/OperatesController.review', { id: data.verification.id }) }}">
+        <div class="inline fields">
+          <label>审核员</label>
+          <div class="field">{{ data.user.nickname || '未分配 - 当前待审核' }}</div>
+        </div>
+        <div class="inline fields">
+          <label>审核时间</label>
+          <div class="field">
+            {{ data.verification.modified_at || '' }}
+          </div>
+        </div>
+        <div class="field" hidden>
+          <label>审核员 User ID</label>
+          <input type="text" name="verification_user_id" value="{{ data.user.user_id || '' }}" />
+        </div>
+        <div class="inline fields">
+          <label>审核内容</label>
+          <div class="field">
+            <span>{{ data.verification.table == 'users' ? '用户信息' : '' }}</span><span>
+              {{ data.verification.field == 'avatar_url' ? '头像' : '' }}
+              {{ data.verification.field == 'photos' ? '照片集' : '' }}
+            </span>
+          </div>
+        </div>
+        <div class="inline fields" title="状态：pending 审核状态 / approved 通过 / rejected 拒绝 / close 关闭">
+          <label>审核状态</label>
+          <div class="field">
+            <div class="ui radio checkbox">
+              <input id="approved" type="radio" name="verification_status" value="approved" {{ data.verification.verification_status == 'approved' ? 'checked' : '' }}>
+              <label for="approved">通过</label>
+            </div>
+          </div>
+          <div class="field">
+            <div class="ui radio checkbox">
+              <input id="rejected" type="radio" name="verification_status" value="rejected" {{ data.verification.verification_status == 'rejected' ? 'checked' : '' }}>
+              <label for="rejected">拒绝</label>
+            </div>
+          </div>
+          <div class="field">
+            <div class="ui radio checkbox">
+              <input id="close" type="radio" name="verification_status" value="close" {{ data.verification.verification_status == 'close' ? 'checked' : '' }}>
+              <label for="close">关闭</label>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label>审核评论</label>
+          <textarea name="verification_comment" rows="8" cols="80" placeholder="选择「通过」项内容可选填，「拒绝」项请填写原因。">{{ data.verification.verification_comment || '' }}</textarea>
+        </div>
+        @if(data.verification.is_verified == 0)
+        {{ csrfField() }}
+        <div class="flex-between">
+          <button class="ui tiny button" type="submit" name="button" value="update">提交</button>
+          <span>提交时间：{{ data.verification.created_at }}</span>
+        </div>
+        @endif
+      </form>
+    </div>
+  </div>
+@endsection
+
+@section('script')
+<script type="text/javascript">
+  @if(data.all.sign)
+    $('.navbar').css('display', 'none')
+  @endif
+</script>
+@endsection

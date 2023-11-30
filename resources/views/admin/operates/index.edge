@@ -16,8 +16,8 @@
   <div class="ui stackable four column grid">
     <div class="three wide column">
       <div class="ui vertical pointing menu">
-        <a class="{{ data.subActive == 'users' ? 'active' : '' }} item" href="">特殊用户</a>
-        <a class="item" href="">内容审核</a>
+        <a class="{{ data.subActive == 'users' ? 'active' : '' }} item" href="{{ route('admin/OperatesController.index') }}">权限用户</a>
+        <a class="{{ data.subActive == 'verification' ? 'active' : '' }} item" href="{{ route('admin/OperatesController.verification') }}">内容审核</a>
         <a class="item" href="">激励下发</a>
         <a class="item" href="">内容分发</a>
       </div>
@@ -34,7 +34,7 @@
             <th class="one wide">类别</th>
             <th class="one wide">手机</th>
             <th class="one wide">介绍数量</th>
-            <th class="one wide">价格</th>
+            <!-- <th class="one wide">价格</th> -->
             <th class="one wide">时间</th>
             <th class="one wide">操作</th>
           </tr>
@@ -56,7 +56,7 @@
               </td>
               <td class="td">{{ row.phone || '' }}</td>
               <td class="td">{{ row.customerTotal || 0 }}</td>
-              <td class="td">{{ row.price || 0 }}</td>
+              <!-- <td class="td">{{ row.price || 0 }}</td> -->
               <td class="td">{{ row.created_at }}</td>
               <td class="td" style="position: relative;">
                 <a class="activating click" data-position="bottom center" data-html="<form class='ui mini basic vertical buttons' method='post' action='/admin/customers/field'>

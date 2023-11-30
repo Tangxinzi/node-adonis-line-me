@@ -33,6 +33,20 @@
           <label>ID</label>
           <input type="text" name="id" value="{{ data.article.id || '' }}" placeholder="" />
         </div>
+        <div class="field">
+          <div class="field">
+            <label>类型</label>
+            <div class="ui selection dropdown">
+              <input type="hidden" name="catalog" value="{{ data.article.article_catalog || '' }}" />
+              <i class="dropdown icon"></i>
+              <div class="default text">点击选择</div>
+              <div class="menu">
+                <div class="item" data-value="1">活动资讯</div>
+                <div class="item" data-value="">其它</div>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="field" hidden>
           <label>图片 URL</label>
           <input type="text" name="theme_url" value="{{ data.article.article_theme_url || '' }}" placeholder="" />
@@ -64,7 +78,7 @@
               <div id="toolbar-container"><!-- 工具栏 --></div>
               <div id="editor-container"><!-- 编辑器 --></div>
             </div>
-            <input id="detail" type="text" name="detail" value="{{ data.article.article_title || '' }}" hidden />
+            <input id="detail" type="text" name="detail" value="{{ data.article.article_detail || '' }}" hidden />
           </div>
         </div>
         {{ csrfField() }}

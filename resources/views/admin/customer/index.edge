@@ -52,6 +52,7 @@
             <th>联系</th>
             <th>手机验证</th>
             <th>照片</th>
+            <th>资料</th>
             <th>时间</th>
             <th>推荐</th>
             <th>操作</th>
@@ -96,6 +97,7 @@
                   @endeach
                 " data-position="bottom center" data-inverted="">{{ row.photos.length || '' }}</span>
               </td>
+              <td class="td" title="{{ row.percent.text }}">{{ row.percent.value }}</td>
               <td class="td">{{ row.created_at }}</td>
               <td class="td" title="推荐时间 {{ row.recommend_at }}">
                 <i class="{{ row.recommend ? 'pink heartbeat' : 'heart outline' }} icon"></i>

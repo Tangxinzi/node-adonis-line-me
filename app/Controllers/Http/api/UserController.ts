@@ -15,6 +15,7 @@ const zpData = require('../lib/Zhipin');
 const Avatar = require('../lib/Avatar');
 const { percentUserinfo } = require('../lib/Percent');
 const { jscode2session } = require('../lib/Weixin');
+const Verification = require('../lib/Verification');
 
 export default class UserController {
   getZodiacSign(day, month) {
@@ -73,9 +74,10 @@ export default class UserController {
         await Database.from('users').where('user_id', session.get('user_id')).update({ online_at: Moment().format('YYYY-MM-DD HH:mm:ss'), ip: request.ip(), ip_city: _geoip.city })
         user.photos = JSON.parse(user.photos)
         user.location = user.location ? JSON.parse(user.location) : ''
-        user['videos'] = JSON.parse(user['videos'])
-        user['zodiac_sign'] = this.getZodiacSign(Moment(user['birthday']).format('DD'), Moment(user['birthday']).format('MM'))
-        user['age'] = Moment().diff(user['birthday'], 'years')
+        user.videos = JSON.parse(user.videos)
+        user.zodiac_sign = this.getZodiacSign(Moment(user.birthday).format('DD'), Moment(user.birthday).format('MM'))
+        user.age = Moment().diff(user.birthday, 'years')
+        user.operates = await Database.from('users_operates').where({ user_id: session.get('user_id'), type: 'examine' }).first() ? true : false
 
         user['work'] = JSON.parse(user['work'])
         if (user['work'] && user['work']['value']) {
@@ -123,10 +125,60 @@ export default class UserController {
     }
   }
 
+  public async review({ params, request, response, session }: HttpContextContract) {
+    try {
+      const all = request.all()
+      const verify = await Database.from('verification').where({ user_id: session.get('user_id'), table: params.table, field: params.field, is_verified: 0, verification_status: 'pending' }).first()
+      response.json({ status: 200, message: "ok", data: verify })
+    } catch (error) {
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
+      return error
+    }
+  }
+
+  public async verification({ request, response, session }: HttpContextContract) {
+    try {
+      const all = request.all(), operates = await Database.from('users_operates').where({ user_id: session.get('user_id'), type: 'examine' }).first() ? true : false
+      if (operates) {
+        var verify = await Database.from('verification').orderBy('is_verified', 'asc').orderBy('id', 'desc').forPage(request.input('page', 1), 20)
+        for (let index = 0; index < verify.length; index++) {
+          verify[index].userinfo = await Database.from('users').select('avatar_url', 'nickname').where({ user_id: verify[index].user_id }).first()
+          verify[index].checker = await Database.from('users').select('avatar_url', 'nickname').where({ user_id: verify[index].verification_user_id }).first() || {}
+          verify[index].verification_status = verify[index].verification_status.toUpperCase()
+          verify[index].created_at = Moment(verify[index].created_at).fromNow()
+          verify[index].modified_at = verify[index].modified_at ? Moment(verify[index].modified_at).format('YYYY-MM-DD HH:mm:ss') : ''
+
+          switch (`${ verify[index].table }.${ verify[index].field }`) {
+            case 'users.avatar_url':
+              verify[index].table = '用户信息'
+              verify[index].value = '头像'
+              break;
+            case 'users.photos':
+              verify[index].table = '用户信息'
+              verify[index].value = '照片集'
+              break;
+          }
+        }
+      }
+
+      response.json({
+        status: 200,
+        message: "ok",
+        data: {
+          verify,
+          operates,
+          pending: (await Database.from('verification').where({ is_verified: 0, verification_status: 'pending' }).count('* as total'))[0].total
+        }
+      })
+    } catch (error) {
+      console.log(error);
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
+    }
+  }
+
   public async updateUserinfo({ request, session }: HttpContextContract) {
     try {
       const all = request.all()
-
       return Database.from('users').where('user_id', session.get('user_id')).update({
         type: all.type,
         nickname: all.nickname,
@@ -144,13 +196,45 @@ export default class UserController {
     }
   }
 
+  compareArrays(before, after) {
+    const changes = { modified: [], added: [], deleted: [] };
+
+    // Check for modified elements
+    before.forEach((item, index) => {
+      if (after[index] !== item) {
+        changes.modified.push({ index, before: item, after: after[index] });
+      }
+    });
+
+    // Check for added elements
+    after.slice(before.length).forEach((item, index) => {
+      changes.added.push({ index: index + before.length, item });
+    });
+
+    // Check for deleted elements
+    before.slice(after.length).forEach((item, index) => {
+      changes.deleted.push({ index: index + after.length, item });
+    });
+
+    return changes;
+  }
+
   public async updateUserField({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-
+      const user = await Database.from('users').where('user_id', session.get('user_id')).first() || {}
       switch (all.type) {
         case 'avatar_url':
-          await Database.from('users').where('user_id', session.get('user_id')).update({ avatar_url: all.value })
+          // await Database.from('users').where('user_id', session.get('user_id')).update({ avatar_url: all.value })
+          // 头像 - 加入审核列表
+          await Verification.regularData({
+            user_id: session.get('user_id'),
+            table: 'users',
+            field: 'avatar_url',
+            before: user.avatar_url,
+            value: all.value,
+            ip: request.ip()
+          })
           break;
         case 'nickname':
           await Database.from('users').where('user_id', session.get('user_id')).update({ nickname: all.value })
@@ -174,12 +258,24 @@ export default class UserController {
           await Database.from('users').where('user_id', session.get('user_id')).update({ phone: all.value })
           break;
         case 'photos':
-          await Database.from('users').where('user_id', session.get('user_id')).update({ photos: JSON.stringify(all.value || []) })
+          const changes = this.compareArrays(JSON.parse(user.photos), all.value);
+          if (changes.added.length) {
+            // 照片集 - 加入审核列表
+            await Verification.regularData({
+              user_id: session.get('user_id'),
+              table: 'users',
+              field: 'photos',
+              before: user.photos,
+              value: JSON.stringify(all.value),
+              ip: request.ip()
+            })
+          } else {
+            await Database.from('users').where('user_id', session.get('user_id')).update({ photos: JSON.stringify(all.value || []) })
+          }
           break;
         case 'videos':
           await Database.from('users').where('user_id', session.get('user_id')).update({ videos: JSON.stringify(all.value || []) })
           break;
-        default:
         case 'school':
           await Database.from('users').where('user_id', session.get('user_id')).update({ school: all.value })
           break;
@@ -199,6 +295,7 @@ export default class UserController {
         message: "ok"
       })
     } catch (error) {
+      console.log(error);
       Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
