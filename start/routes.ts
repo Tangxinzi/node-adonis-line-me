@@ -84,6 +84,7 @@ Route.group(() => {
 Route.group(() => {
   Route.get('/operates', 'admin/OperatesController.index')
   Route.post('/operates', 'admin/OperatesController.save')
+  Route.get('/incentive', 'admin/OperatesController.incentive')
   Route.get('/operates/verification', 'admin/OperatesController.verification')
   Route.get('/operates/verification/review/:id', 'admin/OperatesController.review')
   Route.post('/operates/verification/review/:id', 'admin/OperatesController.review')
@@ -151,6 +152,8 @@ Route.group(() => {
   Route.post('/article/delete', 'land/admin/ArticleController.delete')
 
   Route.get('/good', 'land/admin/GoodController.index')
+  Route.get('/good/catalog', 'land/admin/GoodController.catalog')
+  Route.post('/good/catalog', 'land/admin/GoodController.catalog')
   Route.get('/good/create', 'land/admin/GoodController.create')
   Route.get('/good/show/:id', 'land/admin/GoodController.show')
   Route.get('/good/edit/:id', 'land/admin/GoodController.edit')

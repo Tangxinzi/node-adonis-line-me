@@ -45,6 +45,35 @@ export default class OperatesController {
     }
   }
 
+  public async incentive({ request, response, view, session }: HttpContextContract) {
+    try {
+      const all = request.all(), verification = await Database.from('verification').orderBy('is_verified', 'asc').orderBy('id', 'desc').forPage(request.input('page', 1), 20)
+      for (let index = 0; index < verification.length; index++) {
+        if (verification[index].field == 'photos') {
+          verification[index].before = JSON.parse(verification[index].before)
+          verification[index].value = JSON.parse(verification[index].value)
+        }
+        verification[index].userinfo = await Database.from('users').select('avatar_url', 'nickname').where({ user_id: verification[index].user_id }).first()
+        verification[index].checker = await Database.from('users').select('avatar_url', 'nickname').where({ user_id: verification[index].verification_user_id }).first() || {}
+        verification[index].verification_status = verification[index].verification_status.toUpperCase()
+        verification[index].created_at = Moment(verification[index].created_at).fromNow()
+        verification[index].modified_at = verification[index].modified_at ? Moment(verification[index].modified_at).format('YYYY-MM-DD HH:mm:ss') : ''
+      }
+
+      return view.render('admin/operates/incentive', {
+        data: {
+          title: '内容审核 - 运营',
+          active: 'operates',
+          subActive: 'verification',
+          verification,
+          all
+        }
+      })
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   public async verification({ request, response, view, session }: HttpContextContract) {
     try {
       const all = request.all(), verification = await Database.from('verification').orderBy('is_verified', 'asc').orderBy('id', 'desc').forPage(request.input('page', 1), 20)

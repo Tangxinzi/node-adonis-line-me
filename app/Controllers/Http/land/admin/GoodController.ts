@@ -6,12 +6,14 @@ export default class GoodController {
   public async index({ request, view, response }: HttpContextContract) {
     try {
       const all = request.all()
-      const goods = await Database.from('land_goods').select('id', 'good_catalog', 'good_title', 'good_author', 'good_detail', 'good_theme_url', 'good_original_url').where('status', 1)
+      const goods = await Database.from('land_goods').select('*').where('status', 1).orderBy('created_at', 'desc').forPage(request.input('page', 1), 20)
       for (let index = 0; index < goods.length; index++) {
-        goods[index]['created_at'] = Moment(goods[index]['created_at']).format('YYYY-MM-DD H:mm:ss')
+        goods[index].catalog = await Database.from('land_goods_catalog').select('*').where({ id: goods[index].good_catalog, status: 1 }).first()
+        goods[index].created_at = Moment(goods[index].created_at).format('YYYY-MM-DD H:mm:ss')
       }
 
       if (all.type == 'json') {
+        const goods = await Database.from('land_goods').select('*').where('status', 1).orderBy('created_at', 'desc').forPage(request.input('page', 1), 8)
         return response.json({
           status: 200,
           message: "ok",
@@ -31,15 +33,47 @@ export default class GoodController {
     }
   }
 
-  public async create({ request, view, session }: HttpContextContract) {
+  public async create({ view }: HttpContextContract) {
     try {
-      const all = request.all()
+      const catalog = await Database.from('land_goods_catalog').select('*').where({ level: 1, status:  1 }).orderBy('created_at', 'desc')
+      for (let index = 0; index < catalog.length; index++) {
+        catalog[index].sub_catalog = await Database.from('land_goods_catalog').select('*').where({ parent_catalog_id: catalog[index].id, level: 2, status:  1 })
+      }
+
       return view.render('land/admin/good/create', {
         data: {
           title: '创建商城商品',
-          active: 'good'
+          active: 'good',
+          catalog
         }
       })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  public async catalog({ request, response, view, session }: HttpContextContract) {
+    try {
+      const all = request.all()
+      const catalog = await Database.from('land_goods_catalog').select('*').where({ level: 1, status:  1 }).orderBy('created_at', 'desc')
+      for (let index = 0; index < catalog.length; index++) {
+        catalog[index].sub_catalog = await Database.from('land_goods_catalog').select('*').where({ parent_catalog_id: catalog[index].id, level: 2, status:  1 })
+      }
+      if (request.method() == 'GET') {
+        return view.render('land/admin/good/catalog', {
+          data: {
+            title: '目录',
+            active: 'good',
+            catalog
+          }
+        })
+      }
+
+      if (request.method() == 'POST') {
+        console.log(all);
+        session.flash('message', { type: 'success', header: '创建成功', message: `` })
+        return response.redirect('back')
+      }
     } catch (error) {
       console.log(error)
     }
@@ -50,6 +84,12 @@ export default class GoodController {
       const all = request.all()
       const good = await Database.from('land_goods').where('id', params.id).first()
       good.created_at = Moment(good.created_at).format('YYYY-MM-DD H:mm:ss')
+
+      const catalog = await Database.from('land_goods_catalog').select('*').where({ level: 1, status:  1 }).orderBy('created_at', 'desc')
+      for (let index = 0; index < catalog.length; index++) {
+        catalog[index].sub_catalog = await Database.from('land_goods_catalog').select('*').where({ parent_catalog_id: catalog[index].id, level: 2, status:  1 })
+      }
+
       const data = {
         status: 200,
         message: "ok",
@@ -61,7 +101,8 @@ export default class GoodController {
       }
 
       return view.render('land/admin/good/edit', {
-        data
+        data,
+        catalog
       })
     } catch (error) {
       console.log(error)
@@ -72,11 +113,17 @@ export default class GoodController {
     try {
       const all = request.all()
       const good = await Database.from('land_goods').where('id', params.id).first()
+      const catalog = await Database.from('land_goods_catalog').select('*').where({ level: 1, status:  1 }).orderBy('created_at', 'desc')
+      for (let index = 0; index < catalog.length; index++) {
+        catalog[index].sub_catalog = await Database.from('land_goods_catalog').select('*').where({ parent_catalog_id: catalog[index].id, level: 2, status:  1 })
+      }
+
       return view.render('land/admin/good/edit', {
         data: {
           title: '编辑商城商品',
           active: 'good'
-          good
+          good,
+          catalog
         }
       })
     } catch (error) {
@@ -102,30 +149,23 @@ export default class GoodController {
         good_theme_url = file.fileSrc
       }
 
-      // await Database.from('files').insert({
-      //   clientName: profileImages._files[i].clientName,
-      //   fileName: profileImages._files[i].fileName,
-      //   fieldName: profileImages._files[i].fieldName,
-      //   filePath: publicPath,
-      //   size: profileImages._files[i].size,
-      //   type: profileImages._files[i].type,
-      //   subtype: profileImages._files[i].subtype,
-      //   status: profileImages._files[i].status,
-      //   extname: profileImages._files[i].extname,
-      // })
-
       if (request.method() == 'POST' && all.button == 'update') {
-        await Database.from('land_goods').where('id', all.id).update({ good_catalog: all.catalog, good_title: all.title, good_author: all.author, good_detail: all.detail, good_original_url: all.original_url, good_theme_url })
+        await Database.from('land_goods').where('id', all.id).update({
+          good_catalog: all.good_catalog || '',
+          good_name: all.good_name,
+          good_brand: all.good_brand,
+          detail: all.detail,
+          good_theme_url
+        })
         session.flash('message', { type: 'success', header: '更新成功', message: `` })
         return response.redirect('back')
       }
 
       const id = await Database.table('land_goods').returning('id').insert({
-        good_catalog: all.catalog || '',
-        good_title: all.title || '',
-        good_author: all.author || '',
-        good_detail: all.detail || '',
-        good_original_url: all.original_url,
+        good_catalog: all.good_catalog || '',
+        good_name: all.good_name || '',
+        good_brand: all.good_brand || '',
+        detail: all.detail || '',
         good_theme_url
       })
 
@@ -140,8 +180,16 @@ export default class GoodController {
   public async delete({ session, request, response }: HttpContextContract) {
     try {
       const all = request.all()
-      await Database.from('land_goods').where('id', all.id).update({ status: 0, deleted_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
-      session.flash('message', { type: 'success', header: '商城商品已删除成功！', message: `` })
+      if (all.button == 'good') {
+        await Database.from('land_goods').where('id', all.id).update({ status: 0, deleted_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
+        session.flash('message', { type: 'success', header: '商城商品已删除成功！', message: `` })
+      }
+
+      if (all.button == 'catalog') {
+        await Database.from('land_goods_catalog').where('id', all.id).update({ status: 0, deleted_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
+        session.flash('message', { type: 'success', header: '商城商品已删除成功！', message: `` })
+      }
+
       return response.redirect('back')
     } catch (error) {
       console.log(error);

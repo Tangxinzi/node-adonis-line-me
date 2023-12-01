@@ -20,15 +20,21 @@
     <div class="thirteen wide column">
       <div class="flex-between">
         <b>{{ data.title }}</b>
-        <a href="{{ route('land/admin/GoodController.create') }}">添加</a>
+        <div>
+          <a href="{{ route('land/admin/GoodController.catalog') }}">目录</a>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <a href="{{ route('land/admin/GoodController.create') }}">添加</a>
+        </div>
       </div>
       <table class="ui celled center aligned table">
         <thead>
           <tr>
             <th>ID</th>
+            <th class="center aligned one wide">主图</th>
             <th>名称</th>
             <th>品牌</th>
             <th>类别</th>
+            <th>时间</th>
             <th>操作</th>
           </tr>
         </thead>
@@ -36,8 +42,12 @@
           @each(row in data.goods)
             <tr>
               <td class="td">{{ row.id }}</td>
+              <td class="center aligned td">
+                <img class="ui tiny bordered rounded image" style="margin: 0 auto;" src="{{ row.good_theme_url || '' }}" alt="" />
+              </td>
               <td class="td">{{ row.good_name || '' }}</td>
               <td class="td">{{ row.good_brand || '' }}</td>
+              <td class="td">{{ row.catalog.name || '' }}</td>
               <td class="td">{{ row.created_at }}</td>
               <td class="td">
                 <a href="{{ route('land/admin/GoodController.edit', { id: row.id }) }}">编辑</a>
@@ -59,7 +69,7 @@
       <div class="ui black deny button">
         取消
       </div>
-      <button class="ui red right labeled icon button">
+      <button class="ui red right labeled icon button" name="button" value="good">
         确认
         <i class="checkmark icon"></i>
       </button>

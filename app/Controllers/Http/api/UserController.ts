@@ -125,9 +125,47 @@ export default class UserController {
     }
   }
 
-  public async review({ params, request, response, session }: HttpContextContract) {
+  watermark(mart) {
     try {
-      const all = request.all()
+      const { createCanvas, loadImage } = require('canvas');
+      // const fs = require('fs');
+      
+      // 创建 Canvas
+      const canvas = createCanvas(240, 100);
+      const context = canvas.getContext('2d');
+      
+      // 设置背景颜色
+      context.fillStyle = '#ffffff';
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // 设置文字样式
+      context.fillStyle = '#000000';
+      context.font = '14px Arial';
+
+      // 在 Canvas 上绘制倾斜的文字
+      const text = `${ mart } ${ Moment().format('YYYY-MM-DD HH:mm:ss') }`;
+      context.save(); // 保存当前状态
+      context.rotate(-18 * Math.PI / 180); // 旋转角度，这里是 -45 度
+      context.fillText(text, -10, 85);
+      context.restore(); // 恢复到之前保存的状态
+
+      // 将 Canvas 转为 Base64
+      const base64 = canvas.toDataURL('image/png')
+      
+      // 保存为 PNG 图片
+      // const buffer = Buffer.from(base64, 'base64');
+      // fs.writeFileSync('output.png', buffer);
+      
+      // console.log('Image generated successfully!');
+
+      return base64
+    } catch (error) {
+      console.log(error);      
+    }
+  }
+
+  public async review({ params, response, session }: HttpContextContract) {
+    try {
       const verify = await Database.from('verification').where({ user_id: session.get('user_id'), table: params.table, field: params.field, is_verified: 0, verification_status: 'pending' }).first()
       response.json({ status: 200, message: "ok", data: verify })
     } catch (error) {
@@ -167,6 +205,7 @@ export default class UserController {
         data: {
           verify,
           operates,
+          watermark: this.watermark(session.get('user_id')),
           pending: (await Database.from('verification').where({ is_verified: 0, verification_status: 'pending' }).count('* as total'))[0].total
         }
       })

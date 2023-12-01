@@ -1,4 +1,3 @@
-import Database from '@ioc:Adonis/Lucid/Database'
 import Logger from '@ioc:Adonis/Core/Logger'
 import Moment from'moment'
 Moment.locale('zh-cn')
