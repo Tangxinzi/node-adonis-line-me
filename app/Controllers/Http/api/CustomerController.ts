@@ -10,6 +10,15 @@ const Avatar = require('../lib/Avatar');
 const zpData = require('../lib/Zhipin');
 const { percentUserinfo, percentCustomerinfo } = require('../lib/Percent');
 const RELATION = ["朋友", "亲戚", "伙伴", "同事", "其他"]
+const SALARY_RANGE = [
+  { index: 0, value: '5w 以内' },
+  { index: 1, value: '5 - 10w' },
+  { index: 2, value: '10 - 20w' },
+  { index: 3, value: '20 - 30w' },
+  { index: 4, value: '30 - 50w' },
+  { index: 5, value: '50 - 100w' },
+  { index: 6, value: '100w 以上' }
+]
 
 export default class CustomerController {
   getZodiacSign(day, month) {
@@ -65,6 +74,7 @@ export default class CustomerController {
         customer[index]['zodiac_sign'] = this.getZodiacSign(Moment(customer[index]['birthday']).format('DD'), Moment(customer[index]['birthday']).format('MM'))
         customer[index]['age'] = Moment().diff(customer[index]['birthday'], 'years')
         customer[index].relation = RELATION[customer[index].relation]
+        customer[index].salary = customer[index].salary ? SALARY_RANGE[customer[index].salary].value : ''
 
         customer[index]['work'] = customer[index]['work'] ? JSON.parse(customer[index]['work']) : []
         if (customer[index]['work']['value']) {
@@ -321,6 +331,9 @@ export default class CustomerController {
       if (customer.userinfo.work.value) {
         customer.userinfo.work.text = await zpData.data(customer.userinfo.work.value[0], customer.userinfo.work.value[1])
       }
+
+      const QrCode = require('qrcode');
+      customer.qrcode = await QrCode.toDataURL('/pages/user-info-detail/user-info-detail?id=' + customer.cid, { width: 180 })
 
       response.json({
         status: 200,

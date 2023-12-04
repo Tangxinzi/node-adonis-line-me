@@ -32,6 +32,7 @@
     "@alicloud/sms-sdk": "^1.1.6",
     "aliyun-sdk": "^1.12.10",
     "axios": "^1.5.0",
+    "canvas": "^2.11.2",
     "geoip-lite": "^1.4.8",
     "iconv-lite": "^0.6.3",
     "jsonwebtoken": "^9.0.2",

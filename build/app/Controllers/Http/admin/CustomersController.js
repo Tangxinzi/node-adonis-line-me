@@ -16,6 +16,9 @@ class CustomersController {
             const all = request.all();
             const customer = await Database_1.default.from('customer').where({ id: all.id }).orderBy('id', 'desc').first();
             switch (all.button) {
+                case 're-recommend':
+                    await Database_1.default.from('customer').where({ id: all.id }).update({ recommend_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss') });
+                    break;
                 case 'recommend':
                     await Database_1.default.from('customer').where({ id: all.id }).update({ recommend: !customer.recommend, recommend_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss') });
                     break;

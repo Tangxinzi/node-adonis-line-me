@@ -35,36 +35,32 @@
         </div>
         <div class="field">
           <div class="field">
-            <label>类型</label>
+            <label>目录</label>
             <div class="ui selection dropdown">
-              <input type="hidden" name="catalog" value="{{ data.good.good_catalog || '' }}" />
+              <input type="hidden" name="good_catalog" value="{{ data.good.good_catalog }}" />
               <i class="dropdown icon"></i>
               <div class="default text">点击选择</div>
               <div class="menu">
-                <div class="item" data-value="1">活动资讯</div>
-                <div class="item" data-value="">其它</div>
+                @each(catalog in data.catalog)
+                  <!-- <div class="item" data-value="{{ catalog.id }}">{{ catalog.name }}</div> -->
+                  @each(sub_catalog in catalog.sub_catalog)
+                    <div class="item" data-value="{{ sub_catalog.id }}">-- {{ sub_catalog.name }}</div>
+                  @endeach
+                @endeach
               </div>
             </div>
           </div>
         </div>
-        <div class="field" hidden>
-          <label>图片 URL</label>
-          <input type="text" name="theme_url" value="{{ data.good.good_theme_url || '' }}" placeholder="" />
+        <div class="field">
+          <label>名称</label>
+          <input type="text" name="good_name" value="{{ data.good.good_name || '' }}" placeholder="" />
         </div>
         <div class="field">
-          <label>标题</label>
-          <input type="text" name="title" value="{{ data.good.good_title || '' }}" placeholder="" />
+          <label>品牌</label>
+          <input type="text" name="good_brand" value="{{ data.good.good_brand || '' }}" placeholder="" />
         </div>
         <div class="field">
-          <label>作者</label>
-          <input type="text" name="author" value="{{ data.good.good_author || '' }}" placeholder="" />
-        </div>
-        <div class="field">
-          <label>原文链接</label>
-          <input type="text" name="original_url" value="{{ data.good.good_original_url || '' }}" placeholder="" />
-        </div>
-        <div class="field">
-          <label>封面
+          <label>主图
             @if(data.good.good_theme_url)
               <a href="{{ data.good.good_theme_url }}" target="_blank">查看图片</a>
             @endif
@@ -78,7 +74,7 @@
               <div id="toolbar-container"><!-- 工具栏 --></div>
               <div id="editor-container"><!-- 编辑器 --></div>
             </div>
-            <input id="detail" type="text" name="detail" value="{{ data.good.good_title || '' }}" hidden />
+            <input id="detail" type="text" name="detail" value="{{ data.good.detail || '' }}" hidden />
           </div>
         </div>
         {{ csrfField() }}

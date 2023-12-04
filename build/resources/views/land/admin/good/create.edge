@@ -30,34 +30,32 @@
       </div>
       <form class="ui segment form" method="post" action="{{ route('land/admin/GoodController.save') }}" enctype="multipart/form-data">
         <div class="field">
-          <div class="field">
-            <label>类型</label>
-            <div class="ui selection dropdown">
-              <input type="hidden" name="catalog" value="" />
-              <i class="dropdown icon"></i>
-              <div class="default text">点击选择</div>
-              <div class="menu">
-                <div class="item" data-value="1">活动资讯</div>
-                <div class="item" data-value="">其它</div>
-              </div>
+          <label>目录</label>
+          <div class="ui selection dropdown">
+            <input type="hidden" name="good_catalog" value="" />
+            <i class="dropdown icon"></i>
+            <div class="default text">点击选择</div>
+            <div class="menu">
+              @each(catalog in data.catalog)
+                <!-- <div class="item" data-value="{{ catalog.id }}">{{ catalog.name }}</div> -->
+                @each(sub_catalog in catalog.sub_catalog)
+                  <div class="item" data-value="{{ sub_catalog.id }}">-- {{ sub_catalog.name }}</div>
+                @endeach
+              @endeach
             </div>
           </div>
         </div>
         <div class="field">
-          <label>标题</label>
-          <input type="text" name="title" placeholder="" />
+          <label>名称</label>
+          <input type="text" name="good_name" placeholder="" />
         </div>
         <div class="field">
-          <label>作者</label>
-          <input type="text" name="author" placeholder="" />
+          <label>品牌</label>
+          <input type="text" name="good_brand" placeholder="" />
         </div>
         <div class="field">
-          <label>原文链接</label>
-          <input type="url" name="original_url" value="" placeholder="" />
-        </div>
-        <div class="field">
-          <label>封面</label>
-          <input type="file" name="theme" value="" placeholder="" />
+          <label>主图</label>
+          <input type="file" name="good_theme_url" value="" placeholder="" />
         </div>
         <div class="field">
           <label>页面详细内容</label>

@@ -103,9 +103,29 @@ class UserController {
             return error;
         }
     }
-    async review({ params, request, response, session }) {
+    watermark(mart) {
         try {
-            const all = request.all();
+            const { createCanvas, loadImage } = require('canvas');
+            const canvas = createCanvas(240, 100);
+            const context = canvas.getContext('2d');
+            context.fillStyle = '#ffffff';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            context.fillStyle = '#000000';
+            context.font = '14px Arial';
+            const text = `${mart} ${(0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss')}`;
+            context.save();
+            context.rotate(-18 * Math.PI / 180);
+            context.fillText(text, -10, 85);
+            context.restore();
+            const base64 = canvas.toDataURL('image/png');
+            return base64;
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+    async review({ params, response, session }) {
+        try {
             const verify = await Database_1.default.from('verification').where({ user_id: session.get('user_id'), table: params.table, field: params.field, is_verified: 0, verification_status: 'pending' }).first();
             response.json({ status: 200, message: "ok", data: verify });
         }
@@ -143,6 +163,7 @@ class UserController {
                 data: {
                     verify,
                     operates,
+                    watermark: this.watermark(session.get('user_id')),
                     pending: (await Database_1.default.from('verification').where({ is_verified: 0, verification_status: 'pending' }).count('* as total'))[0].total
                 }
             });

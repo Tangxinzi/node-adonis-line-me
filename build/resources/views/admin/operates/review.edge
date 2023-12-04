@@ -18,7 +18,7 @@
       <div class="ui vertical pointing menu">
         <a class="{{ data.subActive == 'users' ? 'active' : '' }} item" href="{{ route('admin/OperatesController.index') }}">权限用户</a>
         <a class="{{ data.subActive == 'verification' ? 'active' : '' }} item" href="{{ route('admin/OperatesController.verification') }}">内容审核</a>
-        <a class="item" href="">激励下发</a>
+        <a class="{{ data.subActive == 'incentive' ? 'active' : '' }} item" href="{{ route('admin/OperatesController.incentive') }}">激励下发</a>
         <a class="item" href="">内容分发</a>
       </div>
     </div>
@@ -136,6 +136,30 @@
         </div>
         @endif
       </form>
+      <div class="ui styled fluid accordion">
+        <div class="title">
+          <i class="dropdown icon"></i>
+          用户资料审核常见的拒审原因
+        </div>
+        <div class="content">
+          <p>请确保提交的信息符合平台规定，确保提供完整、真实、清晰的资料，可以降低审核被拒的可能性。</p>
+          <ul class="ui list">
+            <li><b>不完整的信息：</b>提交的用户资料缺少必要的信息。</li>
+            <li><b>不合规的身份证明：</b>提供的身份证明不符合平台或法规的要求。</li>
+            <li><b>虚假信息：</b>用户提供的个人信息或证件信息被确认为虚假。</li>
+            <li><b>图片模糊或不清晰：</b>提交的照片或证件图片质量不足以进行有效的审核。</li>
+            <li><b>与平台规定不符的资料：</b>用户提交的资料与平台规定的要求不符。</li>
+            <li><b>过期的证件：</b>提交的证件已经过期，无法有效确认用户身份。</li>
+            <li><b>重复的账户或资料：</b>同一用户提交多个账户或相同的资料，违反了平台的规定。</li>
+            <li><b>未成年用户：</b>平台要求用户必须达到法定年龄 18+，未成年用户可能会被拒审。</li>
+            <li><b>地理位置不符：</b>提交的资料中的地理位置与用户注册或平台要求的地理位置信息不一致。</li>
+            <li><b>违反平台政策：</b>用户的行为或提交的资料违反了平台的使用政策，导致审核拒审。</li>
+            <li><b>负面信用记录：</b>用户可能因贷款违约、违法记录等负面信用记录而被拒审。</li>
+            <li><b>无法联系：</b>审核人员无法联系用户以进一步核实信息，导致审核失败。</li>
+            <li><b>技术问题：</b>提交的资料可能由于技术问题而无法被有效审核，如文件损坏或不可读。</li>            
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 @endsection
@@ -145,5 +169,7 @@
   @if(data.all.sign)
     $('.navbar').css('display', 'none')
   @endif
+
+  $('.accordion').accordion()
 </script>
 @endsection

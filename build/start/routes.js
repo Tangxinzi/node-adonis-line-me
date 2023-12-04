@@ -57,6 +57,7 @@ Route_1.default.group(() => {
 Route_1.default.group(() => {
     Route_1.default.get('/operates', 'admin/OperatesController.index');
     Route_1.default.post('/operates', 'admin/OperatesController.save');
+    Route_1.default.get('/incentive', 'admin/OperatesController.incentive');
     Route_1.default.get('/operates/verification', 'admin/OperatesController.verification');
     Route_1.default.get('/operates/verification/review/:id', 'admin/OperatesController.review');
     Route_1.default.post('/operates/verification/review/:id', 'admin/OperatesController.review');
@@ -112,6 +113,8 @@ Route_1.default.group(() => {
     Route_1.default.post('/article/save', 'land/admin/ArticleController.save');
     Route_1.default.post('/article/delete', 'land/admin/ArticleController.delete');
     Route_1.default.get('/good', 'land/admin/GoodController.index');
+    Route_1.default.get('/good/catalog', 'land/admin/GoodController.catalog');
+    Route_1.default.post('/good/catalog', 'land/admin/GoodController.catalog');
     Route_1.default.get('/good/create', 'land/admin/GoodController.create');
     Route_1.default.get('/good/show/:id', 'land/admin/GoodController.show');
     Route_1.default.get('/good/edit/:id', 'land/admin/GoodController.edit');

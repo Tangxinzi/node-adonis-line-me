@@ -35,7 +35,7 @@ export default class GoodController {
 
   public async create({ view }: HttpContextContract) {
     try {
-      const catalog = await Database.from('land_goods_catalog').select('*').where({ level: 1, status:  1 }).orderBy('created_at', 'desc')
+      const catalog = await Database.from('land_goods_catalog').select('*').where({ level: 1, status: 1 }).orderBy('created_at', 'desc')
       for (let index = 0; index < catalog.length; index++) {
         catalog[index].sub_catalog = await Database.from('land_goods_catalog').select('*').where({ parent_catalog_id: catalog[index].id, level: 2, status:  1 })
       }
@@ -55,23 +55,89 @@ export default class GoodController {
   public async catalog({ request, response, view, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const catalog = await Database.from('land_goods_catalog').select('*').where({ level: 1, status:  1 }).orderBy('created_at', 'desc')
+      const catalog = await Database.from('land_goods_catalog').select('*').where({ level: 1, status: 1 }).orderBy('sort', 'asc')
       for (let index = 0; index < catalog.length; index++) {
-        catalog[index].sub_catalog = await Database.from('land_goods_catalog').select('*').where({ parent_catalog_id: catalog[index].id, level: 2, status:  1 })
+        catalog[index].sub_catalog = await Database.from('land_goods_catalog').select('*').where({ parent_catalog_id: catalog[index].id, level: 2, status: 1 }).orderBy('sort', 'asc')
       }
       if (request.method() == 'GET') {
+        let log = {}
+
+        if (all.id) {
+          log = await Database.from('land_goods_catalog').select('*').where({ id: all.id, status: 1 }).first()
+        }
+
+        if (all.type == 'json') {
+          return response.json({
+            status: 200,
+            message: "ok",
+            data: catalog
+          })
+        }
+
         return view.render('land/admin/good/catalog', {
           data: {
             title: '目录',
-            active: 'good',
-            catalog
+            active: 'catalog',
+            catalog,
+            log,
+            all
           }
         })
       }
 
-      if (request.method() == 'POST') {
-        console.log(all);
+      if (request.method() == 'POST' && all.button == 'save') {
+        let theme_url = all.theme_url || ''
+        if (request.file('theme_url')) {
+          const RandomString = require('RandomString')
+          const profile = request.file('theme_url', { type: ['image', 'video'], size: '10mb' })
+          const profileName = `${RandomString.generate(32)}.${profile.extname}`
+          const profilePath = `/uploads/catalogs/`
+
+          let file = {}
+          file.fileName = profile.clientName
+          file.fileSrc = profilePath + profileName
+          await profile.move(Application.publicPath(profilePath), { name: profileName, overwrite: true })
+
+          theme_url = file.fileSrc
+        }
+
+        const id = await Database.table('land_goods_catalog').returning('id').insert({
+          name: all.name || '',
+          level: all.is_catalog == 1 ? 1 : 2,
+          parent_catalog_id: all.parent_catalog_id ? parseInt(all.parent_catalog_id) : '',
+          sort: all.sort,
+          theme_url
+        })
+
         session.flash('message', { type: 'success', header: '创建成功', message: `` })
+        return response.redirect('back')
+      }
+
+      if (request.method() == 'POST' && all.button == 'update') {
+        let theme_url = all.theme_url || ''
+        if (request.file('theme_url')) {
+          const RandomString = require('RandomString')
+          const profile = request.file('theme_url', { type: ['image', 'video'], size: '10mb' })
+          const profileName = `${RandomString.generate(32)}.${profile.extname}`
+          const profilePath = `/uploads/catalogs/`
+
+          let file = {}
+          file.fileName = profile.clientName
+          file.fileSrc = profilePath + profileName
+          await profile.move(Application.publicPath(profilePath), { name: profileName, overwrite: true })
+
+          theme_url = file.fileSrc
+        }
+
+        const id = await Database.from('land_goods_catalog').where({ id: all.id }).update({
+          name: all.name || '',
+          level: all.is_catalog == 1 ? 1 : 2,
+          parent_catalog_id: all.parent_catalog_id ? parseInt(all.parent_catalog_id) : '',
+          sort: all.sort,
+          theme_url
+        })
+
+        session.flash('message', { type: 'success', header: '更新成功', message: `` })
         return response.redirect('back')
       }
     } catch (error) {
