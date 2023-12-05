@@ -11,7 +11,6 @@ import Moment from 'moment';
 import * as Vibrant from 'node-vibrant'
 import GeoIP from 'geoip-lite';
 import QrCode from 'qrcode';
-import { createCanvas, loadImage } from 'canvas';
 
 const zpData = require('../lib/Zhipin');
 const Avatar = require('../lib/Avatar');
@@ -129,6 +128,7 @@ export default class UserController {
 
   watermark(mart) {
     try {
+      const { createCanvas, loadImage } = require('canvas');
       // const fs = require('fs');
 
       // 创建 Canvas

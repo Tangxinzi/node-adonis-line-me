@@ -13,7 +13,6 @@ const uuid_1 = require("uuid");
 const moment_1 = __importDefault(require("moment"));
 const geoip_lite_1 = __importDefault(require("geoip-lite"));
 const qrcode_1 = __importDefault(require("qrcode"));
-const canvas_1 = require("canvas");
 const zpData = require('../lib/Zhipin');
 const Avatar = require('../lib/Avatar');
 const { percentUserinfo } = require('../lib/Percent');
@@ -107,7 +106,8 @@ class UserController {
     }
     watermark(mart) {
         try {
-            const canvas = (0, canvas_1.createCanvas)(240, 100);
+            const { createCanvas, loadImage } = require('canvas');
+            const canvas = createCanvas(240, 100);
             const context = canvas.getContext('2d');
             context.fillStyle = '#ffffff';
             context.fillRect(0, 0, canvas.width, canvas.height);
