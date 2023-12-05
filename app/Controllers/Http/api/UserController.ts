@@ -10,6 +10,8 @@ import { v4 as uuidv4 } from 'uuid';
 import Moment from 'moment';
 import * as Vibrant from 'node-vibrant'
 import GeoIP from 'geoip-lite';
+import QrCode from 'qrcode';
+import { createCanvas, loadImage } from 'canvas';
 
 const zpData = require('../lib/Zhipin');
 const Avatar = require('../lib/Avatar');
@@ -127,17 +129,16 @@ export default class UserController {
 
   watermark(mart) {
     try {
-      const { createCanvas, loadImage } = require('canvas');
       // const fs = require('fs');
-      
+
       // 创建 Canvas
       const canvas = createCanvas(240, 100);
       const context = canvas.getContext('2d');
-      
+
       // 设置背景颜色
       context.fillStyle = '#ffffff';
       context.fillRect(0, 0, canvas.width, canvas.height);
-      
+
       // 设置文字样式
       context.fillStyle = '#000000';
       context.font = '14px Arial';
@@ -151,16 +152,16 @@ export default class UserController {
 
       // 将 Canvas 转为 Base64
       const base64 = canvas.toDataURL('image/png')
-      
+
       // 保存为 PNG 图片
       // const buffer = Buffer.from(base64, 'base64');
       // fs.writeFileSync('output.png', buffer);
-      
+
       // console.log('Image generated successfully!');
 
       return base64
     } catch (error) {
-      console.log(error);      
+      console.log(error);
     }
   }
 
@@ -412,6 +413,27 @@ export default class UserController {
     }
   }
 
+  public async chatSend({ request, response, session }: HttpContextContract) {
+    try {
+      const all = request.all()
+      const id = await Database.table('chats').insert({ chat_id: all.chat_id, user_id: session.get('user_id'), chat_content: all.chat_content, chat_content_type: all.chat_content_type, chat_ip: request.ip() })
+      await Database.from('chatroom').where({ chat_id: all.chat_id, status: 1 }).update({ modified_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
+      await Database.from('chats_log').where({ chat_id: all.chat_id, user_id: session.get('user_id') }).update({ last_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
+      response.json({
+        status: 200,
+        message: "ok",
+        data: id
+      })
+    } catch (error) {
+      console.log(error);
+      response.json({
+        status: 500,
+        message: "ok",
+        data: error
+      })
+    }
+  }
+
   public async location({ request, session }: HttpContextContract) {
     try {
       const all = request.all()
@@ -451,7 +473,6 @@ export default class UserController {
       const all = request.all()
       const user = await Database.from('users').where('user_id', session.get('user_id')).first()
 
-      const QrCode = require('qrcode');
       return await QrCode.toDataURL(await Jwt.signPrivateKey(user.id), { width: 180 })
     } catch (error) {
       Logger.error("error 获取失败 %s", JSON.stringify(error));

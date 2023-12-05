@@ -3,15 +3,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const Application_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Core/Application"));
 const Database_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Lucid/Database"));
 const Logger_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Core/Logger"));
 const Jwt_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/Jwt"));
 const axios_1 = __importDefault(require("axios"));
 const iconv_lite_1 = __importDefault(require("iconv-lite"));
 const moment_1 = __importDefault(require("moment"));
+const fs_1 = __importDefault(require("fs"));
 const Avatar = require('../lib/Avatar');
 const zpData = require('../lib/Zhipin');
 const { percentUserinfo, percentCustomerinfo } = require('../lib/Percent');
+const Weixin = require('../lib/Weixin');
 const RELATION = ["朋友", "亲戚", "伙伴", "同事", "其他"];
 const SALARY_RANGE = [
     { index: 0, value: '5w 以内' },
@@ -295,8 +298,15 @@ class CustomerController {
             if (customer.userinfo.work.value) {
                 customer.userinfo.work.text = await zpData.data(customer.userinfo.work.value[0], customer.userinfo.work.value[1]);
             }
-            const QrCode = require('qrcode');
-            customer.qrcode = await QrCode.toDataURL('/pages/user-info-detail/user-info-detail?id=' + customer.cid, { width: 180 });
+            customer.wxacode = `/uploads/wxacode/customer-${customer.cid}.png`;
+            fs_1.default.access(Application_1.default.publicPath(customer.wxacode), fs_1.default.constants.F_OK, async (err) => {
+                if (err) {
+                    await Weixin.getWxacode({
+                        filename: 'customer-' + customer.cid,
+                        path: 'pages/user-info-detail/user-info-detail?id=' + customer.cid,
+                    });
+                }
+            });
             response.json({
                 status: 200,
                 sms: "ok",

@@ -57,6 +57,19 @@ const getChatsMessage = async (data, chat_id) => {
         }
       }
 
+      if (chats[index].chat_content_type == 'share-customer') {
+        const customer = await Database.from('customer').select('id', 'relation_user_id', 'relation_log_id').where({ id: chats[index].chat_content }).first()
+
+        // 红娘自行发布 / 关联已存在用户
+        if (customer.relation_log_id) {
+          chats[index].chat_content = await Database.from('customer_log').select('avatar_url', 'nickname').where('id', customer.relation_log_id).first()
+          chats[index].chat_content.id = customer.id
+        } else if (customer.relation_user_id) {
+          chats[index].chat_content = await Database.from('users').select('*').where('user_id', customer.relation_user_id).first()
+          chats[index].chat_content.id = customer.id
+        }
+      }
+
       chats[index].created_at = Moment(chats[index].created_at).format('YYYY-MM-DD HH:mm:ss')
     }
 

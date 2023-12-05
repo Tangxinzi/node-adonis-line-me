@@ -12,6 +12,8 @@ const randomstring_1 = __importDefault(require("randomstring"));
 const uuid_1 = require("uuid");
 const moment_1 = __importDefault(require("moment"));
 const geoip_lite_1 = __importDefault(require("geoip-lite"));
+const qrcode_1 = __importDefault(require("qrcode"));
+const canvas_1 = require("canvas");
 const zpData = require('../lib/Zhipin');
 const Avatar = require('../lib/Avatar');
 const { percentUserinfo } = require('../lib/Percent');
@@ -105,8 +107,7 @@ class UserController {
     }
     watermark(mart) {
         try {
-            const { createCanvas, loadImage } = require('canvas');
-            const canvas = createCanvas(240, 100);
+            const canvas = (0, canvas_1.createCanvas)(240, 100);
             const context = canvas.getContext('2d');
             context.fillStyle = '#ffffff';
             context.fillRect(0, 0, canvas.width, canvas.height);
@@ -355,6 +356,27 @@ class UserController {
             console.log(error);
         }
     }
+    async chatSend({ request, response, session }) {
+        try {
+            const all = request.all();
+            const id = await Database_1.default.table('chats').insert({ chat_id: all.chat_id, user_id: session.get('user_id'), chat_content: all.chat_content, chat_content_type: all.chat_content_type, chat_ip: request.ip() });
+            await Database_1.default.from('chatroom').where({ chat_id: all.chat_id, status: 1 }).update({ modified_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss') });
+            await Database_1.default.from('chats_log').where({ chat_id: all.chat_id, user_id: session.get('user_id') }).update({ last_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss') });
+            response.json({
+                status: 200,
+                message: "ok",
+                data: id
+            });
+        }
+        catch (error) {
+            console.log(error);
+            response.json({
+                status: 500,
+                message: "ok",
+                data: error
+            });
+        }
+    }
     async location({ request, session }) {
         try {
             const all = request.all();
@@ -375,8 +397,7 @@ class UserController {
         try {
             const all = request.all();
             const user = await Database_1.default.from('users').where('user_id', session.get('user_id')).first();
-            const QrCode = require('qrcode');
-            return await QrCode.toDataURL(await Jwt_1.default.signPrivateKey(user.id), { width: 180 });
+            return await qrcode_1.default.toDataURL(await Jwt_1.default.signPrivateKey(user.id), { width: 180 });
         }
         catch (error) {
             Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));

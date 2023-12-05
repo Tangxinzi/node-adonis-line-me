@@ -33,6 +33,7 @@ Route.group(() => {
   Route.post('/user/custom/create', 'api/PublishesController.create')
   Route.get('/user/qrcode', 'api/UserController.qrcode')
   Route.get('/user/chat', 'api/UserController.chat')
+  Route.get('/user/chat/send', 'api/UserController.chatSend')
   Route.get('/user/location', 'api/UserController.location')
   Route.get('/user/verification', 'api/UserController.verification')
   Route.get('/user/verification/review/:table/:field', 'api/UserController.review')

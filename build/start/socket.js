@@ -56,6 +56,17 @@ const getChatsMessage = async (data, chat_id) => {
                     chats[index].chat_content = `Hi，我想认识下您介绍的好友「${user.nickname}」😄`;
                 }
             }
+            if (chats[index].chat_content_type == 'share-customer') {
+                const customer = await Database_1.default.from('customer').select('id', 'relation_user_id', 'relation_log_id').where({ id: chats[index].chat_content }).first();
+                if (customer.relation_log_id) {
+                    chats[index].chat_content = await Database_1.default.from('customer_log').select('avatar_url', 'nickname').where('id', customer.relation_log_id).first();
+                    chats[index].chat_content.id = customer.id;
+                }
+                else if (customer.relation_user_id) {
+                    chats[index].chat_content = await Database_1.default.from('users').select('*').where('user_id', customer.relation_user_id).first();
+                    chats[index].chat_content.id = customer.id;
+                }
+            }
             chats[index].created_at = (0, moment_1.default)(chats[index].created_at).format('YYYY-MM-DD HH:mm:ss');
         }
         return {

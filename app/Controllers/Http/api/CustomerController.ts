@@ -6,9 +6,13 @@ import * as Vibrant from 'node-vibrant'
 import axios from "axios";
 import iconv from 'iconv-lite';
 import Moment from'moment';
+import QrCode from 'qrcode';
+import fs from "fs";
+
 const Avatar = require('../lib/Avatar');
 const zpData = require('../lib/Zhipin');
 const { percentUserinfo, percentCustomerinfo } = require('../lib/Percent');
+const Weixin = require('../lib/Weixin');
 const RELATION = ["朋友", "亲戚", "伙伴", "同事", "其他"]
 const SALARY_RANGE = [
   { index: 0, value: '5w 以内' },
@@ -332,8 +336,18 @@ export default class CustomerController {
         customer.userinfo.work.text = await zpData.data(customer.userinfo.work.value[0], customer.userinfo.work.value[1])
       }
 
-      const QrCode = require('qrcode');
-      customer.qrcode = await QrCode.toDataURL('/pages/user-info-detail/user-info-detail?id=' + customer.cid, { width: 180 })
+      // 创建小程序码
+      customer.wxacode = `/uploads/wxacode/customer-${ customer.cid }.png`
+      fs.access(Application.publicPath(customer.wxacode), fs.constants.F_OK, async (err) => {
+        if (err) {
+          await Weixin.getWxacode({
+            filename: 'customer-' + customer.cid,
+            path: 'pages/user-info-detail/user-info-detail?id=' + customer.cid,
+          })
+        }
+      })
+
+      // customer.qrcode = await QrCode.toDataURL('/pages/user-info-detail/user-info-detail?id=' + customer.cid, { width: 180 })
 
       response.json({
         status: 200,
