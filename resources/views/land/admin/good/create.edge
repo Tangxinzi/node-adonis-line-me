@@ -53,10 +53,19 @@
           <label>品牌</label>
           <input type="text" name="good_brand" placeholder="" />
         </div>
-        <div class="field">
+        <div class="ten fields">
+          @each((entity, index) in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+            <div class="field">
+              <label>{{ !index ? '主图' : '　' }}</label>
+              <img class="ui small rounded bordered image" onclick="upload_file_{{ index }}.click()" id="upload_file_tmp_{{ index }}" src="https://semantic-ui.com/images/wireframe/white-image.png" />
+              <input type="file" name="theme[]" value="" id="upload_file_{{ index }}" onchange="change('#upload_file_{{ index }}', '#upload_file_tmp_{{ index }}');" hidden />
+            </div>
+          @endeach
+        </div>
+        {{--  <div class="field">
           <label>主图</label>
           <input type="file" name="good_theme_url" value="" placeholder="" />
-        </div>
+        </div>  --}}
         <div class="field">
           <label>页面详细内容</label>
           <div class="ui segment" style="padding: 0;">

@@ -298,15 +298,24 @@ class CustomerController {
             if (customer.userinfo.work.value) {
                 customer.userinfo.work.text = await zpData.data(customer.userinfo.work.value[0], customer.userinfo.work.value[1]);
             }
-            customer.wxacode = `/uploads/wxacode/customer-${customer.cid}.png`;
-            fs_1.default.access(Application_1.default.publicPath(customer.wxacode), fs_1.default.constants.F_OK, async (err) => {
-                if (err) {
-                    await Weixin.getWxacode({
-                        filename: 'customer-' + customer.cid,
-                        path: 'pages/user-info-detail/user-info-detail?id=' + customer.cid,
-                    });
-                }
-            });
+            customer.like = await Database_1.default.from('likes').select('id').where({ status: 1, type: 'customer', relation_type_id: customer.cid, user_id: session.get('user_id') }).first() || {};
+            if (all.type == 'share') {
+                customer.wxacode = `/uploads/wxacode/customer-${customer.cid}.png`;
+                fs_1.default.access(Application_1.default.publicPath(customer.wxacode), fs_1.default.constants.F_OK, async (err) => {
+                    if (err) {
+                        await Weixin.getWxacode({
+                            filename: 'customer-' + customer.cid,
+                            path: 'pages/user-info-detail/user-info-detail?id=' + customer.cid,
+                        });
+                    }
+                });
+                customer.urllink = await Weixin.generateUrllink({
+                    path: 'pages/user-info-detail/user-info-detail?id=' + customer.cid,
+                });
+                customer.shortlink = await Weixin.genwxaShortlink({
+                    path: 'pages/user-info-detail/user-info-detail?id=' + customer.cid,
+                });
+            }
             response.json({
                 status: 200,
                 sms: "ok",

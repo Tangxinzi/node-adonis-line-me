@@ -43,6 +43,52 @@ function getUserPhoneNumber(access_token, data) {
         });
     });
 }
+function generateUrllink(data) {
+    try {
+        return new Promise(async (resolve, reject) => {
+            const token = await this.token();
+            return await (0, axios_1.default)({
+                url: `https://api.weixin.qq.com/wxa/generate_urllink?access_token=${token.access_token}`,
+                method: 'post',
+                data: JSON.stringify({
+                    "path": data.path,
+                    "env_version": "trial"
+                }),
+            }).then(response => {
+                resolve(response.data);
+            }).catch(function (error) {
+                console.log(error);
+                reject(false);
+            });
+        });
+    }
+    catch (e) {
+        console.log(e);
+    }
+}
+function genwxaShortlink(data) {
+    try {
+        return new Promise(async (resolve, reject) => {
+            const token = await this.token();
+            return await (0, axios_1.default)({
+                url: `https://api.weixin.qq.com/wxa/genwxashortlink?access_token=${token.access_token}`,
+                method: 'post',
+                data: JSON.stringify({
+                    "page_url": data.path,
+                    "page_title": "test"
+                }),
+            }).then(response => {
+                resolve(response.data);
+            }).catch(function (error) {
+                console.log(error);
+                reject(false);
+            });
+        });
+    }
+    catch (e) {
+        console.log(e);
+    }
+}
 function getWxacode(data) {
     try {
         return new Promise(async (resolve, reject) => {
@@ -86,6 +132,8 @@ function getWxacode(data) {
 module.exports = {
     jscode2session,
     token,
+    generateUrllink,
+    genwxaShortlink,
     getWxacode,
     getUserPhoneNumber
 };

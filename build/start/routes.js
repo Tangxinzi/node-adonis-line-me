@@ -17,6 +17,7 @@ Route_1.default.group(() => {
     Route_1.default.get('/user/qrcode', 'api/UserController.qrcode');
     Route_1.default.get('/user/chat', 'api/UserController.chat');
     Route_1.default.get('/user/chat/send', 'api/UserController.chatSend');
+    Route_1.default.get('/user/collection/:type/:id', 'api/UserController.collection');
     Route_1.default.get('/user/location', 'api/UserController.location');
     Route_1.default.get('/user/verification', 'api/UserController.verification');
     Route_1.default.get('/user/verification/review/:table/:field', 'api/UserController.review');

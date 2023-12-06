@@ -28,7 +28,7 @@
         <thead>
           <tr>
             <th>ID</th>
-            <th class="center aligned one wide">主图</th>
+            <th class="center aligned one wide">图片</th>
             <th>名称</th>
             <th>品牌</th>
             <th>类别</th>
@@ -41,7 +41,8 @@
             <tr>
               <td class="td">{{ row.id }}</td>
               <td class="center aligned td">
-                <img class="ui tiny bordered rounded image" style="margin: 0 auto;" src="{{ row.good_theme_url || '' }}" alt="" />
+                <!-- <img class="ui tiny bordered rounded image" style="margin: 0 auto;" src="{{ row.good_theme_url || '' }}" alt="" /> -->
+                {{ row.good_theme_url.length || 0 }}
               </td>
               <td class="td">{{ row.good_name || '' }}</td>
               <td class="td">{{ row.good_brand || '' }}</td>

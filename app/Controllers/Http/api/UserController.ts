@@ -88,6 +88,7 @@ export default class UserController {
         user['number'] = {
           message: 0,
           introduction: (await Database.from('answer').where({ type: 1, status: 1, user_id: session.get('user_id') }).count('* as total'))[0].total,
+          like: (await Database.from('likes').where({ type: 'customer', status: 1, user_id: session.get('user_id') }).count('* as total'))[0].total,
           visitor: 0,
           moment: (await Database.from('moments').where('user_id', session.get('user_id')).count('* as total'))[0].total,
           answer: (await Database.from('answer').where({ type: 0, status: 1, user_id: session.get('user_id') }).count('* as total'))[0].total,
@@ -465,6 +466,21 @@ export default class UserController {
       return all
     } catch (error) {
       Logger.error("error 获取失败 %s", JSON.stringify(error));
+    }
+  }
+
+  public async collection({ params, request, response, session }: HttpContextContract) {
+    try {
+      const like = await Database.from('likes').where({ type: params.type, relation_type_id: params.id, user_id: session.get('user_id') }).first() || {}
+      if (!like.id && params.type == 'customer') {
+        await Database.table('likes').insert({ type: params.type, relation_type_id: params.id, user_id: session.get('user_id'), ip: request.ip() })
+      } else if (like.id && params.type == 'customer') {
+        await Database.from('likes').where({ type: params.type, relation_type_id: params.id, user_id: session.get('user_id') }).update({ status: !collection.status, modified_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
+      }
+
+      return response.json({ status: 200, message: "ok" })
+    } catch (error) {
+      console.log(error)
     }
   }
 

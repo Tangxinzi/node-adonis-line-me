@@ -233,19 +233,19 @@ export default class EventController {
       // 如果已存在 like 数据则更新，否则插入
       let data = {}
       const all = request.all()
-      const like = await Database.from('likes').where({ relation_type_id: params.id, type: all.type, user_id: session.get('user_id') }).first()
+      const like = await Database.from('likes').where({ relation_type_id: params.id, type: params.type, user_id: session.get('user_id') }).first()
       if (like && like.id) {
         data = await Database.from('likes').where({ relation_type_id: params.id }).update({ status: like.status ? 0 : 1, modified_at: Moment().format('YYYY-MM-DD HH:mm:ss'), ip: request.ip() })
       } else {
-        data = await Database.table('likes').insert({ type: all.type, relation_type_id: params.id, user_id: session.get('user_id'), ip: request.ip() })
+        data = await Database.table('likes').insert({ type: params.type, relation_type_id: params.id, user_id: session.get('user_id'), ip: request.ip() })
       }
 
-      const dataLike = await Database.from('likes').where({ relation_type_id: params.id, type: all.type, status: 1, user_id: session.get('user_id') }).first()
+      const dataLike = await Database.from('likes').where({ relation_type_id: params.id, type: params.type, status: 1, user_id: session.get('user_id') }).first()
       data = {
         ...data,
         like: dataLike && dataLike.id ? true : false,
-        likeNum: (await Database.from('likes').where({ relation_type_id: params.id, type: all.type, status: 1 }).count('* as total'))[0].total || 0,
-        commentNum: (await Database.from('comments').where({ relation_type_id: params.id, type: all.type, status: 1 }).count('* as total'))[0].total || 0,
+        likeNum: (await Database.from('likes').where({ relation_type_id: params.id, type: params.type, status: 1 }).count('* as total'))[0].total || 0,
+        commentNum: (await Database.from('comments').where({ relation_type_id: params.id, type: params.type, status: 1 }).count('* as total'))[0].total || 0,
       }
 
       response.json({ status: 200, message: "ok", data })

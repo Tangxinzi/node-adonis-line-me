@@ -10,7 +10,7 @@ class ArticleController {
     async index({ request, view, response }) {
         try {
             const all = request.all(), catalog = ['其它', '活动资讯'];
-            const articles = await Database_1.default.from('land_articles').select('id', 'article_catalog', 'article_title', 'article_author', 'article_detail', 'article_theme_url', 'article_original_url').where('status', 1);
+            const articles = await Database_1.default.from('land_articles').select('id', 'article_catalog', 'article_title', 'article_author', 'article_detail', 'article_theme_url', 'article_original_url', 'created_at').where('status', 1);
             for (let index = 0; index < articles.length; index++) {
                 articles[index].catalog = catalog[articles[index].article_catalog];
                 articles[index]['created_at'] = (0, moment_1.default)(articles[index]['created_at']).format('YYYY-MM-DD H:mm:ss');

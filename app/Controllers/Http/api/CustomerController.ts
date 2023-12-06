@@ -336,18 +336,33 @@ export default class CustomerController {
         customer.userinfo.work.text = await zpData.data(customer.userinfo.work.value[0], customer.userinfo.work.value[1])
       }
 
-      // 创建小程序码
-      customer.wxacode = `/uploads/wxacode/customer-${ customer.cid }.png`
-      fs.access(Application.publicPath(customer.wxacode), fs.constants.F_OK, async (err) => {
-        if (err) {
-          await Weixin.getWxacode({
-            filename: 'customer-' + customer.cid,
-            path: 'pages/user-info-detail/user-info-detail?id=' + customer.cid,
-          })
-        }
-      })
+      customer.like = await Database.from('likes').select('id').where({ status: 1, type: 'customer', relation_type_id: customer.cid, user_id: session.get('user_id') }).first() || {}
 
-      // customer.qrcode = await QrCode.toDataURL('/pages/user-info-detail/user-info-detail?id=' + customer.cid, { width: 180 })
+      if (all.type == 'share') {
+        // 创建小程序码
+        customer.wxacode = `/uploads/wxacode/customer-${ customer.cid }.png`
+        fs.access(Application.publicPath(customer.wxacode), fs.constants.F_OK, async (err) => {
+          if (err) {
+            await Weixin.getWxacode({
+              filename: 'customer-' + customer.cid,
+              path: 'pages/user-info-detail/user-info-detail?id=' + customer.cid,
+            })
+          }
+        })
+
+        // URLLink
+        customer.urllink = await Weixin.generateUrllink({
+          path: 'pages/user-info-detail/user-info-detail?id=' + customer.cid,
+        })
+
+        // URLLink
+        customer.shortlink = await Weixin.genwxaShortlink({
+          path: 'pages/user-info-detail/user-info-detail?id=' + customer.cid,
+        })
+
+        // 二维码
+        // customer.qrcode = await QrCode.toDataURL('/pages/user-info-detail/user-info-detail?id=' + customer.cid, { width: 180 })
+      }
 
       response.json({
         status: 200,

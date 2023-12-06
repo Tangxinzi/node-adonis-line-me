@@ -9,14 +9,23 @@ const moment_1 = __importDefault(require("moment"));
 class GoodController {
     async index({ request, view, response }) {
         try {
+            let goods = [];
             const all = request.all();
-            const goods = await Database_1.default.from('land_goods').select('*').where('status', 1).orderBy('created_at', 'desc').forPage(request.input('page', 1), 20);
+            if (all.search) {
+                goods = await Database_1.default.from('land_goods').select('*').where('status', 1).where('good_name', 'like', `%${all.search}%`).orWhere('good_brand', 'like', `%${all.search}%`).orderBy('created_at', 'desc').forPage(request.input('page', 1), 20);
+            }
+            else if (all.catalog) {
+                goods = await Database_1.default.from('land_goods').select('*').where({ status: 1, good_catalog: all.catalog }).orderBy('created_at', 'desc').forPage(request.input('page', 1), 20);
+            }
+            else {
+                goods = await Database_1.default.from('land_goods').select('*').where('status', 1).orderBy('created_at', 'desc').forPage(request.input('page', 1), 20);
+            }
             for (let index = 0; index < goods.length; index++) {
+                goods[index].good_theme_url = goods[index].good_theme_url ? JSON.parse(goods[index].good_theme_url) : [];
                 goods[index].catalog = await Database_1.default.from('land_goods_catalog').select('*').where({ id: goods[index].good_catalog, status: 1 }).first();
                 goods[index].created_at = (0, moment_1.default)(goods[index].created_at).format('YYYY-MM-DD H:mm:ss');
             }
             if (all.type == 'json') {
-                const goods = await Database_1.default.from('land_goods').select('*').where('status', 1).orderBy('created_at', 'desc').forPage(request.input('page', 1), 8);
                 return response.json({
                     status: 200,
                     message: "ok",
@@ -138,9 +147,14 @@ class GoodController {
             const all = request.all();
             const good = await Database_1.default.from('land_goods').where('id', params.id).first();
             good.created_at = (0, moment_1.default)(good.created_at).format('YYYY-MM-DD H:mm:ss');
+            good.good_theme_url = good.good_theme_url ? JSON.parse(good.good_theme_url) : [];
             const catalog = await Database_1.default.from('land_goods_catalog').select('*').where({ level: 1, status: 1 }).orderBy('created_at', 'desc');
             for (let index = 0; index < catalog.length; index++) {
                 catalog[index].sub_catalog = await Database_1.default.from('land_goods_catalog').select('*').where({ parent_catalog_id: catalog[index].id, level: 2, status: 1 });
+            }
+            good.catalog_goods = await Database_1.default.from('land_goods').select('*').where({ status: 1, good_catalog: good.good_catalog }).orderBy('created_at', 'desc').forPage(request.input('page', 1), 20);
+            for (let index = 0; index < good.catalog_goods.length; index++) {
+                good.catalog_goods[index].good_theme_url = good.catalog_goods[index].good_theme_url ? JSON.parse(good.catalog_goods[index].good_theme_url) : [];
             }
             const data = {
                 status: 200,
@@ -163,6 +177,7 @@ class GoodController {
         try {
             const all = request.all();
             const good = await Database_1.default.from('land_goods').where('id', params.id).first();
+            good.good_theme_url = good.good_theme_url ? JSON.parse(good.good_theme_url) : [];
             const catalog = await Database_1.default.from('land_goods_catalog').select('*').where({ level: 1, status: 1 }).orderBy('created_at', 'desc');
             for (let index = 0; index < catalog.length; index++) {
                 catalog[index].sub_catalog = await Database_1.default.from('land_goods_catalog').select('*').where({ parent_catalog_id: catalog[index].id, level: 2, status: 1 });
@@ -183,17 +198,24 @@ class GoodController {
     async save({ request, response, session }) {
         try {
             let all = request.all();
-            let good_theme_url = all.theme_url || '';
+            let good_theme_url = all.theme_url ? JSON.parse(all.theme_url) : [];
             if (request.file('theme')) {
-                const RandomString = require('RandomString');
-                const profile = request.file('theme', { type: ['image', 'video'], size: '10mb' });
-                const profileName = `${RandomString.generate(32)}.${profile.extname}`;
-                const profilePath = `/uploads/themes/`;
-                let file = {};
-                file.fileName = profile.clientName;
-                file.fileSrc = profilePath + profileName;
-                await profile.move(Application_1.default.publicPath(profilePath), { name: profileName, overwrite: true });
-                good_theme_url = file.fileSrc;
+                const themes = request.files('theme', {
+                    types: ['image'],
+                    size: '2mb'
+                });
+                for (let index = 0; index < themes.length; index++) {
+                    let theme = themes[index];
+                    let RandomString = require('RandomString');
+                    const profileName = `${RandomString.generate(32)}.${theme.extname}`;
+                    const profilePath = `/uploads/themes/`;
+                    let file = {
+                        fileName: theme.clientName,
+                        fileSrc: profilePath + profileName
+                    };
+                    await theme.move(Application_1.default.publicPath(profilePath), { name: profileName, overwrite: true });
+                    good_theme_url[good_theme_url.length + index] = file.fileSrc;
+                }
             }
             if (request.method() == 'POST' && all.button == 'update') {
                 await Database_1.default.from('land_goods').where('id', all.id).update({
@@ -201,7 +223,7 @@ class GoodController {
                     good_name: all.good_name,
                     good_brand: all.good_brand,
                     detail: all.detail,
-                    good_theme_url
+                    good_theme_url: JSON.stringify(good_theme_url)
                 });
                 session.flash('message', { type: 'success', header: '更新成功', message: `` });
                 return response.redirect('back');
@@ -211,7 +233,7 @@ class GoodController {
                 good_name: all.good_name || '',
                 good_brand: all.good_brand || '',
                 detail: all.detail || '',
-                good_theme_url
+                good_theme_url: JSON.stringify(good_theme_url)
             });
             session.flash('message', { type: 'success', header: '创建成功', message: `` });
             return response.redirect('back');
