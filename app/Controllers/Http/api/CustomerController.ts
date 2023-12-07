@@ -268,22 +268,30 @@ export default class CustomerController {
   public async customerList({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
+      const user = await Database.from('users').select('user_id', 'nickname', 'avatar_url', 'detail', 'company', 'work', 'job_title').where('user_id', all.user_id || session.get('user_id')).first()
+      user.work = user.work ? JSON.parse(user.work) : []
+      if (user.work.value) {
+        user.work.text = await zpData.data(user.work.value[0], user.work.value[1])
+      }
+
       const customer = await Database.from('customer').select('id', 'user_id', 'relation', 'introduction', 'relation_log_id', 'relation_user_id', 'created_at').whereIn('status', [1, 2]).where('user_id', all.user_id || session.get('user_id')).orderBy('created_at', 'desc')
       for (let index = 0; index < customer.length; index++) {
         if (customer[index].relation_user_id) {
           customer[index] = {
             ...customer[index],
             percent: await percentUserinfo(customer[index].relation_user_id),
-            ...await Database.from('users').select('avatar_url', 'nickname', 'work', 'detail', 'phone').where('user_id', customer[index].relation_user_id).first()
+            ...await Database.from('users').select('avatar_url', 'nickname', 'work', 'company', 'birthday', 'photos').where('user_id', customer[index].relation_user_id).first()
           }
         } else if (customer[index].relation_log_id) {
           customer[index] = {
             ...customer[index],
             percent: await percentCustomerinfo(customer[index].relation_log_id),
-            ...await Database.from('customer_log').select('avatar_url', 'nickname', 'work', 'detail', 'phone').where('id', customer[index].relation_log_id).first()
+            ...await Database.from('customer_log').select('avatar_url', 'nickname', 'work', 'company', 'birthday', 'photos').where('id', customer[index].relation_log_id).first()
           }
         }
 
+        customer[index].age = Moment().diff(customer[index].birthday, 'years')
+        customer[index].photos = customer[index].photos ? JSON.parse(customer[index].photos) : []
         customer[index].relation = RELATION[customer[index].relation]
         customer[index].work = customer[index].work ? JSON.parse(customer[index].work) : []
         if (customer[index].work.value) {
@@ -297,7 +305,7 @@ export default class CustomerController {
         status: 200,
         sms: "ok",
         data: {
-          user: await Database.from('users').select('avatar_url', 'nickname', 'detail').where('user_id', all.user_id || session.get('user_id')).first(),
+          user,
           customer
         }
       })
@@ -323,7 +331,11 @@ export default class CustomerController {
         customer.userinfo = await Database.from('users').select('*').where({ 'user_id': customer.relation_user_id }).first()
       }
 
-      customer.parent = await Database.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer.user_id).first()
+      customer.parent = await Database.from('users').select('user_id', 'nickname', 'avatar_url', 'company', 'job_title').where('user_id', customer.user_id).first()
+      if (customer.parent.company) {
+        customer.parent.company = customer.parent.company.length > 10 ? customer.parent.company.substr(0, 10) + '...' : customer.parent.company
+      }
+
       customer.introduces = await Database.from('answer').where({ type: 1, status: 1, user_id: customer.relation_user_id })
 
       customer.userinfo.location = customer.userinfo.location ? JSON.parse(customer.userinfo.location) : ''

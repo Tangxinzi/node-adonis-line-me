@@ -30,13 +30,9 @@ const Server_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Core/Serv
 Server_1.default.middleware.register([
     () => Promise.resolve().then(() => __importStar(global[Symbol.for('ioc.use')]("Adonis/Core/BodyParser"))),
     () => Promise.resolve().then(() => __importStar(global[Symbol.for('ioc.use')]("Adonis/Addons/Shield"))),
-    () => Promise.resolve().then(() => __importStar(global[Symbol.for('ioc.use')]('App/Middleware/Check'))),
-    () => Promise.resolve().then(() => __importStar(global[Symbol.for('ioc.use')]('App/Middleware/ApiCheck'))),
-    () => Promise.resolve().then(() => __importStar(global[Symbol.for('ioc.use')]('App/Middleware/AdminCheck'))),
 ]);
 Server_1.default.middleware.registerNamed({
-    check: () => Promise.resolve().then(() => __importStar(global[Symbol.for('ioc.use')]('App/Middleware/Check'))),
-    apicheck: () => Promise.resolve().then(() => __importStar(global[Symbol.for('ioc.use')]('App/Middleware/ApiCheck'))),
-    admincheck: () => Promise.resolve().then(() => __importStar(global[Symbol.for('ioc.use')]('App/Middleware/AdminCheck'))),
+    apiCheck: () => Promise.resolve().then(() => __importStar(global[Symbol.for('ioc.use')]('App/Middleware/ApiCheck'))),
+    adminCheck: () => Promise.resolve().then(() => __importStar(global[Symbol.for('ioc.use')]('App/Middleware/AdminCheck'))),
 });
 //# sourceMappingURL=kernel.js.map

@@ -17,7 +17,6 @@ Route_1.default.group(() => {
     Route_1.default.get('/user/qrcode', 'api/UserController.qrcode');
     Route_1.default.get('/user/chat', 'api/UserController.chat');
     Route_1.default.get('/user/chat/send', 'api/UserController.chatSend');
-    Route_1.default.get('/user/collection/:type/:id', 'api/UserController.collection');
     Route_1.default.get('/user/location', 'api/UserController.location');
     Route_1.default.get('/user/verification', 'api/UserController.verification');
     Route_1.default.get('/user/verification/review/:table/:field', 'api/UserController.review');
@@ -48,14 +47,11 @@ Route_1.default.group(() => {
     Route_1.default.post('/comments/create', 'api/CommentsController.create');
     Route_1.default.get('/event/descovery', 'api/EventController.descovery');
     Route_1.default.get('/event/descovery/:type/:id', 'api/EventController.type');
-    Route_1.default.post('/event/like/:id', 'api/EventController.like');
+    Route_1.default.get('/event/like/:type/:id', 'api/EventController.like');
+    Route_1.default.post('/event/like/:type/:id', 'api/EventController.like');
     Route_1.default.get('/query/school', 'api/QueryController.school');
     Route_1.default.get('/query/company', 'api/QueryController.company');
-}).prefix('/api').middleware('apicheck');
-Route_1.default.group(() => {
-    Route_1.default.get('/login', 'admin/UsersController.login');
-    Route_1.default.post('/login', 'admin/UsersController.login');
-}).prefix('/manager');
+}).middleware('apiCheck').prefix('/api');
 Route_1.default.group(() => {
     Route_1.default.get('/operates', 'admin/OperatesController.index');
     Route_1.default.post('/operates', 'admin/OperatesController.save');
@@ -77,13 +73,15 @@ Route_1.default.group(() => {
     Route_1.default.get('/chatroom/edit/:id', 'admin/ChatroomController.edit').as('admin.chatroom.edit');
     Route_1.default.post('/chatroom/store', 'admin/ChatroomController.store');
     Route_1.default.post('/chatroom/update', 'admin/ChatroomController.update');
-    Route_1.default.get('/questions', 'admin/QuestionsController.index').as('questions');
+    Route_1.default.get('/questions', 'admin/QuestionsController.index');
     Route_1.default.get('/questions/answer/:type', 'admin/QuestionsController.answer');
     Route_1.default.get('/questions/edit/:id', 'admin/QuestionsController.edit');
     Route_1.default.get('/questions/create', 'admin/QuestionsController.create');
     Route_1.default.post('/questions/save', 'admin/QuestionsController.save');
     Route_1.default.post('/questions/update', 'admin/QuestionsController.update');
-}).prefix('/admin').middleware('admincheck');
+    Route_1.default.get('/login', 'admin/UsersController.login');
+    Route_1.default.post('/login', 'admin/UsersController.login');
+}).middleware('adminCheck').prefix('/admin');
 Route_1.default.group(() => {
     Route_1.default.get('/user/wx-login', 'land/admin/UserController.wxLogin');
     Route_1.default.get('/user/get-phone-number', 'land/admin/UserController.getPhoneNumber');

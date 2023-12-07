@@ -22,8 +22,17 @@ class UsersController {
                         return response.redirect().status(301).toRoute('admin/CustomersController.index');
                     }
                     else {
+                        console.log('login error');
                         return response.redirect().status(301).toRoute('admin/UsersController.login');
                     }
+                }
+                else {
+                    session.forget('adonis-cookie-sign');
+                    return view.render('admin/user/login', {
+                        data: {
+                            title: '登录'
+                        }
+                    });
                 }
             }
             else {

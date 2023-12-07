@@ -326,6 +326,9 @@ export default class UserController {
         case 'location':
           await Database.from('users').where('user_id', session.get('user_id')).update({ location: JSON.stringify(all.value || []) })
           break;
+        case 'job_title':
+          await Database.from('users').where('user_id', session.get('user_id')).update({ job_title: all.value })
+          break;
         case 'salary':
           await Database.from('users').where('user_id', session.get('user_id')).update({ salary: all.value })
           break;

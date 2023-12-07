@@ -56,7 +56,16 @@ export default class UserController {
         }
       }
 
+      if (all.type == 'good') {
+        if (all.search) {
+          var data = await Database.from('land_collection').join('land_goods', 'land_collection.relation_type_id', 'land_goods.id').where({ 'land_collection.type': all.type, 'land_collection.wechat_open_id': all.openid, 'land_collection.status': 1, 'land_goods.status': 1 }).select('land_goods.id', 'land_goods.good_theme_url', 'land_goods.good_name', 'land_goods.good_brand').where('land_goods.good_name', 'like', `%${ all.search }%`).orderBy('land_goods.created_at', 'desc')
+        } else {
+          var data = await Database.from('land_collection').join('land_goods', 'land_collection.relation_type_id', 'land_goods.id').where({ 'land_collection.type': all.type, 'land_collection.wechat_open_id': all.openid, 'land_collection.status': 1, 'land_goods.status': 1 }).select('land_goods.id', 'land_goods.good_theme_url', 'land_goods.good_name', 'land_goods.good_brand')
+        }
+      }
+
       for (let index = 0; index < data.length; index++) {
+        data[index].good_theme_url = data[index].good_theme_url ? JSON.parse(data[index].good_theme_url) : []
         data[index].labels = data[index].labels ? data[index].labels.split(',') : []
       }
 

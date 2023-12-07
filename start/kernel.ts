@@ -23,9 +23,9 @@ import Server from '@ioc:Adonis/Core/Server'
 Server.middleware.register([
   () => import('@ioc:Adonis/Core/BodyParser'),
   () => import('@ioc:Adonis/Addons/Shield'),
-  () => import('App/Middleware/Check'),
-  () => import('App/Middleware/ApiCheck'),
-  () => import('App/Middleware/AdminCheck'),
+  // () => import('App/Middleware/Check'),
+  // () => import('App/Middleware/ApiCheck'),
+  // () => import('App/Middleware/AdminCheck'),
 ])
 
 /*
@@ -45,7 +45,7 @@ Server.middleware.register([
 |
 */
 Server.middleware.registerNamed({
-  check: () => import('App/Middleware/Check'),
-  apicheck: () => import('App/Middleware/ApiCheck'),
-  admincheck: () => import('App/Middleware/AdminCheck'),
+  // check: () => import('App/Middleware/Check'),
+  apiCheck: () => import('App/Middleware/ApiCheck'),
+  adminCheck: () => import('App/Middleware/AdminCheck'),
 })

@@ -23,7 +23,7 @@
         <a class="{{ data.active == 'operates' ? 'item active' : 'item' }}" href="{{ route('admin/OperatesController.index' )}}">运营</a>
         <a class="{{ data.active == 'file' ? 'item active' : 'item' }}" href="{{ route('admin/FilesController.index' )}}">文件</a>
         <div class="item">
-          <a href=""><i class="user circle black large icon" style="margin: 0"></i></a>
+          <a href="{{ route('admin/UsersController.login') }}">退出</a>
         </div>
       </div>
     </div>

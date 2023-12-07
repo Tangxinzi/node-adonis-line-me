@@ -71,16 +71,12 @@ Route.group(() => {
 
   Route.get('/event/descovery', 'api/EventController.descovery')
   Route.get('/event/descovery/:type/:id', 'api/EventController.type')
-  Route.post('/event/like/:id', 'api/EventController.like')
+  Route.get('/event/like/:type/:id', 'api/EventController.like')
+  Route.post('/event/like/:type/:id', 'api/EventController.like')
 
   Route.get('/query/school', 'api/QueryController.school')
   Route.get('/query/company', 'api/QueryController.company')
-}).prefix('/api').middleware('apicheck')
-
-Route.group(() => {
-  Route.get('/login', 'admin/UsersController.login')
-  Route.post('/login', 'admin/UsersController.login')
-}).prefix('/manager')
+}).middleware('apiCheck').prefix('/api')
 
 Route.group(() => {
   Route.get('/operates', 'admin/OperatesController.index')
@@ -109,13 +105,16 @@ Route.group(() => {
   Route.post('/chatroom/store', 'admin/ChatroomController.store')
   Route.post('/chatroom/update', 'admin/ChatroomController.update')
 
-  Route.get('/questions', 'admin/QuestionsController.index').as('questions')
+  Route.get('/questions', 'admin/QuestionsController.index')
   Route.get('/questions/answer/:type', 'admin/QuestionsController.answer')
   Route.get('/questions/edit/:id', 'admin/QuestionsController.edit')
   Route.get('/questions/create', 'admin/QuestionsController.create')
   Route.post('/questions/save', 'admin/QuestionsController.save')
   Route.post('/questions/update', 'admin/QuestionsController.update')
-}).prefix('/admin').middleware('admincheck')
+
+  Route.get('/login', 'admin/UsersController.login')
+  Route.post('/login', 'admin/UsersController.login')
+}).middleware('adminCheck').prefix('/admin')
 
 Route.group(() => {
   Route.get('/user/wx-login', 'land/admin/UserController.wxLogin')
