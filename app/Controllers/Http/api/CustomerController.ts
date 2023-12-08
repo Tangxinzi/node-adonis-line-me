@@ -280,13 +280,13 @@ export default class CustomerController {
           customer[index] = {
             ...customer[index],
             percent: await percentUserinfo(customer[index].relation_user_id),
-            ...await Database.from('users').select('avatar_url', 'nickname', 'work', 'company', 'birthday', 'photos').where('user_id', customer[index].relation_user_id).first()
+            ...await Database.from('users').select('avatar_url', 'nickname', 'work', 'company', 'birthday', 'phone', 'photos').where('user_id', customer[index].relation_user_id).first()
           }
         } else if (customer[index].relation_log_id) {
           customer[index] = {
             ...customer[index],
             percent: await percentCustomerinfo(customer[index].relation_log_id),
-            ...await Database.from('customer_log').select('avatar_url', 'nickname', 'work', 'company', 'birthday', 'photos').where('id', customer[index].relation_log_id).first()
+            ...await Database.from('customer_log').select('avatar_url', 'nickname', 'work', 'company', 'birthday', 'phone', 'photos').where('id', customer[index].relation_log_id).first()
           }
         }
 
