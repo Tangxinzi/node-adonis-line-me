@@ -35,7 +35,7 @@ function action(data, value) {
                 resolve(false);
                 return;
             }
-            if (value.verification_status == 'rejected' && value.verification_comment != '') {
+            if (value.verification_status == 'rejected' && value.verification_comment == '') {
                 resolve(false);
                 return;
             }
@@ -46,6 +46,14 @@ function action(data, value) {
                 verification_user_id: value.verification_user_id,
                 modified_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss')
             });
+            if (result && value.verification_status == 'rejected') {
+                switch (`${data.table}.${data.field}`) {
+                    case 'customer.':
+                        data.value = JSON.parse(data.value);
+                        await Database_1.default.from('customer').where('id', data.value.customer_id).update({ status: 2 });
+                        break;
+                }
+            }
             if (result && value.verification_status == 'approved') {
                 switch (`${data.table}.${data.field}`) {
                     case 'users.avatar_url':
@@ -53,6 +61,10 @@ function action(data, value) {
                         break;
                     case 'users.photos':
                         await Database_1.default.from('users').where('user_id', data.user_id).update({ photos: data.value });
+                        break;
+                    case 'customer.':
+                        data.value = JSON.parse(data.value);
+                        await Database_1.default.from('customer').where('id', data.value.customer_id).update({ status: 1 });
                         break;
                 }
             }

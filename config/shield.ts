@@ -99,7 +99,7 @@ export const csrf: ShieldConfig['csrf'] = {
     '/api/file/upload',
     '/api/customer/create',
     '/api/customer/create/relation',
-    '/api/customer/delete/:id',
+    '/api/customer/:status/:id',
     '/api/customer/field/update/:id',
     '/api/user/custom/create',
     '/api/user/change-type',

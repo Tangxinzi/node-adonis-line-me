@@ -36,6 +36,16 @@
             </tr>
           </thead>
           <tbody>
+            @if(data.verification.table == 'customer' && data.verification.field == '')
+            <tr>
+              <td>
+                新创建介绍好友
+              </td>
+              <td>
+                请通过小程序查看「介绍主页」，决定是否通过
+              </td>
+            </tr>
+            @endif
             @if(data.verification.table == 'users' && data.verification.field == 'avatar_url')
             <tr>
               <td>
@@ -97,6 +107,7 @@
         <div class="inline fields">
           <label>审核内容</label>
           <div class="field">
+            <span>{{ data.verification.table == 'customer' ? '介绍好友' : '' }}</span><span>
             <span>{{ data.verification.table == 'users' ? '用户信息' : '' }}</span><span>
               {{ data.verification.field == 'avatar_url' ? '头像' : '' }}
               {{ data.verification.field == 'photos' ? '照片集' : '' }}
@@ -132,7 +143,7 @@
         {{ csrfField() }}
         <div class="flex-between">
           <button class="ui tiny button" type="submit" name="button" value="update">提交</button>
-          <span>提交时间：{{ data.verification.created_at }}</span>
+          <span>加入审核队列时间：{{ data.verification.created_at }}</span>
         </div>
         @endif
       </form>
@@ -156,7 +167,7 @@
             <li><b>违反平台政策：</b>用户的行为或提交的资料违反了平台的使用政策，导致审核拒审。</li>
             <li><b>负面信用记录：</b>用户可能因贷款违约、违法记录等负面信用记录而被拒审。</li>
             <li><b>无法联系：</b>审核人员无法联系用户以进一步核实信息，导致审核失败。</li>
-            <li><b>技术问题：</b>提交的资料可能由于技术问题而无法被有效审核，如文件损坏或不可读。</li>            
+            <li><b>技术问题：</b>提交的资料可能由于技术问题而无法被有效审核，如文件损坏或不可读。</li>
           </ul>
         </div>
       </div>

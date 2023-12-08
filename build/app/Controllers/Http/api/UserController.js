@@ -63,7 +63,7 @@ class UserController {
     async getUserinfo({ request, session }) {
         try {
             const all = request.all();
-            const user = await Database_1.default.from('users').where('user_id', session.get('user_id')).first();
+            const user = await Database_1.default.from('users').where('user_id', all.user_id || session.get('user_id')).first();
             if (user) {
                 const _geoip = geoip_lite_1.default.lookup(request.ip()) || {};
                 await Database_1.default.from('users').where('user_id', session.get('user_id')).update({ online_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss'), ip: request.ip(), ip_city: _geoip.city });
@@ -155,6 +155,10 @@ class UserController {
                         case 'users.photos':
                             verify[index].table = '用户信息';
                             verify[index].value = '照片集';
+                            break;
+                        case 'customer.':
+                            verify[index].table = '介绍好友';
+                            verify[index].value = JSON.parse(verify[index].value);
                             break;
                     }
                 }

@@ -108,7 +108,7 @@ export default class OperatesController {
       const all = request.all(), verification = await Database.from('verification').where({ id: params.id }).first()
       if (request.method() == 'GET') {
         if (verification.is_verified == 0) {
-          var user = all.sign ? await Database.from('users').where('id', Jwt.verifyPublicKey(all.sign)).first() : {}
+          var user = await Database.from('users').where('id', Jwt.verifyPublicKey(all.sign || session.get('adonis-cookie-sign'))).first()
         } else {
           var user = await Database.from('users').where('user_id', verification.verification_user_id).first() || {}
         }
@@ -117,11 +117,14 @@ export default class OperatesController {
         verification.created_at = Moment(verification.created_at).format('YYYY-MM-DD HH:mm:ss')
         verification.modified_at = verification.modified_at ? Moment(verification.modified_at).format('YYYY-MM-DD HH:mm:ss') : ''
 
-        switch (verification.field) {
-          case 'avatar_url':
+        switch (`${ verification.table }.${ verification.field }`) {
+          case 'users.avatar_url':
             break;
-          case 'photos':
+          case 'users.photos':
             verification.before = JSON.parse(verification.before)
+            verification.value = JSON.parse(verification.value)
+            break;
+          case 'customer.':
             verification.value = JSON.parse(verification.value)
             break;
         }

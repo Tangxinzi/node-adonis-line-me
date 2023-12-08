@@ -107,7 +107,7 @@ class OperatesController {
             const all = request.all(), verification = await Database_1.default.from('verification').where({ id: params.id }).first();
             if (request.method() == 'GET') {
                 if (verification.is_verified == 0) {
-                    var user = all.sign ? await Database_1.default.from('users').where('id', Jwt_1.default.verifyPublicKey(all.sign)).first() : {};
+                    var user = await Database_1.default.from('users').where('id', Jwt_1.default.verifyPublicKey(all.sign || session.get('adonis-cookie-sign'))).first();
                 }
                 else {
                     var user = await Database_1.default.from('users').where('user_id', verification.verification_user_id).first() || {};
@@ -115,11 +115,14 @@ class OperatesController {
                 const review = await Database_1.default.from('users').where({ user_id: verification.user_id }).first();
                 verification.created_at = (0, moment_1.default)(verification.created_at).format('YYYY-MM-DD HH:mm:ss');
                 verification.modified_at = verification.modified_at ? (0, moment_1.default)(verification.modified_at).format('YYYY-MM-DD HH:mm:ss') : '';
-                switch (verification.field) {
-                    case 'avatar_url':
+                switch (`${verification.table}.${verification.field}`) {
+                    case 'users.avatar_url':
                         break;
-                    case 'photos':
+                    case 'users.photos':
                         verification.before = JSON.parse(verification.before);
+                        verification.value = JSON.parse(verification.value);
+                        break;
+                    case 'customer.':
                         verification.value = JSON.parse(verification.value);
                         break;
                 }

@@ -230,9 +230,9 @@ export default class EventController {
 
   public async like({ params, request, response, session }: HttpContextContract) {
     try {
-      let data = {}, customer = []
       const all = request.all()
       if (request.method() == 'GET') {
+        let customer = []
         switch (params.type) {
           case 'customer':
             customer = await Database.from('likes').select('customer.id as cid', 'relation_log_id', 'likes.created_at').where({ 'likes.type': 'customer', 'likes.user_id': session.get('user_id') }).join('customer', 'likes.relation_type_id', '=', 'customer.id').where({ 'likes.status': 1, 'customer.status': 1 }).orderBy('likes.created_at', 'desc')
@@ -270,6 +270,7 @@ export default class EventController {
 
       if (request.method() == 'POST' && (params.type == 'moment' || params.type == 'answer' || params.type == 'customer')) {
         // 如果已存在 like 数据则更新，否则插入
+        let data = {}
         const like = await Database.from('likes').where({ relation_type_id: params.id, type: params.type, user_id: session.get('user_id') }).first()
         if (like && like.id) {
           data = await Database.from('likes').where({ relation_type_id: params.id }).update({ status: like.status ? 0 : 1, modified_at: Moment().format('YYYY-MM-DD HH:mm:ss'), ip: request.ip() })

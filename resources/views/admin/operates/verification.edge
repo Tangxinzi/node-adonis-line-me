@@ -54,6 +54,7 @@
                 {{ row.userinfo.nickname }}
               </td>
               <td>
+                {{ row.table == 'customer' ? '介绍好友' : '' }}
                 {{ row.table == 'users' ? '用户信息' : '' }}
                 {{ row.field == 'avatar_url' ? '头像更新' : '' }}
                 {{ row.field == 'photos' ? '照片集' : '' }}

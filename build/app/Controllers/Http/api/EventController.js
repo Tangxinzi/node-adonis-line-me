@@ -187,9 +187,9 @@ class EventController {
     }
     async like({ params, request, response, session }) {
         try {
-            let data = {}, customer = [];
             const all = request.all();
             if (request.method() == 'GET') {
+                let customer = [];
                 switch (params.type) {
                     case 'customer':
                         customer = await Database_1.default.from('likes').select('customer.id as cid', 'relation_log_id', 'likes.created_at').where({ 'likes.type': 'customer', 'likes.user_id': session.get('user_id') }).join('customer', 'likes.relation_type_id', '=', 'customer.id').where({ 'likes.status': 1, 'customer.status': 1 }).orderBy('likes.created_at', 'desc');
@@ -225,6 +225,7 @@ class EventController {
                 return response.json({ status: 200, message: "ok", data: customer });
             }
             if (request.method() == 'POST' && (params.type == 'moment' || params.type == 'answer' || params.type == 'customer')) {
+                let data = {};
                 const like = await Database_1.default.from('likes').where({ relation_type_id: params.id, type: params.type, user_id: session.get('user_id') }).first();
                 if (like && like.id) {
                     data = await Database_1.default.from('likes').where({ relation_type_id: params.id }).update({ status: like.status ? 0 : 1, modified_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss'), ip: request.ip() });

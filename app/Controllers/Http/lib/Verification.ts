@@ -31,7 +31,7 @@ function action(data, value) {
         return
       }
 
-      if (value.verification_status == 'rejected' && value.verification_comment != '') {
+      if (value.verification_status == 'rejected' && value.verification_comment == '') {
         resolve(false)
         return
       }
@@ -44,6 +44,17 @@ function action(data, value) {
         modified_at: Moment().format('YYYY-MM-DD HH:mm:ss')
       })
 
+      // 拒绝
+      if (result && value.verification_status == 'rejected') {
+        switch (`${ data.table }.${ data.field }`) {
+          case 'customer.':
+            data.value = JSON.parse(data.value)
+            await Database.from('customer').where('id', data.value.customer_id).update({ status: 2 })
+            break;
+        }
+      }
+
+      // 通过
       if (result && value.verification_status == 'approved') {
         switch (`${ data.table }.${ data.field }`) {
           case 'users.avatar_url':
@@ -51,6 +62,10 @@ function action(data, value) {
             break;
           case 'users.photos':
             await Database.from('users').where('user_id', data.user_id).update({ photos: data.value })
+            break;
+          case 'customer.':
+            data.value = JSON.parse(data.value)
+            await Database.from('customer').where('id', data.value.customer_id).update({ status: 1 })
             break;
         }
       }

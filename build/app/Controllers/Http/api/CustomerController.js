@@ -15,6 +15,7 @@ const Avatar = require('../lib/Avatar');
 const zpData = require('../lib/Zhipin');
 const { percentUserinfo, percentCustomerinfo } = require('../lib/Percent');
 const Weixin = require('../lib/Weixin');
+const Verification = require('../lib/Verification');
 const RELATION = ["朋友", "亲戚", "伙伴", "同事", "其他"];
 const SALARY_RANGE = [
     { index: 0, value: '5w 以内' },
@@ -65,6 +66,7 @@ class CustomerController {
                         parent: await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].relation_user_id).first()
                     };
                 }
+                customer[index].like = await Database_1.default.from('likes').select('id').where({ status: 1, type: 'customer', relation_type_id: customer[index].cid, user_id: session.get('user_id') }).first() || {};
                 customer[index]['photos'] = customer[index]['photos'] ? JSON.parse(customer[index]['photos']) : [];
                 customer[index]['videos'] = customer[index]['videos'] ? JSON.parse(customer[index]['videos']) : [];
                 customer[index]['zodiac_sign'] = this.getZodiacSign((0, moment_1.default)(customer[index]['birthday']).format('DD'), (0, moment_1.default)(customer[index]['birthday']).format('MM'));
@@ -117,6 +119,7 @@ class CustomerController {
             const all = request.all();
             const user = await Database_1.default.from('users').where('id', Jwt_1.default.verifyPublicKey(all.relation_sign)).first();
             const id = await Database_1.default.table('customer').returning('id').insert({
+                status: 1,
                 user_id: session.get('user_id'),
                 relation: all.relation || '',
                 relation_user_id: user.user_id || '',
@@ -202,7 +205,7 @@ class CustomerController {
     async createCustomerinfo({ request, response, session }) {
         try {
             const all = request.all();
-            const id = await Database_1.default.table('customer_log').returning('id').insert({
+            const relation_log_id = await Database_1.default.table('customer_log').returning('id').insert({
                 nickname: all.nickname,
                 avatar_url: all.avatar_url || Avatar.data(all.sex),
                 birthday: all.birthday || '',
@@ -211,13 +214,27 @@ class CustomerController {
                 work: JSON.stringify(all.work || ''),
                 photos: JSON.stringify(all.photos || [])
             });
-            const customer = await Database_1.default.table('customer').insert({
+            const customer_id = await Database_1.default.table('customer').insert({
                 user_id: session.get('user_id'),
-                relation_log_id: id,
+                relation_log_id: relation_log_id,
                 relation: all.relation,
                 introduction: all.introduction || '',
                 userinfo: JSON.stringify(all)
             });
+            if (customer_id.length && relation_log_id.length) {
+                await Verification.regularData({
+                    user_id: session.get('user_id'),
+                    table: 'customer',
+                    field: '',
+                    before: '',
+                    value: JSON.stringify({
+                        user_id: session.get('user_id'),
+                        customer_id: customer_id[0],
+                        relation_log_id: relation_log_id[0],
+                    }),
+                    ip: request.ip()
+                });
+            }
             response.json({
                 status: 200,
                 sms: "ok",
@@ -241,20 +258,20 @@ class CustomerController {
             if (user.work.value) {
                 user.work.text = await zpData.data(user.work.value[0], user.work.value[1]);
             }
-            const customer = await Database_1.default.from('customer').select('id', 'user_id', 'relation', 'introduction', 'relation_log_id', 'relation_user_id', 'created_at').whereIn('status', [1, 2]).where('user_id', all.user_id || session.get('user_id')).orderBy('created_at', 'desc');
+            const customer = await Database_1.default.from('customer').select('id', 'user_id', 'relation', 'introduction', 'relation_log_id', 'relation_user_id', 'status', 'created_at').whereIn('status', [1, 2]).where('user_id', all.user_id || session.get('user_id')).orderBy('created_at', 'desc');
             for (let index = 0; index < customer.length; index++) {
                 if (customer[index].relation_user_id) {
                     customer[index] = {
                         ...customer[index],
                         percent: await percentUserinfo(customer[index].relation_user_id),
-                        ...await Database_1.default.from('users').select('avatar_url', 'nickname', 'work', 'company', 'birthday', 'photos').where('user_id', customer[index].relation_user_id).first()
+                        ...await Database_1.default.from('users').select('avatar_url', 'nickname', 'work', 'company', 'birthday', 'phone', 'photos').where('user_id', customer[index].relation_user_id).first()
                     };
                 }
                 else if (customer[index].relation_log_id) {
                     customer[index] = {
                         ...customer[index],
                         percent: await percentCustomerinfo(customer[index].relation_log_id),
-                        ...await Database_1.default.from('customer_log').select('avatar_url', 'nickname', 'work', 'company', 'birthday', 'photos').where('id', customer[index].relation_log_id).first()
+                        ...await Database_1.default.from('customer_log').select('avatar_url', 'nickname', 'work', 'company', 'birthday', 'phone', 'photos').where('id', customer[index].relation_log_id).first()
                     };
                 }
                 customer[index].age = (0, moment_1.default)().diff(customer[index].birthday, 'years');
@@ -287,7 +304,7 @@ class CustomerController {
     async customerShow({ params, request, response, session }) {
         try {
             const all = request.all();
-            const customer = await Database_1.default.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'relation', 'relation_log_id', 'introduction').where({ 'id': params.id, status: 1 }).first();
+            const customer = await Database_1.default.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'relation', 'relation_log_id', 'introduction').where({ 'id': params.id }).first();
             customer.relation_text = RELATION[customer.relation];
             if (customer.relation_log_id) {
                 customer.userinfo = await Database_1.default.from('customer_log').select('*').where({ 'id': customer.relation_log_id }).first();
@@ -403,13 +420,34 @@ class CustomerController {
             });
         }
     }
-    async deleteCustomer({ params, request, response, session }) {
+    async statusCustomer({ params, request, response, session }) {
         try {
             const all = request.all();
-            const id = await Database_1.default.from('customer').where({ 'id': params.id, user_id: session.get('user_id') }).update({
-                status: 0,
-                deleted_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss')
-            }, ['id']);
+            if (params.status == 'public') {
+                const customer = await Database_1.default.from('customer').where({ 'id': params.id, user_id: session.get('user_id') }).first();
+                await Database_1.default.from('customer').where({ 'id': params.id, user_id: session.get('user_id') }).update({
+                    status: 1,
+                    modified_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss')
+                }, ['id']);
+                await Verification.regularData({
+                    user_id: session.get('user_id'),
+                    table: 'customer',
+                    field: '',
+                    before: '',
+                    value: JSON.stringify({
+                        user_id: session.get('user_id'),
+                        customer_id: customer.id,
+                        relation_log_id: customer.relation_log_id,
+                    }),
+                    ip: request.ip()
+                });
+            }
+            if (params.status == 'delete') {
+                await Database_1.default.from('customer').where({ 'id': params.id, user_id: session.get('user_id') }).update({
+                    status: 0,
+                    deleted_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss')
+                }, ['id']);
+            }
             response.json({
                 status: 200,
                 sms: "ok"

@@ -58,7 +58,7 @@ Route.group(() => {
   Route.get('/customer/userlist/show/:id', 'api/CustomerController.customerShow')
   Route.post('/customer/create', 'api/CustomerController.createCustomerinfo')
   Route.post('/customer/create/relation', 'api/CustomerController.relationCustomerinfo')
-  Route.post('/customer/delete/:id', 'api/CustomerController.deleteCustomer')
+  Route.post('/customer/:status/:id', 'api/CustomerController.statusCustomer')
   Route.get('/customer/verify/phone', 'api/CustomerController.verifyPhone')
 
   Route.get('/college', 'api/CollegeController.index')
@@ -77,6 +77,11 @@ Route.group(() => {
   Route.get('/query/school', 'api/QueryController.school')
   Route.get('/query/company', 'api/QueryController.company')
 }).middleware('apiCheck').prefix('/api')
+
+Route.group(() => {
+  Route.get('/operates/verification/review/:id', 'admin/OperatesController.review')
+  Route.post('/operates/verification/review/:id', 'admin/OperatesController.review')
+}).prefix('/web')
 
 Route.group(() => {
   Route.get('/operates', 'admin/OperatesController.index')

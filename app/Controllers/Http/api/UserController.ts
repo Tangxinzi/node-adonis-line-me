@@ -67,7 +67,7 @@ export default class UserController {
   public async getUserinfo({ request, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const user = await Database.from('users').where('user_id', session.get('user_id')).first()
+      const user = await Database.from('users').where('user_id', all.user_id || session.get('user_id')).first()
 
       if (user) {
         // 格式数据
@@ -196,6 +196,10 @@ export default class UserController {
             case 'users.photos':
               verify[index].table = '用户信息'
               verify[index].value = '照片集'
+              break;
+            case 'customer.':
+              verify[index].table = '介绍好友'
+              verify[index].value = JSON.parse(verify[index].value)
               break;
           }
         }

@@ -13,6 +13,7 @@ const Avatar = require('../lib/Avatar');
 const zpData = require('../lib/Zhipin');
 const { percentUserinfo, percentCustomerinfo } = require('../lib/Percent');
 const Weixin = require('../lib/Weixin');
+const Verification = require('../lib/Verification');
 const RELATION = ["朋友", "亲戚", "伙伴", "同事", "其他"]
 const SALARY_RANGE = [
   { index: 0, value: '5w 以内' },
@@ -73,6 +74,7 @@ export default class CustomerController {
         }
 
         // 格式数据
+        customer[index].like = await Database.from('likes').select('id').where({ status: 1, type: 'customer', relation_type_id: customer[index].cid, user_id: session.get('user_id') }).first() || {}
         customer[index]['photos'] = customer[index]['photos'] ? JSON.parse(customer[index]['photos']) : []
         customer[index]['videos'] = customer[index]['videos'] ? JSON.parse(customer[index]['videos']) : []
         customer[index]['zodiac_sign'] = this.getZodiacSign(Moment(customer[index]['birthday']).format('DD'), Moment(customer[index]['birthday']).format('MM'))
@@ -142,6 +144,7 @@ export default class CustomerController {
       const all = request.all()
       const user = await Database.from('users').where('id', Jwt.verifyPublicKey(all.relation_sign)).first()
       const id = await Database.table('customer').returning('id').insert({
+        status: 1,
         user_id: session.get('user_id'),
         relation: all.relation || '',
         relation_user_id: user.user_id || '',
@@ -232,7 +235,7 @@ export default class CustomerController {
   public async createCustomerinfo({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const id = await Database.table('customer_log').returning('id').insert({
+      const relation_log_id = await Database.table('customer_log').returning('id').insert({
         nickname: all.nickname,
         avatar_url: all.avatar_url || Avatar.data(all.sex),
         birthday: all.birthday || '',
@@ -242,13 +245,29 @@ export default class CustomerController {
         photos: JSON.stringify(all.photos || [])
       })
 
-      const customer = await Database.table('customer').insert({
+      const customer_id = await Database.table('customer').insert({
         user_id: session.get('user_id'), // 关联 发布用户 user id
-        relation_log_id: id, // 关联 customer log
+        relation_log_id: relation_log_id, // 关联 customer log
         relation: all.relation,
         introduction: all.introduction || '',
         userinfo: JSON.stringify(all)
       })
+
+      // 红娘发布客户 - 加入审核列表
+      if (customer_id.length && relation_log_id.length) {
+        await Verification.regularData({
+          user_id: session.get('user_id'),
+          table: 'customer',
+          field: '',
+          before: '',
+          value: JSON.stringify({
+            user_id: session.get('user_id'), // 关联 发布用户 user id
+            customer_id: customer_id[0], // 关联 customer id
+            relation_log_id: relation_log_id[0], // 关联 customer log id
+          }),
+          ip: request.ip()
+        })
+      }
 
       response.json({
         status: 200,
@@ -274,7 +293,7 @@ export default class CustomerController {
         user.work.text = await zpData.data(user.work.value[0], user.work.value[1])
       }
 
-      const customer = await Database.from('customer').select('id', 'user_id', 'relation', 'introduction', 'relation_log_id', 'relation_user_id', 'created_at').whereIn('status', [1, 2]).where('user_id', all.user_id || session.get('user_id')).orderBy('created_at', 'desc')
+      const customer = await Database.from('customer').select('id', 'user_id', 'relation', 'introduction', 'relation_log_id', 'relation_user_id', 'status', 'created_at').whereIn('status', [1, 2]).where('user_id', all.user_id || session.get('user_id')).orderBy('created_at', 'desc')
       for (let index = 0; index < customer.length; index++) {
         if (customer[index].relation_user_id) {
           customer[index] = {
@@ -322,7 +341,7 @@ export default class CustomerController {
   public async customerShow({ params, request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const customer = await Database.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'relation', 'relation_log_id', 'introduction').where({ 'id': params.id, status: 1 }).first()
+      const customer = await Database.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'relation', 'relation_log_id', 'introduction').where({ 'id': params.id }).first()
 
       customer.relation_text = RELATION[customer.relation]
       if (customer.relation_log_id) {
@@ -409,6 +428,15 @@ export default class CustomerController {
           break;
         case 'userinfo.avatar_url':
           var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ avatar_url: all.value })
+          // 头像 - 加入审核列表
+          // await Verification.regularData({
+          //   user_id: session.get('user_id'),
+          //   table: 'customer_log',
+          //   field: 'avatar_url',
+          //   before: customer.avatar_url,
+          //   value: all.value,
+          //   ip: request.ip()
+          // })
           break;
         case 'userinfo.contact_wechat':
           var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ contact_wechat: all.value })
@@ -456,13 +484,37 @@ export default class CustomerController {
     }
   }
 
-  public async deleteCustomer({ params, request, response, session }: HttpContextContract) {
+  public async statusCustomer({ params, request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const id = await Database.from('customer').where({ 'id': params.id, user_id: session.get('user_id') }).update({
-        status: 0,
-        deleted_at: Moment().format('YYYY-MM-DD HH:mm:ss')
-      }, ['id'])
+      if (params.status == 'public') {
+        const customer = await Database.from('customer').where({ 'id': params.id, user_id: session.get('user_id') }).first()
+
+        await Database.from('customer').where({ 'id': params.id, user_id: session.get('user_id') }).update({
+          status: 1,
+          modified_at: Moment().format('YYYY-MM-DD HH:mm:ss')
+        }, ['id'])
+
+        await Verification.regularData({
+          user_id: session.get('user_id'),
+          table: 'customer',
+          field: '',
+          before: '',
+          value: JSON.stringify({
+            user_id: session.get('user_id'), // 关联 发布用户 user id
+            customer_id: customer.id, // 关联 customer id
+            relation_log_id: customer.relation_log_id, // 关联 customer log id
+          }),
+          ip: request.ip()
+        })
+      }
+
+      if (params.status == 'delete') {
+        await Database.from('customer').where({ 'id': params.id, user_id: session.get('user_id') }).update({
+          status: 0,
+          deleted_at: Moment().format('YYYY-MM-DD HH:mm:ss')
+        }, ['id'])
+      }
 
       response.json({
         status: 200,
