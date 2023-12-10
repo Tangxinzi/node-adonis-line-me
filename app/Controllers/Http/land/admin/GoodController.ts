@@ -286,4 +286,20 @@ export default class GoodController {
       console.log(error);
     }
   }
+
+  public async supplier({ view, session, request, response }: HttpContextContract) {
+    try {
+      const all = request.all()
+      const supplier = await Database.from('land_supplier').select('*').where({ status: 1 }).orderBy('created_at', 'desc').forPage(request.input('page', 1), 20)
+      return view.render('land/admin/good/supplier', {
+        data: {
+          title: '供应商',
+          active: 'supplier',
+          supplier
+        }
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
 }

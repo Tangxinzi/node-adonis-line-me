@@ -122,6 +122,9 @@ Route.group(() => {
 }).middleware('adminCheck').prefix('/admin')
 
 Route.group(() => {
+  Route.get('/search', 'land/admin/SearchController.index')
+  Route.post('/file/upload', 'land/admin/FilesController.upload')
+
   Route.get('/user/wx-login', 'land/admin/UserController.wxLogin')
   Route.get('/user/get-phone-number', 'land/admin/UserController.getPhoneNumber')
   Route.get('/user/info', 'land/admin/UserController.userinfo')
@@ -129,8 +132,6 @@ Route.group(() => {
   Route.post('/user/info/upload', 'land/admin/UserController.userinfo')
   Route.get('/user/like/:id', 'land/admin/UserController.like')
   Route.post('/user/like/:id', 'land/admin/UserController.like')
-
-  Route.post('/file/upload', 'land/admin/FilesController.upload')
 
   Route.get('/designer', 'land/admin/DesignerController.index')
   Route.get('/designer/catalog/:catalog', 'land/admin/DesignerController.catalog')
@@ -158,6 +159,7 @@ Route.group(() => {
 
   Route.get('/good', 'land/admin/GoodController.index')
   Route.get('/good/catalog', 'land/admin/GoodController.catalog')
+  Route.get('/good/supplier', 'land/admin/GoodController.supplier')
   Route.post('/good/catalog', 'land/admin/GoodController.catalog')
   Route.get('/good/create', 'land/admin/GoodController.create')
   Route.get('/good/show/:id', 'land/admin/GoodController.show')

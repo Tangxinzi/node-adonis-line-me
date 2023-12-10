@@ -87,6 +87,8 @@ Route_1.default.group(() => {
     Route_1.default.post('/login', 'admin/UsersController.login');
 }).middleware('adminCheck').prefix('/admin');
 Route_1.default.group(() => {
+    Route_1.default.get('/search', 'land/admin/SearchController.index');
+    Route_1.default.post('/file/upload', 'land/admin/FilesController.upload');
     Route_1.default.get('/user/wx-login', 'land/admin/UserController.wxLogin');
     Route_1.default.get('/user/get-phone-number', 'land/admin/UserController.getPhoneNumber');
     Route_1.default.get('/user/info', 'land/admin/UserController.userinfo');
@@ -94,7 +96,6 @@ Route_1.default.group(() => {
     Route_1.default.post('/user/info/upload', 'land/admin/UserController.userinfo');
     Route_1.default.get('/user/like/:id', 'land/admin/UserController.like');
     Route_1.default.post('/user/like/:id', 'land/admin/UserController.like');
-    Route_1.default.post('/file/upload', 'land/admin/FilesController.upload');
     Route_1.default.get('/designer', 'land/admin/DesignerController.index');
     Route_1.default.get('/designer/catalog/:catalog', 'land/admin/DesignerController.catalog');
     Route_1.default.get('/designer/create', 'land/admin/DesignerController.create');
@@ -118,6 +119,7 @@ Route_1.default.group(() => {
     Route_1.default.post('/article/delete', 'land/admin/ArticleController.delete');
     Route_1.default.get('/good', 'land/admin/GoodController.index');
     Route_1.default.get('/good/catalog', 'land/admin/GoodController.catalog');
+    Route_1.default.get('/good/supplier', 'land/admin/GoodController.supplier');
     Route_1.default.post('/good/catalog', 'land/admin/GoodController.catalog');
     Route_1.default.get('/good/create', 'land/admin/GoodController.create');
     Route_1.default.get('/good/show/:id', 'land/admin/GoodController.show');

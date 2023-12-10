@@ -345,8 +345,10 @@ export default class CustomerController {
 
       customer.relation_text = RELATION[customer.relation]
       if (customer.relation_log_id) {
+        customer.percent = await percentCustomerinfo(customer.relation_log_id),
         customer.userinfo = await Database.from('customer_log').select('*').where({ 'id': customer.relation_log_id }).first()
       } else if(customer.relation_user_id) {
+        customer.percent = await percentUserinfo(customer.relation_user_id),
         customer.userinfo = await Database.from('users').select('*').where({ 'user_id': customer.relation_user_id }).first()
       }
 

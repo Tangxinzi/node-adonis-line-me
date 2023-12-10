@@ -307,10 +307,12 @@ class CustomerController {
             const customer = await Database_1.default.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'relation', 'relation_log_id', 'introduction').where({ 'id': params.id }).first();
             customer.relation_text = RELATION[customer.relation];
             if (customer.relation_log_id) {
-                customer.userinfo = await Database_1.default.from('customer_log').select('*').where({ 'id': customer.relation_log_id }).first();
+                customer.percent = await percentCustomerinfo(customer.relation_log_id),
+                    customer.userinfo = await Database_1.default.from('customer_log').select('*').where({ 'id': customer.relation_log_id }).first();
             }
             else if (customer.relation_user_id) {
-                customer.userinfo = await Database_1.default.from('users').select('*').where({ 'user_id': customer.relation_user_id }).first();
+                customer.percent = await percentUserinfo(customer.relation_user_id),
+                    customer.userinfo = await Database_1.default.from('users').select('*').where({ 'user_id': customer.relation_user_id }).first();
             }
             customer.parent = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url', 'company', 'job_title').where('user_id', customer.user_id).first();
             if (customer.parent.company) {
