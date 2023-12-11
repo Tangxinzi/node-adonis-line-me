@@ -79,6 +79,7 @@ export default class UserController {
         user.zodiac_sign = this.getZodiacSign(Moment(user.birthday).format('DD'), Moment(user.birthday).format('MM'))
         user.age = Moment().diff(user.birthday, 'years')
         user.operates = await Database.from('users_operates').where({ user_id: session.get('user_id'), type: 'examine' }).first() ? true : false
+        user.introduces = await Database.from('answer').select('introduce_name', 'content').where({ type: 1, status: 1, recommend: 1, user_id: user.user_id }).orderBy('created_at', 'desc')
 
         user['work'] = JSON.parse(user['work'])
         if (user['work'] && user['work']['value']) {

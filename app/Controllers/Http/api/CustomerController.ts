@@ -357,7 +357,7 @@ export default class CustomerController {
         customer.parent.company = customer.parent.company.length > 10 ? customer.parent.company.substr(0, 10) + '...' : customer.parent.company
       }
 
-      customer.introduces = await Database.from('answer').where({ type: 1, status: 1, user_id: customer.relation_user_id })
+      customer.introduces = await Database.from('answer').where({ type: 1, status: 1, recommend: 1, user_id: customer.relation_user_id })
 
       customer.userinfo.location = customer.userinfo.location ? JSON.parse(customer.userinfo.location) : ''
       customer.userinfo.age = Moment().diff(customer.userinfo.birthday, 'years')

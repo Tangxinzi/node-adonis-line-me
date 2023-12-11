@@ -29,9 +29,9 @@
           <tr>
             <th>ID</th>
             <th>供应商</th>
-            <th>别名</th>
-            <th>账号</th>
-            <th>密码</th>
+            <th>登录账号</th>
+            <th>登录密码</th>
+            <th>状态</th>
             <th>时间</th>
             <th>操作</th>
           </tr>
@@ -42,8 +42,9 @@
               <td class="td">{{ row.id }}</td>
               <td class="td">-</td>
               <td class="td">{{ row.supplier_name || '' }}</td>
-              <td class="td">{{ row.supplier_brand || '' }}</td>
-              <td class="td">{{ row.catalog.name || '' }}</td>
+              <td class="td">{{ row.supplier_name_login || '' }}</td>
+              <td class="td">{{ row.supplier_name_password || '' }}</td>
+              <td class="td">{{ row.status == 0 ? '禁用' : '正常' }}</td>
               <td class="td">{{ row.created_at }}</td>
               <td class="td">
                 <a href="{{ route('land/admin/GoodController.edit', { id: row.id }) }}">编辑</a>
