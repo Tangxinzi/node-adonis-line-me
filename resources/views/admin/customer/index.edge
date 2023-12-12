@@ -18,6 +18,7 @@
       <div class="ui header-title flex-between">
         <span>{{ data.title }}</span>
         <div class="right">
+          <a class="ui small button" onclick="recommendModal()">首页推荐</a>
           <div class="ui mini selection dropdown">
             <input type="hidden" name="type" value="{{ data.all.orderBy || '' }}" />
             <i class="dropdown icon"></i>
@@ -124,23 +125,52 @@
   </div>
   <form class="ui modal form" action="" method="post">
     <i class="close icon"></i>
-    <div class="content">
-    </div>
-    <div class="actions">
-      <div class="ui black deny button">
-        取消
-      </div>
-      <div class="ui positive right labeled icon button">
-        提交
-        <i class="checkmark icon"></i>
-      </div>
+    <div class="content" style="padding: 0">
+      <table class="ui celled striped table">
+        <thead>
+          <tr>
+            <th colspan="5">首页推荐</th>
+          </tr>
+        </thead>
+        <tbody>
+          @each(row in data.users_recommend)
+          <tr class="center aligned">
+            <td>
+              <a class="ui image label" title="{{ row.user.user_id }}" href="{{ route('admin/UsersController.edit', { user_id: row.user.user_id }) }}">
+                @if(row.user.avatar_url)
+                  <img class="ui avatar image" src="{{ row.user.avatar_url }}" />
+                @endif
+                {{ row.user.nickname || ('Unnamed ' + row.user.user_id) }}
+              </a>
+            </td>
+            <td class="center aligned">
+              {{ row.customer_id || '' }} {{ row.customer_user_id || '' }}
+            </td>
+            <td class="center aligned">
+              <p class="one">{{ row.detail || '-' }}</p>
+            </td>
+            <td class="center aligned">
+              {{ row.status == 0 ? '待处理' : '' }}
+              {{ row.status == 1 ? '已推荐' : '' }}
+              {{ row.status == 2 ? '不推荐 / 忽略' : '' }}
+            </td>
+            <td class="center aligned">
+              {{ row.created_at }}
+            </td>
+          </tr>
+          @endeach
+        </tbody>
+      </table>
     </div>
   </form>
 @endsection
 
 @section('script')
-<script src="https://unpkg.com/@wangeditor/editor@latest/dist/index.js"></script>
 <script type="text/javascript">
+  function recommendModal() {
+    $('.ui.modal.form').modal('show')
+  }
+
   $('.activating').popup({
     on: 'click'
   })

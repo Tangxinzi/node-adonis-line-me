@@ -354,6 +354,29 @@ export default class UserController {
     }
   }
 
+  // 推荐上首页
+  public async recommendHome({ request, response, session }: HttpContextContract) {
+    try {
+      const all = request.all()
+      const recommend = await Database.from('users_recommend').where('customer_id', all.customer_id).orWhere('customer_user_id', all.customer_user_id).first() || {}
+      if (recommend.id) {
+        const days = Moment().diff(recommend.created_at, 'days')
+        if (days < 2) {
+          return response.json({ status: 200, message: "ok", data: '该好友最近已被推荐过了哦' })
+        } else {
+          await Database.from('users_recommend').where('customer_id', all.customer_id).orWhere('customer_user_id', all.customer_user_id).update({ status: 0, modified_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
+          return response.json({ status: 200, message: "ok", data: '已推荐' })
+        }
+      } else {
+        const id = await Database.table('users_recommend').insert({ user_id: session.get('user_id'), customer_id: all.customer_id || '', customer_user_id: all.customer_user_id || '', detail: all.detail || '' }).returning('id')
+        response.json({ status: 200, message: "ok", data: '已推荐' })
+      }
+    } catch (error) {
+      console.log(error);
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
+    }
+  }
+
   // 切换用户身份
   public async changeType({ request, response, session }: HttpContextContract) {
     try {

@@ -290,7 +290,10 @@ export default class GoodController {
   public async supplier({ view, session, request, response }: HttpContextContract) {
     try {
       const all = request.all()
-      const supplier = await Database.from('land_supplier').select('*').where({ status: 1 }).orderBy('created_at', 'desc').forPage(request.input('page', 1), 20)
+      const supplier = await Database.from('land_supplier').select('*').orderBy('created_at', 'desc')
+      for (let index = 0; index < supplier.length; index++) {
+        supplier[index].created_at = Moment(supplier[index].created_at).format('YYYY-MM-DD H:mm:ss')
+      }
       return view.render('land/admin/good/supplier', {
         data: {
           title: '供应商',
@@ -298,6 +301,41 @@ export default class GoodController {
           supplier
         }
       })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  public async supplierSave({ view, session, request, response }: HttpContextContract) {
+    try {
+      const all = request.all()
+      // const supplier = await Database.from('land_supplier').select('*').orderBy('created_at', 'desc').first()
+      switch (all.button) {
+        case 'add':
+          await Database.from('land_supplier').insert({
+            supplier_name: all.supplier_name,
+            supplier_name_login: all.supplier_name_login,
+            supplier_name_password: all.supplier_name_password,
+            number: parseInt(all.number),
+            status: parseInt(all.status),
+          })
+          break;
+        case 'save':
+          await Database.from('land_supplier').where({ id: all.id }).update({
+            supplier_name: all.supplier_name,
+            supplier_name_login: all.supplier_name_login,
+            supplier_name_password: all.supplier_name_password,
+            number: parseInt(all.number),
+            status: parseInt(all.status),
+          })
+          break;
+        case 'delete':
+          await Database.from('land_supplier').where('id', all.id).update({ status: 0, deleted_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
+          break;
+      }
+
+      session.flash('message', { type: 'success', header: '操作成功', message: `` })
+      return response.redirect('back')
     } catch (error) {
       console.log(error)
     }

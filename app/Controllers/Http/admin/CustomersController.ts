@@ -82,11 +82,18 @@ export default class CustomersController {
         }
       }
 
+      const users_recommend = await Database.from('users_recommend').where('status', 0).orderBy('id', 'asc')
+      for (let index = 0; index < users_recommend.length; index++) {
+        users_recommend[index].user = await Database.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', users_recommend[index].user_id).first() || {}
+        users_recommend[index].created_at = Moment(users_recommend[index].created_at).format('YYYY-MM-DD HH:mm:ss')
+      }
+
       return view.render('admin/customer/index', {
         data: {
           title: '介绍',
           active: 'customers',
           customer,
+          users_recommend,
           all
         }
       })
