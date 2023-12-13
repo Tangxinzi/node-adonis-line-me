@@ -378,7 +378,7 @@ export default class CustomerController {
           if (err) {
             await Weixin.getWxacode({
               filename: 'customer-' + customer.cid,
-              path: 'pages/user-info-detail/user-info-detail?id=' + customer.cid,
+              path: 'pages/user-info-detail/user-info-detail?source=share&id=' + customer.cid,
             })
           }
         })
@@ -395,6 +395,20 @@ export default class CustomerController {
 
         // 二维码
         // customer.qrcode = await QrCode.toDataURL('/pages/user-info-detail/user-info-detail?id=' + customer.cid, { width: 180 })
+      }
+
+      if (session.get('user_id') == customer.user_id) {
+        const review = await Database.from('datas').where({ status: 1, category: 0, table: 'customer', field_value: customer.cid }).count('* as total')
+        const shareReview = await Database.from('datas').where({ status: 1, category: 2, table: 'customer', field_value: customer.cid }).count('* as total')
+        const like = await Database.from('likes').where({ status: 1, type: 'customer', relation_type_id: customer.cid }).count('* as total')
+        const timer = await Database.from('datas').where({ status: 1, category: 1, table: 'customer', field_value: customer.cid }).sum('count as sum')
+        const timerCounter = await Database.from('datas').distinct('user_id').where({ status: 1, category: 1, table: 'customer', field_value: customer.cid })
+        customer.datas = {
+          review: review[0].total,
+          shareReview: shareReview[0].total,
+          like: like[0].total,
+          timer: parseInt(timer[0].sum / timerCounter.length) || 0,
+        }
       }
 
       response.json({

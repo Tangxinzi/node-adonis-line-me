@@ -8,11 +8,13 @@ export default class SupplierController {
       if (request.method() == 'POST') {
         const all = request.all()
         if (params.supplier_name_login && all.password) {
-          const supplier = await Database.from('land_supplier').where({ status: 1, supplier_name_login: params.supplier_name_login, supplier_name_password: all.password }).first()
+          const supplier = await Database.from('land_supplier').where({ status: 1, supplier_name_login: params.supplier_name_login, supplier_name_password: all.password }).first() || {}
           if (supplier.id) {
             session.put('adonis-cookie-supplier', supplier)
             return response.redirect().status(301).toRoute('land/admin/SupplierController.index')
           } else {
+            session.flash('message', { type: 'error', header: '登录失败', message: `请检查您的账号，或者联系管理员处理。` })
+            return response.redirect('back')
             console.log('login error');
             return response.redirect().status(301).toRoute('land/admin/SupplierController.login')
           }
@@ -65,8 +67,6 @@ export default class SupplierController {
       for (let index = 0; index < catalog.length; index++) {
         catalog[index].sub_catalog = await Database.from('land_goods_catalog').select('*').where({ parent_catalog_id: catalog[index].id, level: 2, status:  1 })
       }
-      console.log(catalog);
-
 
       return view.render('land/supplier/good/create', {
         data: {
@@ -151,6 +151,7 @@ export default class SupplierController {
       }
 
       const id = await Database.table('land_goods').returning('id').insert({
+        status: 0,
         good_supplier_id: supplier.id,
         good_catalog: all.good_catalog || '',
         good_name: all.good_name || '',

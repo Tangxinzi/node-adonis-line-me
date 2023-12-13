@@ -74,6 +74,7 @@ Route.group(() => {
   Route.get('/event/descovery/:type/:id', 'api/EventController.type')
   Route.get('/event/like/:type/:id', 'api/EventController.like')
   Route.post('/event/like/:type/:id', 'api/EventController.like')
+  Route.post('/event/datas/:type', 'api/EventController.datas')
 
   Route.get('/query/school', 'api/QueryController.school')
   Route.get('/query/company', 'api/QueryController.company')
@@ -85,6 +86,8 @@ Route.group(() => {
 }).prefix('/web')
 
 Route.group(() => {
+  Route.get('/datas', 'admin/DataController.index')
+
   Route.get('/operates', 'admin/OperatesController.index')
   Route.post('/operates', 'admin/OperatesController.save')
   Route.get('/incentive', 'admin/OperatesController.incentive')

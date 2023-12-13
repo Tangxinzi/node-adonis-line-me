@@ -108,6 +108,7 @@ export const csrf: ShieldConfig['csrf'] = {
     '/api/user/info',
     '/api/user/question/answer/:id',
     '/api/user/moment/create',
+    '/api/event/datas/:type',
     '/api/event/like/:type/:id',
     '/api/comments/create',
   ],

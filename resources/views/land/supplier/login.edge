@@ -15,7 +15,14 @@
     </style>
   </head>
   <body>
-    <div class="ui container">
+    <div class="ui container" style="padding-top: 1em;">
+      @if(flashMessages.get('message'))
+        @!component('land.components.alert', {
+          type: [flashMessages.get('message.type')],
+          header: [flashMessages.get('message.header')],
+          message: [flashMessages.get('message.message')]
+        })
+      @endif
       <div class="ui middle aligned center aligned grid" style="margin: 0 auto; padding-top: 200px; width: 440px;">
         <div class="column">
           <h2 class="ui teal image header">

@@ -5,6 +5,7 @@ Moment.locale('zh-cn')
 import axios from "axios";
 import iconv from 'iconv-lite';
 const zpData = require('../lib/Zhipin');
+const Data = require('../lib/Data');
 
 export default class EventController {
   public async descovery({ request, response, session }: HttpContextContract) {
@@ -223,8 +224,16 @@ export default class EventController {
       }
     } catch (error) {
       console.log(error);
-
       Logger.error("error 获取失败 %s", JSON.stringify(error));
+    }
+  }
+
+  public async datas({ params, request, response, session }: HttpContextContract) {
+    try {
+      const all = request.all()
+      return await Data.record({ table: 'customer', field: 'id', field_value: all.field_value, user_id: session.get('user_id'), wechat_open_id: all.wechat_open_id, category: all.category, count: all.count || 1 })
+    } catch (error) {
+      console.log(error);
     }
   }
 

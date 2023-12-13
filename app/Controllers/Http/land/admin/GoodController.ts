@@ -12,7 +12,15 @@ export default class GoodController {
       } else if (all.catalog) {
         goods = await Database.from('land_goods').select('*').where({ status: 1, good_catalog: all.catalog }).orderBy('created_at', 'desc').forPage(request.input('page', 1), 20)
       } else {
-        goods = await Database.from('land_goods').select('*').where('status', 1).orderBy('created_at', 'desc').forPage(request.input('page', 1), 20)
+        goods = await Database.from('land_goods').select('*').where('status', all.status == 0 ? 0 : 1).orderBy('created_at', 'desc').forPage(request.input('page', 1), 20)
+
+        for (let index = 0; index < goods.length; index++) {
+          if (goods[index].good_supplier_id) {
+            goods[index].good_supplier = await Database.from('land_supplier').select('*').where('id', goods[index].good_supplier_id).first()
+          } else {
+            goods[index].good_supplier = {}
+          }
+        }
       }
 
       for (let index = 0; index < goods.length; index++) {
@@ -312,7 +320,7 @@ export default class GoodController {
       // const supplier = await Database.from('land_supplier').select('*').orderBy('created_at', 'desc').first()
       switch (all.button) {
         case 'add':
-          await Database.from('land_supplier').insert({
+          await Database.table('land_supplier').insert({
             supplier_name: all.supplier_name,
             supplier_name_login: all.supplier_name_login,
             supplier_name_password: all.supplier_name_password,
