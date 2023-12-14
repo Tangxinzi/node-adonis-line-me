@@ -51,6 +51,9 @@ function action(data, value) {
             data.value = JSON.parse(data.value)
             await Database.from('customer').where('id', data.value.customer_id).update({ status: 2 })
             break;
+          case 'authentication_log.company':
+            await Database.from('authentication_log').where({ user_id: data.user_id }).update({ company: '' })
+            break;
         }
       }
 
@@ -66,6 +69,9 @@ function action(data, value) {
           case 'customer.':
             data.value = JSON.parse(data.value)
             await Database.from('customer').where('id', data.value.customer_id).update({ status: 1 })
+            break;
+          case 'authentication_log.company':
+            await Database.from('authentication').where({ user_id: data.user_id }).update({ company: 1 })
             break;
         }
       }

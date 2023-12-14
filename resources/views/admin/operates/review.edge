@@ -86,6 +86,24 @@
               </td>
             </tr>
             @endif
+            @if(data.verification.table == 'authentication_log')
+            <tr>
+              <td>
+
+              </td>
+              <td>
+                <img class="ui avatar image" src="{{ data.verification.value }}" />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span class="one-line">{{ data.verification.before }}</span>
+              </td>
+              <td>
+                <span class="one-line">{{ data.verification.value }}</span>
+              </td>
+            </tr>
+            @endif
           </tbody>
         </table>
       </div>
@@ -107,10 +125,13 @@
         <div class="inline fields">
           <label>审核内容</label>
           <div class="field">
-            <span>{{ data.verification.table == 'customer' ? '介绍好友' : '' }}</span><span>
-            <span>{{ data.verification.table == 'users' ? '用户信息' : '' }}</span><span>
+            <span>{{ data.verification.table == 'customer' ? '介绍好友' : '' }}</span>
+            <span>{{ data.verification.table == 'users' ? '用户信息' : '' }}</span>
+            <span>{{ data.verification.table == 'authentication_log' ? '认证' : '' }}</span>
+            <span>
               {{ data.verification.field == 'avatar_url' ? '头像' : '' }}
               {{ data.verification.field == 'photos' ? '照片集' : '' }}
+              {{ data.verification.field == 'company' ? '公司' : '' }}
             </span>
           </div>
         </div>

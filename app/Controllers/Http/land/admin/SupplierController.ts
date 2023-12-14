@@ -42,7 +42,7 @@ export default class SupplierController {
   public async index({ request, view, response, session }: HttpContextContract) {
     try {
       const all = request.all(), supplier = session.get('adonis-cookie-supplier')
-      const goods = await Database.from('land_goods').select('*').where({ good_supplier_id: supplier.id, status: 1 }).orderBy('created_at', 'desc').forPage(request.input('page', 1), 20)
+      const goods = await Database.from('land_goods').select('*').where({ good_supplier_id: supplier.id }).orderBy('created_at', 'desc').forPage(request.input('page', 1), 20)
       for (let index = 0; index < goods.length; index++) {
         goods[index].good_theme_url = goods[index].good_theme_url ? JSON.parse(goods[index].good_theme_url) : []
         goods[index].catalog = await Database.from('land_goods_catalog').select('*').where({ id: goods[index].good_catalog, status: 1 }).first()
@@ -122,6 +122,12 @@ export default class SupplierController {
 
         for (let index = 0; index < themes.length; index++) {
           let theme = themes[index];
+          if (!theme.extname) {
+            console.log(theme);
+            session.flash('message', { type: 'error', header: '上传错误', message: `上传图片格式遇到问题。` })
+            return response.redirect('back')
+          }
+
           let RandomString = require('RandomString')
           const profileName = `${RandomString.generate(32)}.${theme.extname}`
           const profilePath = `/uploads/supplier/themes/`
@@ -137,6 +143,9 @@ export default class SupplierController {
         }
       }
 
+      // 整理图片集
+      good_theme_url = good_theme_url.filter(item => item !== null && item !== '');
+
       if (request.method() == 'POST' && all.button == 'update') {
         await Database.from('land_goods').where('id', all.id).update({
           good_supplier_id: supplier.id,
@@ -147,7 +156,7 @@ export default class SupplierController {
           good_theme_url: JSON.stringify(good_theme_url)
         })
         session.flash('message', { type: 'success', header: '更新成功', message: `` })
-        return response.redirect('back')
+        return response.redirect().toRoute('land/admin/SupplierController.edit', { id: all.id }) // return response.redirect('back')
       }
 
       const id = await Database.table('land_goods').returning('id').insert({
@@ -161,7 +170,8 @@ export default class SupplierController {
       })
 
       session.flash('message', { type: 'success', header: '创建成功', message: `` })
-      return response.redirect('back')
+      // return response.redirect('back')
+      return response.redirect().toRoute('land/admin/SupplierController.edit', { id: id })
     } catch (error) {
       console.log(error)
       session.flash('message', { type: 'error', header: '提交失败', message: `捕获错误信息 ${ JSON.stringify(error) }。` })

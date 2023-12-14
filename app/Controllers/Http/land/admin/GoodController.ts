@@ -248,9 +248,15 @@ export default class GoodController {
         }
       }
 
+      // 整理图片集
+      good_theme_url = good_theme_url.filter(item => item !== null && item !== '');
+
       if (request.method() == 'POST' && all.button == 'update') {
+        console.log(all);
+
         await Database.from('land_goods').where('id', all.id).update({
-          good_catalog: all.good_catalog || '',
+          status: all.status,
+          good_catalog: parseInt(parseInt(all.good_catalog)) || '',
           good_name: all.good_name,
           good_brand: all.good_brand,
           detail: all.detail,
@@ -261,6 +267,7 @@ export default class GoodController {
       }
 
       const id = await Database.table('land_goods').returning('id').insert({
+        status: all.status,
         good_catalog: all.good_catalog || '',
         good_name: all.good_name || '',
         good_brand: all.good_brand || '',

@@ -38,6 +38,8 @@ Route.group(() => {
   Route.get('/user/location', 'api/UserController.location')
   Route.get('/user/verification', 'api/UserController.verification')
   Route.get('/user/verification/review/:table/:field', 'api/UserController.review')
+  Route.get('/user/authentication/verification', 'api/UserController.authenticationVerification')
+  Route.post('/user/authentication/verification', 'api/UserController.authenticationVerification')
 
   Route.get('/user/question', 'api/QuestionsController.index')
   Route.get('/user/question/lists', 'api/QuestionsController.questionLists')

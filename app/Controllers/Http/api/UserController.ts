@@ -202,6 +202,10 @@ export default class UserController {
               verify[index].table = '介绍好友'
               verify[index].value = JSON.parse(verify[index].value)
               break;
+            case 'authentication_log.company':
+              verify[index].table = '认证审核'
+              verify[index].value = '公司'
+              break;
           }
         }
       }
@@ -215,6 +219,83 @@ export default class UserController {
           watermark: this.watermark(session.get('user_id')),
           pending: (await Database.from('verification').where({ is_verified: 0, verification_status: 'pending' }).count('* as total'))[0].total
         }
+      })
+    } catch (error) {
+      console.log(error);
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
+    }
+  }
+
+  public async authenticationVerification({ request, response, session }: HttpContextContract) {
+    try {
+      let all = request.all(), data = {}
+      if (request.method() == 'POST') {
+        const authentication = await Database.from('authentication_log').where({ user_id: session.get('user_id') }).first() || {}
+        if (!authentication.id) {
+          switch (all.type) {
+            case 'school':
+              await Database.table('authentication_log').insert({ user_id: session.get('user_id'), school: all.value })
+              break;
+            case 'company':
+              await Database.table('authentication_log').insert({ user_id: session.get('user_id'), company: all.value })
+              break;
+            case 'work':
+              await Database.table('authentication_log').insert({ user_id: session.get('user_id'), work: all.value })
+              break;
+            case 'job_title':
+              await Database.table('authentication_log').insert({ user_id: session.get('user_id'), job_title: all.value })
+              break;
+            case 'salary':
+              await Database.table('authentication_log').insert({ user_id: session.get('user_id'), salary: all.value })
+              break;
+          }
+        }
+
+        switch (all.type) {
+          case 'school':
+            await Database.from('authentication_log').where({ user_id: session.get('user_id') }).update({ school: all.value })
+            break;
+          case 'company':
+            await Database.from('authentication_log').where({ user_id: session.get('user_id') }).update({ company: all.value })
+            break;
+          case 'work':
+            await Database.from('authentication_log').where({ user_id: session.get('user_id') }).update({ work: all.value })
+            break;
+          case 'job_title':
+            await Database.from('authentication_log').where({ user_id: session.get('user_id') }).update({ job_title: all.value })
+            break;
+          case 'salary':
+            await Database.from('authentication_log').where({ user_id: session.get('user_id') }).update({ salary: all.value })
+            break;
+        }
+
+        // 加入审核
+        await Verification.regularData({
+          user_id: session.get('user_id'),
+          table: 'authentication_log',
+          field: all.type,
+          before: '',
+          value: all.value,
+          ip: request.ip()
+        })
+      }
+
+      if (request.method() == 'GET') {
+        const authentication = await Database.from('authentication').where({ user_id: all.user_id || session.get('user_id') }).first() || {}
+        const authentication_log = await Database.from('authentication_log').where({ user_id: session.get('user_id') }).first() || {}
+        data = {
+          school: authentication.school == 1 ? 'approved' : (authentication_log.school ? 'pending' : ''),
+          company: authentication.company == 1 ? 'approved' : (authentication_log.company ? 'pending' : ''),
+          work: authentication.work == 1 ? 'approved' : (authentication_log.work ? 'pending' : ''),
+          job_title: authentication.job_title == 1 ? 'approved' : (authentication_log.job_title ? 'pending' : ''),
+          salary: authentication.salary == 1 ? 'approved' : (authentication_log.salary ? 'pending' : ''),
+        }
+      }
+
+      response.json({
+        status: 200,
+        message: "ok",
+        data
       })
     } catch (error) {
       console.log(error);
