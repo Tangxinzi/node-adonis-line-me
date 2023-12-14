@@ -18,7 +18,15 @@ class GoodController {
                 goods = await Database_1.default.from('land_goods').select('*').where({ status: 1, good_catalog: all.catalog }).orderBy('created_at', 'desc').forPage(request.input('page', 1), 20);
             }
             else {
-                goods = await Database_1.default.from('land_goods').select('*').where('status', 1).orderBy('created_at', 'desc').forPage(request.input('page', 1), 20);
+                goods = await Database_1.default.from('land_goods').select('*').where('status', all.status == 0 ? 0 : 1).orderBy('created_at', 'desc').forPage(request.input('page', 1), 20);
+                for (let index = 0; index < goods.length; index++) {
+                    if (goods[index].good_supplier_id) {
+                        goods[index].good_supplier = await Database_1.default.from('land_supplier').select('*').where('id', goods[index].good_supplier_id).first();
+                    }
+                    else {
+                        goods[index].good_supplier = {};
+                    }
+                }
             }
             for (let index = 0; index < goods.length; index++) {
                 goods[index].good_theme_url = goods[index].good_theme_url ? JSON.parse(goods[index].good_theme_url) : [];
@@ -217,9 +225,12 @@ class GoodController {
                     good_theme_url[good_theme_url.length + index] = file.fileSrc;
                 }
             }
+            good_theme_url = good_theme_url.filter(item => item !== null && item !== '');
             if (request.method() == 'POST' && all.button == 'update') {
+                console.log(all);
                 await Database_1.default.from('land_goods').where('id', all.id).update({
-                    good_catalog: all.good_catalog || '',
+                    status: all.status,
+                    good_catalog: parseInt(parseInt(all.good_catalog)) || '',
                     good_name: all.good_name,
                     good_brand: all.good_brand,
                     detail: all.detail,
@@ -229,6 +240,7 @@ class GoodController {
                 return response.redirect('back');
             }
             const id = await Database_1.default.table('land_goods').returning('id').insert({
+                status: all.status,
                 good_catalog: all.good_catalog || '',
                 good_name: all.good_name || '',
                 good_brand: all.good_brand || '',
@@ -263,7 +275,10 @@ class GoodController {
     async supplier({ view, session, request, response }) {
         try {
             const all = request.all();
-            const supplier = await Database_1.default.from('land_supplier').select('*').where({ status: 1 }).orderBy('created_at', 'desc').forPage(request.input('page', 1), 20);
+            const supplier = await Database_1.default.from('land_supplier').select('*').orderBy('created_at', 'desc');
+            for (let index = 0; index < supplier.length; index++) {
+                supplier[index].created_at = (0, moment_1.default)(supplier[index].created_at).format('YYYY-MM-DD H:mm:ss');
+            }
             return view.render('land/admin/good/supplier', {
                 data: {
                     title: '供应商',
@@ -271,6 +286,39 @@ class GoodController {
                     supplier
                 }
             });
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+    async supplierSave({ view, session, request, response }) {
+        try {
+            const all = request.all();
+            switch (all.button) {
+                case 'add':
+                    await Database_1.default.table('land_supplier').insert({
+                        supplier_name: all.supplier_name,
+                        supplier_name_login: all.supplier_name_login,
+                        supplier_name_password: all.supplier_name_password,
+                        number: parseInt(all.number),
+                        status: parseInt(all.status),
+                    });
+                    break;
+                case 'save':
+                    await Database_1.default.from('land_supplier').where({ id: all.id }).update({
+                        supplier_name: all.supplier_name,
+                        supplier_name_login: all.supplier_name_login,
+                        supplier_name_password: all.supplier_name_password,
+                        number: parseInt(all.number),
+                        status: parseInt(all.status),
+                    });
+                    break;
+                case 'delete':
+                    await Database_1.default.from('land_supplier').where('id', all.id).update({ status: 0, deleted_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss') });
+                    break;
+            }
+            session.flash('message', { type: 'success', header: '操作成功', message: `` });
+            return response.redirect('back');
         }
         catch (error) {
             console.log(error);

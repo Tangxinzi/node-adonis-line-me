@@ -52,6 +52,9 @@ function action(data, value) {
                         data.value = JSON.parse(data.value);
                         await Database_1.default.from('customer').where('id', data.value.customer_id).update({ status: 2 });
                         break;
+                    case 'authentication_log.company':
+                        await Database_1.default.from('authentication_log').where({ user_id: data.user_id }).update({ company: '' });
+                        break;
                 }
             }
             if (result && value.verification_status == 'approved') {
@@ -65,6 +68,9 @@ function action(data, value) {
                     case 'customer.':
                         data.value = JSON.parse(data.value);
                         await Database_1.default.from('customer').where('id', data.value.customer_id).update({ status: 1 });
+                        break;
+                    case 'authentication_log.company':
+                        await Database_1.default.from('authentication').where({ user_id: data.user_id }).update({ company: 1 });
                         break;
                 }
             }

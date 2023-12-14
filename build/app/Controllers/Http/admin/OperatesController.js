@@ -125,6 +125,8 @@ class OperatesController {
                     case 'customer.':
                         verification.value = JSON.parse(verification.value);
                         break;
+                    case 'authentication_log.':
+                        break;
                 }
                 return view.render('admin/operates/review', {
                     data: {

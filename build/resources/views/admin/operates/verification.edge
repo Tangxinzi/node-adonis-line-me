@@ -56,8 +56,10 @@
               <td>
                 {{ row.table == 'customer' ? '介绍好友' : '' }}
                 {{ row.table == 'users' ? '用户信息' : '' }}
+                {{ row.table == 'authentication_log' ? '认证' : '' }}
                 {{ row.field == 'avatar_url' ? '头像更新' : '' }}
                 {{ row.field == 'photos' ? '照片集' : '' }}
+                {{ row.field == 'company' ? '公司' : '' }}
               </td>
               <td>
                 @if(row.field == 'avatar_url')

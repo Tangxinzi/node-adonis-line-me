@@ -318,7 +318,7 @@ class CustomerController {
             if (customer.parent.company) {
                 customer.parent.company = customer.parent.company.length > 10 ? customer.parent.company.substr(0, 10) + '...' : customer.parent.company;
             }
-            customer.introduces = await Database_1.default.from('answer').where({ type: 1, status: 1, user_id: customer.relation_user_id });
+            customer.introduces = await Database_1.default.from('answer').where({ type: 1, status: 1, recommend: 1, user_id: customer.relation_user_id });
             customer.userinfo.location = customer.userinfo.location ? JSON.parse(customer.userinfo.location) : '';
             customer.userinfo.age = (0, moment_1.default)().diff(customer.userinfo.birthday, 'years');
             customer.userinfo.zodiac_sign = this.getZodiacSign((0, moment_1.default)(customer.userinfo.birthday).format('DD'), (0, moment_1.default)(customer.userinfo.birthday).format('MM'));
@@ -334,7 +334,7 @@ class CustomerController {
                     if (err) {
                         await Weixin.getWxacode({
                             filename: 'customer-' + customer.cid,
-                            path: 'pages/user-info-detail/user-info-detail?id=' + customer.cid,
+                            path: 'pages/user-info-detail/user-info-detail?source=share&id=' + customer.cid,
                         });
                     }
                 });
@@ -344,6 +344,19 @@ class CustomerController {
                 customer.shortlink = await Weixin.genwxaShortlink({
                     path: 'pages/user-info-detail/user-info-detail?id=' + customer.cid,
                 });
+            }
+            if (session.get('user_id') == customer.user_id) {
+                const review = await Database_1.default.from('datas').where({ status: 1, category: 0, table: 'customer', field_value: customer.cid }).count('* as total');
+                const shareReview = await Database_1.default.from('datas').where({ status: 1, category: 2, table: 'customer', field_value: customer.cid }).count('* as total');
+                const like = await Database_1.default.from('likes').where({ status: 1, type: 'customer', relation_type_id: customer.cid }).count('* as total');
+                const timer = await Database_1.default.from('datas').where({ status: 1, category: 1, table: 'customer', field_value: customer.cid }).sum('count as sum');
+                const timerCounter = await Database_1.default.from('datas').distinct('user_id').where({ status: 1, category: 1, table: 'customer', field_value: customer.cid });
+                customer.datas = {
+                    review: review[0].total,
+                    shareReview: shareReview[0].total,
+                    like: like[0].total,
+                    timer: parseInt(timer[0].sum / timerCounter.length) || 0,
+                };
             }
             response.json({
                 status: 200,

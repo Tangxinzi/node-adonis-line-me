@@ -10,6 +10,7 @@ moment_1.default.locale('zh-cn');
 const axios_1 = __importDefault(require("axios"));
 const iconv_lite_1 = __importDefault(require("iconv-lite"));
 const zpData = require('../lib/Zhipin');
+const Data = require('../lib/Data');
 class EventController {
     async descovery({ request, response, session }) {
         try {
@@ -183,6 +184,15 @@ class EventController {
         catch (error) {
             console.log(error);
             Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
+        }
+    }
+    async datas({ params, request, response, session }) {
+        try {
+            const all = request.all();
+            return await Data.record({ table: 'customer', field: 'id', field_value: all.field_value, user_id: session.get('user_id'), wechat_open_id: all.wechat_open_id, category: all.category, count: all.count || 1 });
+        }
+        catch (error) {
+            console.log(error);
         }
     }
     async like({ params, request, response, session }) {

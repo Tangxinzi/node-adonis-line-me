@@ -1,4 +1,4 @@
-@layout('land.components.layouts.main')
+@layout('land.components.layouts.supplier')
 
 @section('title')
 <meta name="keywords" content="" />
@@ -21,56 +21,48 @@
 
 @section('content')
   <div class="ui stackable four column grid">
-    <div class="three wide column">
-      @!component('land.components.navbar-menus', data=data, csrf=csrfField())
-    </div>
-    <div class="thirteen wide column">
+    <div class="sixteen wide column">
       <div class="flex-between">
         <b>{{ data.title }}</b>
       </div>
-      <form class="ui segment form" method="post" action="{{ route('land/admin/ArticleController.save') }}" enctype="multipart/form-data">
-        <div class="field" hidden>
-          <label>ID</label>
-          <input type="text" name="id" value="{{ data.article.id || '' }}" placeholder="" />
-        </div>
+      <form class="ui segment form" method="post" action="{{ route('land/admin/SupplierController.save') }}" enctype="multipart/form-data">
         <div class="field">
-          <div class="field">
-            <label>类型</label>
-            <div class="ui selection dropdown">
-              <input type="hidden" name="catalog" value="{{ data.article.article_catalog || '' }}" />
-              <i class="dropdown icon"></i>
-              <div class="default text">点击选择</div>
-              <div class="menu">
-                <div class="item" data-value="1">活动资讯</div>
-                <div class="item" data-value="">其它</div>
-              </div>
+          <label>目录</label>
+          <div class="ui selection dropdown">
+            <input type="hidden" name="good_catalog" value="" />
+            <i class="dropdown icon"></i>
+            <div class="default text">点击选择</div>
+            <div class="menu">
+              @each(catalog in data.catalog)
+                <!-- <div class="item" data-value="{{ catalog.id }}">{{ catalog.name }}</div> -->
+                @each(sub_catalog in catalog.sub_catalog)
+                  <div class="item" data-value="{{ sub_catalog.id }}">-- {{ sub_catalog.name }}</div>
+                @endeach
+              @endeach
             </div>
           </div>
         </div>
-        <div class="field" hidden>
-          <label>图片 URL</label>
-          <input type="text" name="theme_url" value="{{ data.article.article_theme_url || '' }}" placeholder="" />
+        <div class="field">
+          <label>名称</label>
+          <input type="text" name="good_name" placeholder="" />
         </div>
         <div class="field">
-          <label>标题</label>
-          <input type="text" name="title" value="{{ data.article.article_title || '' }}" placeholder="" />
+          <label>品牌</label>
+          <input type="text" name="good_brand" placeholder="" />
         </div>
-        <div class="field">
-          <label>作者</label>
-          <input type="text" name="author" value="{{ data.article.article_author || '' }}" placeholder="" />
+        <div class="ten fields">
+          @each((entity, index) in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+            <div class="field">
+              <label>{{ !index ? '主图' : '　' }}</label>
+              <img class="ui small rounded bordered image" onclick="upload_file_{{ index }}.click()" id="upload_file_tmp_{{ index }}" src="https://semantic-ui.com/images/wireframe/white-image.png" />
+              <input type="file" name="theme[]" value="" id="upload_file_{{ index }}" onchange="change('#upload_file_{{ index }}', '#upload_file_tmp_{{ index }}');" hidden />
+            </div>
+          @endeach
         </div>
-        <div class="field">
-          <label>原文链接</label>
-          <input type="text" name="original_url" value="{{ data.article.article_original_url || '' }}" placeholder="" />
-        </div>
-        <div class="field">
-          <label>封面
-            @if(data.article.article_theme_url)
-              <a href="{{ data.article.article_theme_url }}" target="_blank">查看图片</a>
-            @endif
-          </label>
-          <input type="file" name="theme" value="{{ data.article.article_theme_url }}" placeholder="" />
-        </div>
+        {{--  <div class="field">
+          <label>主图</label>
+          <input type="file" name="good_theme_url" value="" placeholder="" />
+        </div>  --}}
         <div class="field">
           <label>页面详细内容</label>
           <div class="ui segment" style="padding: 0;">
@@ -78,11 +70,11 @@
               <div id="toolbar-container"><!-- 工具栏 --></div>
               <div id="editor-container"><!-- 编辑器 --></div>
             </div>
-            <input id="detail" type="text" name="detail" value="{{ data.article.article_detail || '' }}" hidden />
+            <input id="detail" type="text" name="detail" value="" hidden />
           </div>
         </div>
         {{ csrfField() }}
-        <button class="ui tiny button" type="submit" name="button" value="update">提交</button>
+        <button class="ui tiny button" type="submit" name="button" value="save">提交</button>
       </form>
     </div>
   </div>

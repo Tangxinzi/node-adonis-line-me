@@ -13,6 +13,7 @@ Route_1.default.group(() => {
     Route_1.default.post('/user/info', 'api/UserController.updateUserinfo');
     Route_1.default.post('/user/change-type', 'api/UserController.changeType');
     Route_1.default.post('/user/field', 'api/UserController.updateUserField');
+    Route_1.default.post('/user/recommend/home', 'api/UserController.recommendHome');
     Route_1.default.post('/user/custom/create', 'api/PublishesController.create');
     Route_1.default.get('/user/qrcode', 'api/UserController.qrcode');
     Route_1.default.get('/user/chat', 'api/UserController.chat');
@@ -20,6 +21,8 @@ Route_1.default.group(() => {
     Route_1.default.get('/user/location', 'api/UserController.location');
     Route_1.default.get('/user/verification', 'api/UserController.verification');
     Route_1.default.get('/user/verification/review/:table/:field', 'api/UserController.review');
+    Route_1.default.get('/user/authentication/verification', 'api/UserController.authenticationVerification');
+    Route_1.default.post('/user/authentication/verification', 'api/UserController.authenticationVerification');
     Route_1.default.get('/user/question', 'api/QuestionsController.index');
     Route_1.default.get('/user/question/lists', 'api/QuestionsController.questionLists');
     Route_1.default.get('/user/answer/lists', 'api/QuestionsController.answerLists');
@@ -49,6 +52,7 @@ Route_1.default.group(() => {
     Route_1.default.get('/event/descovery/:type/:id', 'api/EventController.type');
     Route_1.default.get('/event/like/:type/:id', 'api/EventController.like');
     Route_1.default.post('/event/like/:type/:id', 'api/EventController.like');
+    Route_1.default.post('/event/datas/:type', 'api/EventController.datas');
     Route_1.default.get('/query/school', 'api/QueryController.school');
     Route_1.default.get('/query/company', 'api/QueryController.company');
 }).middleware('apiCheck').prefix('/api');
@@ -57,6 +61,7 @@ Route_1.default.group(() => {
     Route_1.default.post('/operates/verification/review/:id', 'admin/OperatesController.review');
 }).prefix('/web');
 Route_1.default.group(() => {
+    Route_1.default.get('/datas', 'admin/DataController.index');
     Route_1.default.get('/operates', 'admin/OperatesController.index');
     Route_1.default.post('/operates', 'admin/OperatesController.save');
     Route_1.default.get('/incentive', 'admin/OperatesController.incentive');
@@ -120,11 +125,21 @@ Route_1.default.group(() => {
     Route_1.default.get('/good', 'land/admin/GoodController.index');
     Route_1.default.get('/good/catalog', 'land/admin/GoodController.catalog');
     Route_1.default.get('/good/supplier', 'land/admin/GoodController.supplier');
+    Route_1.default.post('/good/supplier/save', 'land/admin/GoodController.supplierSave');
     Route_1.default.post('/good/catalog', 'land/admin/GoodController.catalog');
     Route_1.default.get('/good/create', 'land/admin/GoodController.create');
     Route_1.default.get('/good/show/:id', 'land/admin/GoodController.show');
     Route_1.default.get('/good/edit/:id', 'land/admin/GoodController.edit');
     Route_1.default.post('/good/save', 'land/admin/GoodController.save');
     Route_1.default.post('/good/delete', 'land/admin/GoodController.delete');
+}).prefix('/land');
+Route_1.default.group(() => {
+    Route_1.default.get('/supplier/login/:supplier_name_login', 'land/admin/SupplierController.login');
+    Route_1.default.post('/supplier/login/:supplier_name_login', 'land/admin/SupplierController.login');
+    Route_1.default.get('/supplier/goods', 'land/admin/SupplierController.index');
+    Route_1.default.get('/supplier/goods/create', 'land/admin/SupplierController.create');
+    Route_1.default.get('/supplier/goods/edit/:id', 'land/admin/SupplierController.edit');
+    Route_1.default.post('/supplier/goods/create', 'land/admin/SupplierController.save');
+    Route_1.default.post('/supplier/goods/delete', 'land/admin/SupplierController.delete');
 }).prefix('/land');
 //# sourceMappingURL=routes.js.map

@@ -73,6 +73,7 @@ class UserController {
                 user.zodiac_sign = this.getZodiacSign((0, moment_1.default)(user.birthday).format('DD'), (0, moment_1.default)(user.birthday).format('MM'));
                 user.age = (0, moment_1.default)().diff(user.birthday, 'years');
                 user.operates = await Database_1.default.from('users_operates').where({ user_id: session.get('user_id'), type: 'examine' }).first() ? true : false;
+                user.introduces = await Database_1.default.from('answer').select('introduce_name', 'content').where({ type: 1, status: 1, recommend: 1, user_id: user.user_id }).orderBy('created_at', 'desc');
                 user['work'] = JSON.parse(user['work']);
                 if (user['work'] && user['work']['value']) {
                     user['work']['text'] = await zpData.data(user['work']['value'][0], user['work']['value'][1]);
@@ -160,6 +161,10 @@ class UserController {
                             verify[index].table = '介绍好友';
                             verify[index].value = JSON.parse(verify[index].value);
                             break;
+                        case 'authentication_log.company':
+                            verify[index].table = '认证审核';
+                            verify[index].value = '公司';
+                            break;
                     }
                 }
             }
@@ -172,6 +177,78 @@ class UserController {
                     watermark: this.watermark(session.get('user_id')),
                     pending: (await Database_1.default.from('verification').where({ is_verified: 0, verification_status: 'pending' }).count('* as total'))[0].total
                 }
+            });
+        }
+        catch (error) {
+            console.log(error);
+            Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
+        }
+    }
+    async authenticationVerification({ request, response, session }) {
+        try {
+            let all = request.all(), data = {};
+            if (request.method() == 'POST') {
+                const authentication = await Database_1.default.from('authentication_log').where({ user_id: session.get('user_id') }).first() || {};
+                if (!authentication.id) {
+                    switch (all.type) {
+                        case 'school':
+                            await Database_1.default.table('authentication_log').insert({ user_id: session.get('user_id'), school: all.value });
+                            break;
+                        case 'company':
+                            await Database_1.default.table('authentication_log').insert({ user_id: session.get('user_id'), company: all.value });
+                            break;
+                        case 'work':
+                            await Database_1.default.table('authentication_log').insert({ user_id: session.get('user_id'), work: all.value });
+                            break;
+                        case 'job_title':
+                            await Database_1.default.table('authentication_log').insert({ user_id: session.get('user_id'), job_title: all.value });
+                            break;
+                        case 'salary':
+                            await Database_1.default.table('authentication_log').insert({ user_id: session.get('user_id'), salary: all.value });
+                            break;
+                    }
+                }
+                switch (all.type) {
+                    case 'school':
+                        await Database_1.default.from('authentication_log').where({ user_id: session.get('user_id') }).update({ school: all.value });
+                        break;
+                    case 'company':
+                        await Database_1.default.from('authentication_log').where({ user_id: session.get('user_id') }).update({ company: all.value });
+                        break;
+                    case 'work':
+                        await Database_1.default.from('authentication_log').where({ user_id: session.get('user_id') }).update({ work: all.value });
+                        break;
+                    case 'job_title':
+                        await Database_1.default.from('authentication_log').where({ user_id: session.get('user_id') }).update({ job_title: all.value });
+                        break;
+                    case 'salary':
+                        await Database_1.default.from('authentication_log').where({ user_id: session.get('user_id') }).update({ salary: all.value });
+                        break;
+                }
+                await Verification.regularData({
+                    user_id: session.get('user_id'),
+                    table: 'authentication_log',
+                    field: all.type,
+                    before: '',
+                    value: all.value,
+                    ip: request.ip()
+                });
+            }
+            if (request.method() == 'GET') {
+                const authentication = await Database_1.default.from('authentication').where({ user_id: all.user_id || session.get('user_id') }).first() || {};
+                const authentication_log = await Database_1.default.from('authentication_log').where({ user_id: session.get('user_id') }).first() || {};
+                data = {
+                    school: authentication.school == 1 ? 'approved' : (authentication_log.school ? 'pending' : ''),
+                    company: authentication.company == 1 ? 'approved' : (authentication_log.company ? 'pending' : ''),
+                    work: authentication.work == 1 ? 'approved' : (authentication_log.work ? 'pending' : ''),
+                    job_title: authentication.job_title == 1 ? 'approved' : (authentication_log.job_title ? 'pending' : ''),
+                    salary: authentication.salary == 1 ? 'approved' : (authentication_log.salary ? 'pending' : ''),
+                };
+            }
+            response.json({
+                status: 200,
+                message: "ok",
+                data
             });
         }
         catch (error) {
@@ -298,6 +375,30 @@ class UserController {
                 message: "ok",
                 data: error
             });
+        }
+    }
+    async recommendHome({ request, response, session }) {
+        try {
+            const all = request.all();
+            const recommend = await Database_1.default.from('users_recommend').where('customer_id', all.customer_id).orWhere('customer_user_id', all.customer_user_id).first() || {};
+            if (recommend.id) {
+                const days = (0, moment_1.default)().diff(recommend.created_at, 'days');
+                if (days < 2) {
+                    return response.json({ status: 200, message: "ok", data: '该好友最近已被推荐过了哦' });
+                }
+                else {
+                    await Database_1.default.from('users_recommend').where('customer_id', all.customer_id).orWhere('customer_user_id', all.customer_user_id).update({ status: 0, modified_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss') });
+                    return response.json({ status: 200, message: "ok", data: '已推荐' });
+                }
+            }
+            else {
+                const id = await Database_1.default.table('users_recommend').insert({ user_id: session.get('user_id'), customer_id: all.customer_id || '', customer_user_id: all.customer_user_id || '', detail: all.detail || '' }).returning('id');
+                response.json({ status: 200, message: "ok", data: '已推荐' });
+            }
+        }
+        catch (error) {
+            console.log(error);
+            Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
         }
     }
     async changeType({ request, response, session }) {

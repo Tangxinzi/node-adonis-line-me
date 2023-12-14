@@ -34,7 +34,7 @@ class MomentsController {
     async lists({ request, response, session }) {
         try {
             const all = request.all();
-            const moments = await Database_1.default.from('moments').where('user_id', session.get('user_id')).orderBy('created_at', 'desc');
+            const moments = await Database_1.default.from('moments').where('user_id', all.user_id || session.get('user_id')).orderBy('created_at', 'desc');
             for (let index = 0; index < moments.length; index++) {
                 moments[index].data_type = 'image';
                 moments[index].photos = moments[index].photos ? JSON.parse(moments[index].photos) : [];
