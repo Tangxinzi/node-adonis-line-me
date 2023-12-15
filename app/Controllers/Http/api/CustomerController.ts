@@ -50,91 +50,130 @@ export default class CustomerController {
     return zodiacSigns[0];
   }
 
+  async customerFormat (customer, session) {
+    for (let index = 0; index < customer.length; index++) {
+      // 红娘自行发布
+      if (customer[index].relation_log_id) {
+        customer[index] = {
+          ...customer[index],
+          ...await Database.from('customer_log').select('*').where('id', customer[index].relation_log_id).first(),
+          parent: await Database.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].user_id).first()
+        }
+      }
+
+      // 关联注册用户 openid
+      if (customer[index].relation_user_id) {
+        customer[index] = {
+          ...customer[index],
+          ...await Database.from('users').select('*').where('user_id', customer[index].relation_user_id).first(),
+          parent: await Database.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].relation_user_id).first()
+        }
+      }
+
+      // 格式数据
+      customer[index].like = await Database.from('likes').select('id').where({ status: 1, type: 'customer', relation_type_id: customer[index].cid, user_id: session.get('user_id') }).first() || {}
+      customer[index]['photos'] = customer[index]['photos'] ? JSON.parse(customer[index]['photos']) : []
+      customer[index]['videos'] = customer[index]['videos'] ? JSON.parse(customer[index]['videos']) : []
+      customer[index]['zodiac_sign'] = this.getZodiacSign(Moment(customer[index]['birthday']).format('DD'), Moment(customer[index]['birthday']).format('MM'))
+      customer[index]['age'] = Moment().diff(customer[index]['birthday'], 'years')
+      customer[index].relation = RELATION[customer[index].relation]
+      customer[index].salary = customer[index].salary ? SALARY_RANGE[customer[index].salary].value : ''
+
+      customer[index]['work'] = customer[index]['work'] ? JSON.parse(customer[index]['work']) : []
+      if (customer[index]['work']['value']) {
+        customer[index]['work']['text'] = await zpData.data(customer[index]['work']['value'][0], customer[index]['work']['value'][1])
+      }
+
+      // 个性化问答
+      if (customer[index].relation_wechat_open_id) {
+        let _answer = [[], [], []]
+        const answer = (await Database.rawQuery("select questions.type, questions.title, questions.description, answer.content, answer.user_id from answer left outer join questions on answer.relation_question_id = questions.id where answer.user_id = :user_id order by type asc;", {
+          user_id: customer[index].relation_user_id
+        }))[0]
+
+        for (let index = 0; index < answer.length; index++) {
+          switch (answer[index].type) {
+            case '0':
+              _answer[0].push(answer[index])
+              break;
+            case '1':
+              _answer[1].push(answer[index])
+              break;
+            case '2':
+              _answer[2].push(answer[index])
+              break;
+          }
+        }
+        customer[index].answer = _answer
+      }
+
+      // IP 属地
+      if (customer[index].ip) {
+        await axios({
+          url: `http://whois.pconline.com.cn/ipJson.jsp?ip=${ customer[index].ip }&json=true`,
+          responseType: "arraybuffer"
+        }).then((response) => {
+          const data = iconv.decode(response.data, 'gbk')
+          customer[index].ip = data ? JSON.parse(data) : ''
+        }).catch((error) => {
+          // console.log(error)
+        })
+      }
+
+      // 头像主色
+      // if (customer[index].avatar_url) {
+      //   const imagePath = Application.publicPath(customer[index].avatar_url);
+      //   await Vibrant.from(imagePath).getPalette().then((palette) => {
+      //     let rgb = palette.DarkVibrant._rgb
+      //     let color = `rgba(${ parseInt(rgb[0]) }, ${ parseInt(rgb[1]) }, ${ parseInt(rgb[2]) }, 1)`
+      //     customer[index].color = color
+      //   })
+      // }
+    }
+
+    return customer
+  }
+
   public async index({ request, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const customer = await Database.from('customer').select('id  as cid', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id').where({ status: 1, recommend: 1 }).orderBy('recommend_at', 'desc').limit(10)
-      for (let index = 0; index < customer.length; index++) {
-        // 红娘自行发布
-        if (customer[index].relation_log_id) {
-          customer[index] = {
-            ...customer[index],
-            ...await Database.from('customer_log').select('*').where('id', customer[index].relation_log_id).first(),
-            parent: await Database.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].user_id).first()
-          }
-        }
+      const customer = await Database.from('customer').select('id as cid', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id').where({ status: 1, recommend: 1 }).orderBy('recommend_at', 'desc').limit(10)
+      return await this.customerFormat(customer, session)
+    } catch (error) {
+      console.log(error);
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
+    }
+  }
 
-        // 关联注册用户 openid
-        if (customer[index].relation_user_id) {
-          customer[index] = {
-            ...customer[index],
-            ...await Database.from('users').select('*').where('user_id', customer[index].relation_user_id).first(),
-            parent: await Database.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].relation_user_id).first()
-          }
-        }
-
-        // 格式数据
-        customer[index].like = await Database.from('likes').select('id').where({ status: 1, type: 'customer', relation_type_id: customer[index].cid, user_id: session.get('user_id') }).first() || {}
-        customer[index]['photos'] = customer[index]['photos'] ? JSON.parse(customer[index]['photos']) : []
-        customer[index]['videos'] = customer[index]['videos'] ? JSON.parse(customer[index]['videos']) : []
-        customer[index]['zodiac_sign'] = this.getZodiacSign(Moment(customer[index]['birthday']).format('DD'), Moment(customer[index]['birthday']).format('MM'))
-        customer[index]['age'] = Moment().diff(customer[index]['birthday'], 'years')
-        customer[index].relation = RELATION[customer[index].relation]
-        customer[index].salary = customer[index].salary ? SALARY_RANGE[customer[index].salary].value : ''
-
-        customer[index]['work'] = customer[index]['work'] ? JSON.parse(customer[index]['work']) : []
-        if (customer[index]['work']['value']) {
-          customer[index]['work']['text'] = await zpData.data(customer[index]['work']['value'][0], customer[index]['work']['value'][1])
-        }
-
-        // 个性化问答
-        if (customer[index].relation_wechat_open_id) {
-          let _answer = [[], [], []]
-          const answer = (await Database.rawQuery("select questions.type, questions.title, questions.description, answer.content, answer.user_id from answer left outer join questions on answer.relation_question_id = questions.id where answer.user_id = :user_id order by type asc;", {
-            user_id: customer[index].relation_user_id
-          }))[0]
-
-          for (let index = 0; index < answer.length; index++) {
-            switch (answer[index].type) {
-              case '0':
-                _answer[0].push(answer[index])
-                break;
-              case '1':
-                _answer[1].push(answer[index])
-                break;
-              case '2':
-                _answer[2].push(answer[index])
-                break;
+  public async filter({ params, response, request, session }: HttpContextContract) {
+    try {
+      let all = request.all(), data = []
+      switch (params.type) {
+        case 'distance':
+          const location = await Database.from('users_location').where('user_id', session.get('user_id')).first()
+          const distance = await Database.rawQuery(`SELECT user_id, latitude, longitude, ST_DISTANCE_SPHERE(point(longitude, latitude), point(${ location.longitude }, ${ location.latitude })) AS distance FROM users_location WHERE user_id != '${ session.get('user_id') }' ORDER BY distance;`)
+          let database = []
+          for (let index = 0; index < distance[0].length; index++) database[index] = distance[0][index].user_id
+          console.log(database);
+          const customer = await Database.from('customer').select('id as cid', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id').where({ status: 1, recommend: 1 }).whereIn('user_id', database).orderBy('recommend_at', 'desc').limit(10)
+          data = await this.customerFormat(customer, session)
+          for (let index = 0; index < location.length; index++) {
+            for (let j = 0; j < data.length; j++) {
+              if (distance[0][index].user_id == data[j].user_id) {
+                data[j].distance = location[index].distance
+              }
             }
           }
-          customer[index].answer = _answer
-        }
+          break;
 
-        // IP 属地
-        if (customer[index].ip) {
-          await axios({
-            url: `http://whois.pconline.com.cn/ipJson.jsp?ip=${ customer[index].ip }&json=true`,
-            responseType: "arraybuffer"
-          }).then((response) => {
-            const data = iconv.decode(response.data, 'gbk')
-            customer[index].ip = data ? JSON.parse(data) : ''
-          }).catch((error) => {
-            // console.log(error)
-          })
-        }
-
-        // 头像主色
-        // if (customer[index].avatar_url) {
-        //   const imagePath = Application.publicPath(customer[index].avatar_url);
-        //   await Vibrant.from(imagePath).getPalette().then((palette) => {
-        //     let rgb = palette.DarkVibrant._rgb
-        //     let color = `rgba(${ parseInt(rgb[0]) }, ${ parseInt(rgb[1]) }, ${ parseInt(rgb[2]) }, 1)`
-        //     customer[index].color = color
-        //   })
-        // }
+        default:
+          break;
       }
-      return customer
+
+      return response.json({ status: 200, message: "ok", data })
     } catch (error) {
+      console.log(error);
+
       Logger.error("error 获取失败 %s", JSON.stringify(error));
     }
   }

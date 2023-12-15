@@ -55,6 +55,7 @@ Route.group(() => {
   Route.post('/user/moment/create', 'api/MomentsController.create')
 
   Route.get('/customs', 'api/CustomerController.index')
+  Route.get('/customer/filter/:type', 'api/CustomerController.filter')
   Route.get('/customer/userinfo/:id', 'api/CustomerController.customerInfo')
   Route.post('/customer/field/update/:id', 'api/CustomerController.updateCustomerField')
   Route.get('/customer/userlist', 'api/CustomerController.customerList')

@@ -8,8 +8,6 @@ function record(data) {
       if (data.user_id || data.wechat_open_id) resolve(false)
       const datas = await Database.from('datas').where({ table: data.table, field: data.field, field_value: data.field_value, user_id: data.user_id || '', wechat_open_id: data.wechat_open_id || '', category: data.category }).orderBy('created_at', 'desc').first() || {}
       const milliseconds = Moment().diff(datas.created_at, 'milliseconds')
-      console.log('data milliseconds', data, milliseconds);
-
       if (milliseconds == 0 || milliseconds > 100 * 1000) {
         await Database.table('datas').insert({ table: data.table, field: data.field, field_value: data.field_value, user_id: data.user_id || '', wechat_open_id: data.wechat_open_id || '', category: data.category, count: data.count })
         resolve(true)

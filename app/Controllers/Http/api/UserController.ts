@@ -202,9 +202,29 @@ export default class UserController {
               verify[index].table = '介绍好友'
               verify[index].value = JSON.parse(verify[index].value)
               break;
+            case 'authentication_log.idcard':
+              verify[index].table = '认证审核'
+              verify[index].value = '用户身份'
+              break;
+            case 'authentication_log.school':
+              verify[index].table = '认证审核'
+              verify[index].value = '学校'
+              break;
             case 'authentication_log.company':
               verify[index].table = '认证审核'
               verify[index].value = '公司'
+              break;
+            case 'authentication_log.work':
+              verify[index].table = '认证审核'
+              verify[index].value = '职业'
+              break;
+            case 'authentication_log.job_title':
+              verify[index].table = '认证审核'
+              verify[index].value = '职位'
+              break;
+            case 'authentication_log.salary':
+              verify[index].table = '认证审核'
+              verify[index].value = '薪资'
               break;
           }
         }
@@ -230,9 +250,15 @@ export default class UserController {
     try {
       let all = request.all(), data = {}
       if (request.method() == 'POST') {
-        const authentication = await Database.from('authentication_log').where({ user_id: session.get('user_id') }).first() || {}
-        if (!authentication.id) {
+        const authentication = await Database.from('authentication').where({ user_id: session.get('user_id') }).first() || {}
+        const authentication_log = await Database.from('authentication_log').where({ user_id: session.get('user_id') }).first() || {}
+        if (!authentication.id && !authentication_log.id) {
+          await Database.table('authentication').insert({ user_id: session.get('user_id') })
+
           switch (all.type) {
+            case 'idcard':
+              await Database.table('authentication_log').insert({ user_id: session.get('user_id'), idcard: all.value })
+              break;
             case 'school':
               await Database.table('authentication_log').insert({ user_id: session.get('user_id'), school: all.value })
               break;
@@ -252,6 +278,9 @@ export default class UserController {
         }
 
         switch (all.type) {
+          case 'idcard':
+            await Database.from('authentication_log').where({ user_id: session.get('user_id') }).update({ idcard: all.value })
+            break;
           case 'school':
             await Database.from('authentication_log').where({ user_id: session.get('user_id') }).update({ school: all.value })
             break;

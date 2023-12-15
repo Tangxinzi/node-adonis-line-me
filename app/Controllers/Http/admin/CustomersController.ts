@@ -105,6 +105,8 @@ export default class CustomersController {
   public async update({ params, request, response, session, view }: HttpContextContract) {
     try {
       const all = request.all()
+      console.log(all);
+
       // const customer = await Database.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'relation', 'relation_log_id', 'introduction', 'recommend', 'created_at').where({ 'id': params.id, status: 1 }).first()
 
       return response.redirect('back')

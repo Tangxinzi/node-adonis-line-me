@@ -137,9 +137,9 @@
           </div>
           <div class="field {{ data.customer.relation_user_id ? 'disabled' : '' }}">
             <label>照片</label>
-            <div class="ui tiny rounded bordered images" id="container" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <div class="ui tiny rounded bordered images" id="container">
               @each((row, index) in data.customer.userinfo.photos)
-              <div class="ui image draggable" style="background-image: url({{ row }})" id="image{{ index }}" draggable="true" ondragstart="drag(event)">
+              <div class="ui image draggable" style="background-image: url({{ row }})" id="image{{ index }}">
                 <input type="text" name="userinfo.photos[]" value="{{ row }}" hidden />
               </div>
               @endeach
@@ -159,29 +159,12 @@
 @endsection
 
 @section('script')
-<script src="https://unpkg.com/@wangeditor/editor@latest/dist/index.js"></script>
+<!-- <script src="https://unpkg.com/@wangeditor/editor@latest/dist/index.js"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.8.3/Sortable.min.js" charset="utf-8"></script>
 <script type="text/javascript">
-  function allowDrop(ev) {
-    ev.preventDefault();
-  }
-
-  function drop(ev) {
-    ev.preventDefault();
-    var data = ev.dataTransfer.getData("text");
-    var draggedElement = document.getElementById(data);
-    var container = document.getElementById("container");
-
-    // 如果容器中已经有一个拖动的元素，则将其插入被拖动的元素的前面
-    if (container.contains(draggedElement)) {
-      container.insertBefore(draggedElement, ev.target);
-    } else {
-      // 否则，将元素添加到容器中
-      container.appendChild(draggedElement);
-    }
-  }
-
-  function drag(ev) {
-    ev.dataTransfer.setData("text", ev.target.id);
-  }
+  new Sortable(document.getElementById('container'), {
+  	animation: 150,
+  	ghostClass: 'blue-background-class'
+  });
 </script>
 @endsection
