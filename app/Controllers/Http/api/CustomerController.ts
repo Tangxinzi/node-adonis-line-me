@@ -275,16 +275,17 @@ export default class CustomerController {
     try {
       const all = request.all()
       const relation_log_id = await Database.table('customer_log').returning('id').insert({
-        nickname: all.nickname,
-        avatar_url: all.avatar_url || Avatar.data(all.sex),
+        nickname: all.nickname || '',
+        avatar_url: all.avatar_url || Avatar.data(all.sex || 0),
         birthday: all.birthday || '',
-        height: all.height,
-        sex: all.sex,
+        height: all.height || 0,
+        sex: all.sex || 0,
         work: JSON.stringify(all.work || ''),
         photos: JSON.stringify(all.photos || [])
       })
 
       const customer_id = await Database.table('customer').insert({
+        status: 2,
         user_id: session.get('user_id'), // 关联 发布用户 user id
         relation_log_id: relation_log_id, // 关联 customer log
         relation: all.relation,
@@ -293,20 +294,20 @@ export default class CustomerController {
       })
 
       // 红娘发布客户 - 加入审核列表
-      if (customer_id.length && relation_log_id.length) {
-        await Verification.regularData({
-          user_id: session.get('user_id'),
-          table: 'customer',
-          field: '',
-          before: '',
-          value: JSON.stringify({
-            user_id: session.get('user_id'), // 关联 发布用户 user id
-            customer_id: customer_id[0], // 关联 customer id
-            relation_log_id: relation_log_id[0], // 关联 customer log id
-          }),
-          ip: request.ip()
-        })
-      }
+      // if (customer_id.length && relation_log_id.length) {
+      //   await Verification.regularData({
+      //     user_id: session.get('user_id'),
+      //     table: 'customer',
+      //     field: '',
+      //     before: '',
+      //     value: JSON.stringify({
+      //       user_id: session.get('user_id'), // 关联 发布用户 user id
+      //       customer_id: customer_id[0], // 关联 customer id
+      //       relation_log_id: relation_log_id[0], // 关联 customer log id
+      //     }),
+      //     ip: request.ip()
+      //   })
+      // }
 
       response.json({
         status: 200,
@@ -314,6 +315,7 @@ export default class CustomerController {
         data: customer
       })
     } catch (error) {
+      console.log(error);
       Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,

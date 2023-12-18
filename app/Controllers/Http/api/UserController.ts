@@ -67,18 +67,21 @@ export default class UserController {
   public async getUserinfo({ request, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const user = await Database.from('users').where('user_id', all.user_id || session.get('user_id')).first()
+      const user_id = all.user_id || session.get('user_id')
+      const user = await Database.from('users').where('user_id', user_id).first() || {}
 
       if (user) {
+        user.percent = await percentUserinfo(user_id)
+
         // 格式数据
         const _geoip = GeoIP.lookup(request.ip()) || {}
-        await Database.from('users').where('user_id', session.get('user_id')).update({ online_at: Moment().format('YYYY-MM-DD HH:mm:ss'), ip: request.ip(), ip_city: _geoip.city })
+        await Database.from('users').where('user_id', user_id).update({ online_at: Moment().format('YYYY-MM-DD HH:mm:ss'), ip: request.ip(), ip_city: _geoip.city })
         user.photos = JSON.parse(user.photos)
         user.location = user.location ? JSON.parse(user.location) : ''
         user.videos = JSON.parse(user.videos)
         user.zodiac_sign = this.getZodiacSign(Moment(user.birthday).format('DD'), Moment(user.birthday).format('MM'))
         user.age = Moment().diff(user.birthday, 'years')
-        user.operates = await Database.from('users_operates').where({ user_id: session.get('user_id'), type: 'examine' }).first() ? true : false
+        user.operates = await Database.from('users_operates').where({ user_id, type: 'examine' }).first() ? true : false
         user.introduces = await Database.from('answer').select('introduce_name', 'content').where({ type: 1, status: 1, recommend: 1, user_id: user.user_id }).orderBy('created_at', 'desc')
 
         user['work'] = JSON.parse(user['work'])
@@ -119,12 +122,10 @@ export default class UserController {
         }
       }
 
-      user.percent = await percentUserinfo(session.get('user_id'))
-
       return user
     } catch (error) {
-      Logger.error("error 获取失败 %s", JSON.stringify(error));
-      return error
+      Logger.error("error 获取失败 %s", error);
+      return {}
     }
   }
 
