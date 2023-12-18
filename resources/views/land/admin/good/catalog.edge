@@ -1,4 +1,4 @@
-@layout('land.components.layouts.main')
+@layout('land/components/layouts/main')
 
 @section('title')
 <meta name="keywords" content="" />
@@ -13,7 +13,7 @@
 @section('content')
 <div class="ui stackable four column grid">
   <div class="three wide column">
-    @!component('land.components.navbar-menus', data=data, csrf=csrfField())
+    @!component('land/components/navbar-menus', data=data, csrf=csrfField())
   </div>
   <div class="thirteen wide column">
     <div class="flex-between">
@@ -27,7 +27,7 @@
             <input placeholder="" name="name" value="{{ data.log.name || '' }}" type="text" />
           </div>
           <div class="field">
-            <label>父级目录</label>
+            <label>一级目录</label>
             <div class="ui selection dropdown">
               <input type="hidden" name="is_catalog" value="{{ data.log.level == 1 ? 1 : 0 }}" />
               <i class="dropdown icon"></i>
@@ -39,7 +39,7 @@
             </div>
           </div>
           <div class="field">
-            <label>父级目录列表</label>
+            <label>一级目录列表</label>
             <div class="ui selection dropdown">
               <input type="hidden" name="parent_catalog_id" value="{{ data.log.parent_catalog_id || '' }}" />
               <i class="dropdown icon"></i>

@@ -105,7 +105,6 @@ export default class SupplierController {
   public async save({ request, response, session }: HttpContextContract) {
     try {
       let all = request.all(), supplier = session.get('adonis-cookie-supplier')
-
       // 限制供应商添加商品数量
       const goods = await Database.from('land_goods').select('*').where({ good_supplier_id: supplier.id, status: 1 }).orderBy('created_at', 'desc').forPage(request.input('page', 1), 20)
       if (goods.length >= supplier.number) {
@@ -113,9 +112,11 @@ export default class SupplierController {
         return response.redirect('back')
       }
 
-      let good_theme_url = all.theme_url ? JSON.parse(all.theme_url) : []
-      if (request.file('theme')) {
-        const themes = request.files('theme', {
+      let good_theme_url = all.theme_url || []
+      good_theme_url = good_theme_url.filter(item => item !== null && item !== ''); // 整理图片集
+
+      if (request.file('theme_url')) {
+        const themes = request.files('theme_url', {
           types: ['image'],
           size: '2mb'
         })
@@ -142,9 +143,6 @@ export default class SupplierController {
           good_theme_url[good_theme_url.length + index] = file.fileSrc
         }
       }
-
-      // 整理图片集
-      good_theme_url = good_theme_url.filter(item => item !== null && item !== '');
 
       if (request.method() == 'POST' && all.button == 'update') {
         await Database.from('land_goods').where('id', all.id).update({

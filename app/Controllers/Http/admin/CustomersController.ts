@@ -33,7 +33,6 @@ export default class CustomersController {
   public async index({ request, view, session }: HttpContextContract) {
     try {
       const all = request.all()
-      Logger.info("error 获取失败 %s", JSON.stringify(all));
       const customer = await Database.from('customer').select('id', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id', 'recommend').where('status', 1).orderBy('recommend', 'desc').orderBy('recommend_at', 'desc').forPage(request.input('page', 1), 20)
       for (let index = 0; index < customer.length; index++) {
         // 红娘自行发布
@@ -102,27 +101,19 @@ export default class CustomersController {
     }
   }
 
-  public async update({ params, request, response, session, view }: HttpContextContract) {
-    try {
-      const all = request.all()
-      console.log(all);
-
-      // const customer = await Database.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'relation', 'relation_log_id', 'introduction', 'recommend', 'created_at').where({ 'id': params.id, status: 1 }).first()
-
-      return response.redirect('back')
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   public async edit({ params, request, response, session, view }: HttpContextContract) {
     try {
       const all = request.all()
       const customer = await Database.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'relation', 'relation_log_id', 'introduction', 'recommend', 'created_at').where({ 'id': params.id, status: 1 }).first()
-
       customer.relation_text = RELATION[customer.relation]
       if (customer.relation_log_id) {
         customer.userinfo = await Database.from('customer_log').select('*').where({ 'id': customer.relation_log_id }).first()
+        if (request.method() == 'POST') {
+          console.log(JSON.stringify(all.userinfo.photos || []));
+          await Database.from('customer_log').where({ id: customer.userinfo.id }).update({ photos: JSON.stringify(all.userinfo.photos || []) })
+          session.flash('message', { type: 'success', header: '更新成功', message: `` })
+          return response.redirect('back')
+        }
       } else if(customer.relation_user_id) {
         customer.userinfo = await Database.from('users').select('*').where({ 'user_id': customer.relation_user_id }).first()
       }
@@ -134,7 +125,7 @@ export default class CustomersController {
         customer.userinfo.work.text = await zpData.data(customer.userinfo.work.value[0], customer.userinfo.work.value[1])
       }
       customer.created_at = Moment(customer.created_at).format('YYYY-MM-DD HH:mm:ss')
-
+      
       return view.render('admin/customer/edit', {
         data: {
           title: '介绍',
@@ -144,13 +135,7 @@ export default class CustomersController {
       })
     } catch (error) {
       console.log(error);
-
       Logger.error("error 获取失败 %s", JSON.stringify(error));
-      response.json({
-        status: 500,
-        message: "internalServerError",
-        data: error
-      })
     }
   }
 }

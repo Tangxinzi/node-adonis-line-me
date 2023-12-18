@@ -1,4 +1,4 @@
-@layout('land.components.layouts.main')
+@layout('land/components/layouts/main')
 
 @section('title')
 <meta name="keywords" content="" />
@@ -18,7 +18,7 @@
 @section('content')
   <div class="ui stackable four column grid">
     <div class="three wide column">
-      @!component('land.components.navbar-menus', data=data, csrf=csrfField())
+      @!component('land/components/navbar-menus', data=data, csrf=csrfField())
     </div>
     <div class="thirteen wide column">
       <div class="flex-between">

@@ -1,4 +1,4 @@
-@layout('components.layouts.main')
+@layout('components/layouts/main')
 
 @section('title')
 <meta name="keywords" content="" />
@@ -120,7 +120,7 @@
           @endeach
         </tbody>
       </table>
-      @!component('components.pagination', all=data.all)
+      @!component('components/pagination', all=data.all)
     </div>
   </div>
   <form class="ui modal form" action="" method="post">

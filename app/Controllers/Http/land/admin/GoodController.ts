@@ -53,7 +53,7 @@ export default class GoodController {
     try {
       const catalog = await Database.from('land_goods_catalog').select('*').where({ level: 1, status: 1 }).orderBy('created_at', 'desc')
       for (let index = 0; index < catalog.length; index++) {
-        catalog[index].sub_catalog = await Database.from('land_goods_catalog').select('*').where({ parent_catalog_id: catalog[index].id, level: 2, status:  1 })
+        catalog[index].sub_catalog = await Database.from('land_goods_catalog').select('*').where({ parent_catalog_id: catalog[index].id, level: 2, status: 1 })
       }
 
       return view.render('land/admin/good/create', {
@@ -168,9 +168,9 @@ export default class GoodController {
       good.created_at = Moment(good.created_at).format('YYYY-MM-DD H:mm:ss')
       good.good_theme_url = good.good_theme_url ? JSON.parse(good.good_theme_url) : []
 
-      const catalog = await Database.from('land_goods_catalog').select('*').where({ level: 1, status:  1 }).orderBy('created_at', 'desc')
+      const catalog = await Database.from('land_goods_catalog').select('*').where({ level: 1, status: 1 }).orderBy('created_at', 'desc')
       for (let index = 0; index < catalog.length; index++) {
-        catalog[index].sub_catalog = await Database.from('land_goods_catalog').select('*').where({ parent_catalog_id: catalog[index].id, level: 2, status:  1 })
+        catalog[index].sub_catalog = await Database.from('land_goods_catalog').select('*').where({ parent_catalog_id: catalog[index].id, level: 2, status: 1 })
       }
 
       good.catalog_goods = await Database.from('land_goods').select('*').where({ status: 1, good_catalog: good.good_catalog }).orderBy('created_at', 'desc').forPage(request.input('page', 1), 20)
@@ -203,9 +203,9 @@ export default class GoodController {
       const good = await Database.from('land_goods').where('id', params.id).first()
       good.good_theme_url = good.good_theme_url ? JSON.parse(good.good_theme_url) : []
 
-      const catalog = await Database.from('land_goods_catalog').select('*').where({ level: 1, status:  1 }).orderBy('created_at', 'desc')
+      const catalog = await Database.from('land_goods_catalog').select('*').where({ level: 1, status: 1 }).orderBy('created_at', 'desc')
       for (let index = 0; index < catalog.length; index++) {
-        catalog[index].sub_catalog = await Database.from('land_goods_catalog').select('*').where({ parent_catalog_id: catalog[index].id, level: 2, status:  1 })
+        catalog[index].sub_catalog = await Database.from('land_goods_catalog').select('*').where({ parent_catalog_id: catalog[index].id, level: 2, status: 1 })
       }
 
       return view.render('land/admin/good/edit', {
@@ -224,9 +224,11 @@ export default class GoodController {
   public async save({ request, response, session }: HttpContextContract) {
     try {
       let all = request.all()
-      let good_theme_url = all.theme_url ? JSON.parse(all.theme_url) : []
-      if (request.file('theme')) {
-        const themes = request.files('theme', {
+      let good_theme_url = all.theme_url || []
+      good_theme_url = good_theme_url.filter(item => item !== null && item !== ''); // 整理图片集
+
+      if (request.file('theme_url')) {
+        const themes = request.files('theme_url', {
           types: ['image'],
           size: '2mb'
         })
@@ -248,12 +250,7 @@ export default class GoodController {
         }
       }
 
-      // 整理图片集
-      good_theme_url = good_theme_url.filter(item => item !== null && item !== '');
-
       if (request.method() == 'POST' && all.button == 'update') {
-        console.log(all);
-
         await Database.from('land_goods').where('id', all.id).update({
           status: all.status,
           good_catalog: parseInt(parseInt(all.good_catalog)) || '',
@@ -307,6 +304,7 @@ export default class GoodController {
       const all = request.all()
       const supplier = await Database.from('land_supplier').select('*').orderBy('created_at', 'desc')
       for (let index = 0; index < supplier.length; index++) {
+        supplier[index].supplier_good_count = (await Database.from('land_goods').where({ good_supplier_id: supplier[index].id, status: 1 }).count('* as total'))[0].total || 0
         supplier[index].created_at = Moment(supplier[index].created_at).format('YYYY-MM-DD H:mm:ss')
       }
       return view.render('land/admin/good/supplier', {

@@ -104,7 +104,7 @@ Route.group(() => {
 
   Route.get('/customers', 'admin/CustomersController.index')
   Route.get('/customers/edit/:id', 'admin/CustomersController.edit')
-  Route.post('/customers/update', 'admin/CustomersController.update')
+  Route.post('/customers/edit/:id', 'admin/CustomersController.edit')
   Route.post('/customers/field', 'admin/CustomersController.field')
 
   Route.get('/event/descovery', 'admin/EventController.descovery')
@@ -132,6 +132,7 @@ Route.group(() => {
   Route.get('/search', 'land/admin/SearchController.index')
   Route.post('/file/upload', 'land/admin/FilesController.upload')
 
+  Route.get('/user/index', 'land/admin/UserController.index')
   Route.get('/user/wx-login', 'land/admin/UserController.wxLogin')
   Route.get('/user/get-phone-number', 'land/admin/UserController.getPhoneNumber')
   Route.get('/user/info', 'land/admin/UserController.userinfo')

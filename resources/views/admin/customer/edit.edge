@@ -1,4 +1,4 @@
-@layout('components.layouts.main')
+@layout('components/layouts/main')
 
 @section('title')
 <meta name="keywords" content="" />
@@ -8,8 +8,10 @@
 
 @section('style')
 <style media="screen">
-  .ui.images .ui.image { height: 80px; background-size: cover; background-position: center; background-repeat: no-repeat; }
-  .draggable { cursor: move; }
+  .ui.images .ui.image { height: 80px; background-size: cover; background-position: center; background-repeat: no-repeat; cursor: move; }
+  .ui.images .ui.image { position: relative; }
+  .ui.images .ui.image .icon { position: absolute; right: 0; top: 0; opacity: 0; }
+  .ui.images .ui.image:hover .icon { opacity: 1; color: #FFF; }
 </style>
 @endsection
 
@@ -19,7 +21,7 @@
       <div class="ui header-title flex-between">
         <span>编辑</span>
       </div>
-      <form class="ui segments form" method="post" action="{{ route('admin/CustomersController.update') }}">
+      <form class="ui segments form" method="post" action="#">
         <div class="ui segment">
           <h3 class="ui header">介绍人</h3>
           <div class="four fields">
@@ -62,7 +64,7 @@
           </div>
         </div>
         <div class="ui segment">
-          <h3 class="ui header">被推荐人信息</h3>
+          <h3 class="ui header">被推荐人 - {{ data.customer.userinfo.nickname }}</h3>
           @if(data.customer.relation_user_id)
           <div class="ui info message">
             <p>当前被推荐人已注册账号，前往用户账号查看信息 User ID: {{ data.customer.relation_user_id }}</p>
@@ -134,13 +136,27 @@
               <label>职业 - {{ data.customer.userinfo.work.text }}</label>
               <input type="text" name="userinfo.work" value="{{ JSON.stringify(data.customer.userinfo.work) }}" placeholder="" />
             </div>
+            <div class="field">
+              <label>学校</label>
+              <input type="text" name="userinfo.school" value="{{ data.customer.userinfo.school || '' }}" placeholder="" />
+            </div>
+            <div class="field">
+              <label>公司</label>
+              <input type="text" name="userinfo.company" value="{{ data.customer.userinfo.company || '' }}" placeholder="" />
+            </div>
+            <div class="field">
+              <label>薪资</label>
+              <input type="text" name="userinfo.salary" value="{{ data.customer.userinfo.salary || '' }}" placeholder="" />
+            </div>
           </div>
           <div class="field {{ data.customer.relation_user_id ? 'disabled' : '' }}">
-            <label>照片</label>
-            <div class="ui tiny rounded bordered images" id="container">
+            <label>头像 / 照片集</label>
+            <div class="ui tiny rounded bordered images" id="draggable">
+              <div class="ui image ignore-elements" style="background-image: url({{ data.customer.userinfo.avatar_url }})"></div>
               @each((row, index) in data.customer.userinfo.photos)
-              <div class="ui image draggable" style="background-image: url({{ row }})" id="image{{ index }}">
+              <div class="ui image image-{{ index }}" style="background-image: url({{ row }})" id="image{{ index }}">
                 <input type="text" name="userinfo.photos[]" value="{{ row }}" hidden />
+                <i class="close link icon" onclick="removeImage('image-{{ index }}')"></i>
               </div>
               @endeach
             </div>
@@ -162,9 +178,11 @@
 <!-- <script src="https://unpkg.com/@wangeditor/editor@latest/dist/index.js"></script> -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.8.3/Sortable.min.js" charset="utf-8"></script>
 <script type="text/javascript">
-  new Sortable(document.getElementById('container'), {
-  	animation: 150,
-  	ghostClass: 'blue-background-class'
-  });
+  new Sortable(document.getElementById('draggable'), { animation: 150, ghostClass: 'blue-background-class', filter: ".ignore-elements", });
+
+  function removeImage (className) {
+    console.log('.ui.image.' + className);
+    $('.ui.image.' + className).remove()
+  }
 </script>
 @endsection
