@@ -101,6 +101,7 @@ Route.group(() => {
   Route.get('/users', 'admin/UsersController.index')
   Route.get('/users/edit/:user_id', 'admin/UsersController.edit')
   Route.get('/users/update', 'admin/UsersController.update')
+  Route.post('/users/update', 'admin/UsersController.update')
 
   Route.get('/customers', 'admin/CustomersController.index')
   Route.get('/customers/edit/:id', 'admin/CustomersController.edit')

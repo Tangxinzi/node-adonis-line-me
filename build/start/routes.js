@@ -72,6 +72,7 @@ Route_1.default.group(() => {
     Route_1.default.get('/users', 'admin/UsersController.index');
     Route_1.default.get('/users/edit/:user_id', 'admin/UsersController.edit');
     Route_1.default.get('/users/update', 'admin/UsersController.update');
+    Route_1.default.post('/users/update', 'admin/UsersController.update');
     Route_1.default.get('/customers', 'admin/CustomersController.index');
     Route_1.default.get('/customers/edit/:id', 'admin/CustomersController.edit');
     Route_1.default.post('/customers/edit/:id', 'admin/CustomersController.edit');

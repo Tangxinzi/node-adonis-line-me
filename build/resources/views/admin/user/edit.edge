@@ -8,8 +8,10 @@
 
 @section('style')
 <style media="screen">
-  .ui.images .ui.image { height: 80px; background-size: cover; background-position: center; background-repeat: no-repeat; }
-  .draggable { cursor: move; }
+  .ui.images .ui.image { height: 80px; background-size: cover; background-position: center; background-repeat: no-repeat; cursor: move; }
+  .ui.images .ui.image { position: relative; }
+  .ui.images .ui.image .icon { position: absolute; right: 0; top: 0; opacity: 0; }
+  .ui.images .ui.image:hover .icon { opacity: 1; color: #FFF; }
 </style>
 @endsection
 
@@ -17,7 +19,7 @@
   <div class="ui stackable four column grid">
     <div class="sixteen wide column">
       <div class="ui header-title flex-between">
-        <span>编辑</span>
+        <span>编辑 {{ data.user.nickname }}</span>
       </div>
       <form class="ui segments form" method="post" action="{{ route('admin/UsersController.update') }}">
         <div class="ui segment">
@@ -88,22 +90,22 @@
               <input type="text" name="work" value="{{ JSON.stringify(data.user.work) }}" placeholder="" />
             </div>
             <div class="field">
-              <label>个人视频</label>
-              <input type="text" name="videos" value="{{ JSON.stringify(data.user.videos) }}" placeholder="" />
+              <label>职位</label>
+              <input type="text" name="job_title" value="{{ data.user.job_title || '' }}" placeholder="" />
             </div>
             <div class="field">
               <label>学校</label>
-              <input type="text" name="videos" value="{{ data.user.school || '' }}" placeholder="" />
+              <input type="text" name="school" value="{{ data.user.school || '' }}" placeholder="" />
             </div>
             <div class="field">
               <label>单位 / 公司</label>
-              <input type="text" name="videos" value="{{ data.user.company || '' }}" placeholder="" />
+              <input type="text" name="company" value="{{ data.user.company || '' }}" placeholder="" />
             </div>
           </div>
           <div class="four fields">
             <div class="field">
               <label>位置（IP {{ data.user.ip.city || '未知' }}）</label>
-              <input type="text" name="work" value="{{ data.user.location || '' }}" placeholder="" />
+              <input type="text" name="location" value="{{ data.user.location || '' }}" placeholder="" />
             </div>
             <div class="field">
               <label>真名</label>
@@ -118,22 +120,37 @@
               <input type="text" name="online_at" value="{{ data.user.online_at || '' }}" placeholder="" />
             </div>
           </div>
+          <div class="four fields">
+            <div class="field">
+              <label>薪资</label>
+              <input type="text" name="salary" value="{{ data.user.salary || '' }}" placeholder="" />
+            </div>
+            <div class="field">
+              <label>个人视频</label>
+              <input type="text" name="videos" value="{{ JSON.stringify(data.user.videos) }}" placeholder="" />
+            </div>
+          </div>
           <div class="field">
-            <label>照片</label>
-            <div class="ui tiny rounded bordered images" id="container" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <label>头像 / 照片集</label>
+            <div class="ui tiny rounded bordered images" id="draggable">
+              <div class="ui image ignore-elements" style="background-image: url({{ data.user.avatar_url }})"></div>
               @each((row, index) in data.user.photos)
-              <div class="ui image draggable" style="background-image: url({{ row }})" id="image{{ index }}" draggable="true" ondragstart="drag(event)">
+              <div class="ui image image-{{ index }}" style="background-image: url({{ row }})" id="image{{ index }}">
                 <input type="text" name="photos[]" value="{{ row }}" hidden />
+                <i class="close link icon" onclick="removeImage('image-{{ index }}')"></i>
               </div>
               @endeach
             </div>
-          </div>
           <div class="field">
             <label>个性签名 / 介绍</label>
             <textarea name="detail" rows="8" cols="80">{{ data.user.detail || '' }}</textarea>
           </div>
+          <div class="field">
+            <label>期待的 ta</label>
+            <textarea name="expectation" rows="8" cols="80">{{ data.user.expectation || '' }}</textarea>
+          </div>
         </div>
-        <div class="ui segment" {{ data.user.relation_user_id ? 'hidden' : '' }}>
+        <div {{ data.user.relation_user_id ? 'hidden' : '' }}>
           {{ csrfField() }}
           <div class="flex-between">
             <button class="ui tiny button" type="submit" name="button" value="update">更新</button>
@@ -146,29 +163,13 @@
 @endsection
 
 @section('script')
-<script src="https://unpkg.com/@wangeditor/editor@latest/dist/index.js"></script>
+<!-- <script src="https://unpkg.com/@wangeditor/editor@latest/dist/index.js"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.8.3/Sortable.min.js" charset="utf-8"></script>
 <script type="text/javascript">
-  function allowDrop(ev) {
-    ev.preventDefault();
-  }
+  new Sortable(document.getElementById('draggable'), { animation: 150, ghostClass: 'blue-background-class', filter: ".ignore-elements", });
 
-  function drop(ev) {
-    ev.preventDefault();
-    var data = ev.dataTransfer.getData("text");
-    var draggedElement = document.getElementById(data);
-    var container = document.getElementById("container");
-
-    // 如果容器中已经有一个拖动的元素，则将其插入被拖动的元素的前面
-    if (container.contains(draggedElement)) {
-      container.insertBefore(draggedElement, ev.target);
-    } else {
-      // 否则，将元素添加到容器中
-      container.appendChild(draggedElement);
-    }
-  }
-
-  function drag(ev) {
-    ev.dataTransfer.setData("text", ev.target.id);
+  function removeImage (className) {
+    $('.ui.image.' + className).remove()
   }
 </script>
 @endsection

@@ -108,6 +108,11 @@ export default class UsersController {
     try {
       const all = request.all()
       console.log(all);
+
+      // await Database.from('customer_log').where({ id: customer.id }).update({ photos: JSON.stringify(all.photos || []) })
+      //
+      // session.flash('message', { type: 'success', header: '更新成功', message: `` })
+      return response.redirect('back')
       return all
     } catch (error) {
       console.log(error);

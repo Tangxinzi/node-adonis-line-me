@@ -411,6 +411,9 @@ export default class UserController {
         case 'detail':
           await Database.from('users').where('user_id', session.get('user_id')).update({ detail: all.value })
           break;
+        case 'expectation':
+          await Database.from('users').where('user_id', session.get('user_id')).update({ expectation: all.value })
+          break;
         case 'phone':
           await Database.from('users').where('user_id', session.get('user_id')).update({ phone: all.value })
           break;
@@ -447,6 +450,9 @@ export default class UserController {
           break;
         case 'salary':
           await Database.from('users').where('user_id', session.get('user_id')).update({ salary: all.value })
+          break;
+        case 'contact_wechat':
+          await Database.from('users').where('user_id', session.get('user_id')).update({ contact_wechat: all.value })
           break;
       }
 

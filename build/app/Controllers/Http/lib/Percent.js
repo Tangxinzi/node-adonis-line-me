@@ -19,6 +19,8 @@ function percentUserinfo(user_id) {
             percent += 5;
         if (user.height)
             percent += 5;
+        if (user.expectation)
+            percent += 5;
         if (user.sex)
             percent += 5;
         if (user.work)
@@ -47,15 +49,20 @@ function percentUserinfo(user_id) {
             percent += 5;
         if (user.phone)
             percent += 5;
-        if (percent >= 80) {
+        if (percent >= 100) {
+            value = '100%';
+            percent = 100;
             text = '';
+        }
+        else if (percent >= 80) {
             value = percent + '%';
+            text = '';
         }
         else {
-            text = '完善资料进度低';
             value = percent + '%';
+            text = '完善资料进度低';
         }
-        resolve({ text, value });
+        resolve({ number: percent, value, text });
     });
 }
 function percentCustomerinfo(id) {
@@ -72,6 +79,8 @@ function percentCustomerinfo(id) {
         if (customer.birthday)
             percent += 5;
         if (customer.height)
+            percent += 5;
+        if (customer.expectation)
             percent += 5;
         if (customer.sex)
             percent += 5;
@@ -101,15 +110,20 @@ function percentCustomerinfo(id) {
             percent += 5;
         if (customer.phone)
             percent += 5;
-        if (percent >= 80) {
+        if (percent >= 100) {
+            value = '100%';
+            percent = 100;
             text = '';
+        }
+        else if (percent >= 80) {
             value = percent + '%';
+            text = '';
         }
         else {
-            text = '完善资料进度低';
             value = percent + '%';
+            text = '完善资料进度低';
         }
-        resolve({ text, value });
+        resolve({ number: percent, text, value });
     });
 }
 module.exports = {

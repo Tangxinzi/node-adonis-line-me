@@ -161,6 +161,10 @@
               @endeach
             </div>
           </div>
+          <div class="field">
+            <label>期待的 ta</label>
+            <textarea name="expectation" rows="8" cols="80">{{ data.customer.expectation || '' }}</textarea>
+          </div>
         </div>
         <div class="ui segment" {{ data.customer.relation_user_id ? 'hidden' : '' }}>
           {{ csrfField() }}
@@ -181,7 +185,6 @@
   new Sortable(document.getElementById('draggable'), { animation: 150, ghostClass: 'blue-background-class', filter: ".ignore-elements", });
 
   function removeImage (className) {
-    console.log('.ui.image.' + className);
     $('.ui.image.' + className).remove()
   }
 </script>

@@ -100,7 +100,6 @@ class CustomersController {
             if (customer.relation_log_id) {
                 customer.userinfo = await Database_1.default.from('customer_log').select('*').where({ 'id': customer.relation_log_id }).first();
                 if (request.method() == 'POST') {
-                    console.log(JSON.stringify(all.userinfo.photos || []));
                     await Database_1.default.from('customer_log').where({ id: customer.userinfo.id }).update({ photos: JSON.stringify(all.userinfo.photos || []) });
                     session.flash('message', { type: 'success', header: '更新成功', message: `` });
                     return response.redirect('back');

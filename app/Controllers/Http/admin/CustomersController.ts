@@ -109,7 +109,6 @@ export default class CustomersController {
       if (customer.relation_log_id) {
         customer.userinfo = await Database.from('customer_log').select('*').where({ 'id': customer.relation_log_id }).first()
         if (request.method() == 'POST') {
-          console.log(JSON.stringify(all.userinfo.photos || []));
           await Database.from('customer_log').where({ id: customer.userinfo.id }).update({ photos: JSON.stringify(all.userinfo.photos || []) })
           session.flash('message', { type: 'success', header: '更新成功', message: `` })
           return response.redirect('back')
@@ -125,7 +124,7 @@ export default class CustomersController {
         customer.userinfo.work.text = await zpData.data(customer.userinfo.work.value[0], customer.userinfo.work.value[1])
       }
       customer.created_at = Moment(customer.created_at).format('YYYY-MM-DD HH:mm:ss')
-      
+
       return view.render('admin/customer/edit', {
         data: {
           title: '介绍',

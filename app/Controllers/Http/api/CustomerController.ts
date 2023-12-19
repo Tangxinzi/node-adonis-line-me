@@ -222,6 +222,7 @@ export default class CustomerController {
           ...await Database.from('users').select('avatar_url', 'nickname', 'detail').where('user_id', customer.relation_user_id).first()
         }
       }
+
       response.json({
         status: 200,
         sms: "ok",
@@ -410,6 +411,9 @@ export default class CustomerController {
         customer.userinfo.work.text = await zpData.data(customer.userinfo.work.value[0], customer.userinfo.work.value[1])
       }
 
+      customer.userinfo.created_at = Moment(customer.userinfo.created_at).format('YYYY-MM-DD')
+      customer.userinfo.modified_at = Moment(customer.userinfo.modified_at).format('YYYY-MM-DD')
+
       customer.like = await Database.from('likes').select('id').where({ status: 1, type: 'customer', relation_type_id: customer.cid, user_id: session.get('user_id') }).first() || {}
 
       if (all.type == 'share') {
@@ -521,6 +525,12 @@ export default class CustomerController {
           break;
         case 'userinfo.salary':
           var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ salary: all.value })
+          break;
+        case 'userinfo.sex':
+          var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ sex: all.value })
+          break;
+        case 'userinfo.expectation':
+          var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ expectation: all.value })
           break;
       }
 
