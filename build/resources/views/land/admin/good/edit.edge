@@ -1,4 +1,4 @@
-@layout('land.components.layouts.main')
+@layout('land/components/layouts/main')
 
 @section('title')
 <meta name="keywords" content="" />
@@ -16,13 +16,19 @@
   #editor—wrapper { border: 1px solid #ccc; z-index: 100; }
   #toolbar-container { border-bottom: 1px solid #ccc; }
   #editor-container { height: 500px; }
+
+  .ui.images .ui.image { height: 80px; background-size: cover; background-position: center; background-repeat: no-repeat; cursor: move; }
+  .ui.images .ui.image { position: relative; }
+  .ui.images .ui.image .icon { position: absolute; right: 0; top: 0; opacity: 0; text-shadow: 0 0 5px #333; }
+  .ui.images .ui.image:hover .icon { opacity: 1; color: #FFF; }
+  .ui.images .ui.image .ignore-elements { cursor: none; }
 </style>
 @endsection
 
 @section('content')
   <div class="ui stackable four column grid">
     <div class="three wide column">
-      @!component('land.components.navbar-menus', data=data, csrf=csrfField())
+      @!component('land/components/navbar-menus', data=data, csrf=csrfField())
     </div>
     <div class="thirteen wide column">
       <div class="flex-between">
@@ -45,18 +51,30 @@
             </div>
           </div>
         </div>
-        <div class="field">
+        <div class="two fields">
           <div class="field">
-            <label>目录</label>
-            <div class="ui selection dropdown">
+            <label>一级目录</label>
+            <div class="ui level-0 selection dropdown">
+              <input type="hidden" name="good_parent_catalog" value="" />
+              <i class="dropdown icon"></i>
+              <div class="default text">点击选择</div>
+              <div class="menu">
+                @each(catalog in data.catalog)
+                  <div class="item item-catalog-{{ catalog.id }}" data-value="{{ catalog.id }}">- {{ catalog.name }}</div>
+                @endeach
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label>二级目录</label>
+            <div class="ui level-1 selection dropdown">
               <input type="hidden" name="good_catalog" value="{{ data.good.good_catalog }}" />
               <i class="dropdown icon"></i>
               <div class="default text">点击选择</div>
               <div class="menu">
                 @each(catalog in data.catalog)
-                  <!-- <div class="item" data-value="{{ catalog.id }}">{{ catalog.name }}</div> -->
                   @each(sub_catalog in catalog.sub_catalog)
-                    <div class="item" data-value="{{ sub_catalog.id }}">-- {{ sub_catalog.name }}</div>
+                    <div class="item item-parent-catalog-{{ sub_catalog.parent_catalog_id }}" data-value="{{ sub_catalog.id }}">-- {{ sub_catalog.name }}</div>
                   @endeach
                 @endeach
               </div>
@@ -73,26 +91,20 @@
         </div>
         <div class="field" hidden>
           <label>主图 array</label>
-          <input type="text" name="theme_url" value="{{ JSON.stringify(data.good.good_theme_url) }}" placeholder="" />
+          <input type="text" name="" value="{{ JSON.stringify(data.good.good_theme_url) }}" placeholder="" />
         </div>
-        <div class="ten fields">
-          @each((entity, index) in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-            @if(index < data.good.good_theme_url.length)
-              <div class="field">
-                <label>{{ !index ? '主图（2M 内）' : '　' }}</label>
-                <img class="ui small rounded bordered image" src="{{ data.good.good_theme_url[index] ? data.good.good_theme_url[index] : 'https://semantic-ui.com/images/wireframe/white-image.png' }}">
-              </div>
-            @endif
-          @endeach
-          @each((entity, index) in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-            @if(index >= data.good.good_theme_url.length)
-              <div class="field">
-                <label>{{ !index ? '主图' : '　' }}</label>
-                <img class="ui small rounded bordered image" onclick="upload_file_{{ index }}.click()" id="upload_file_tmp_{{ index }}" src="{{ data.good.good_theme_url[index] ? data.good.good_theme_url[index] : 'https://semantic-ui.com/images/wireframe/white-image.png' }}">
-                <input type="file" name="theme[]" value="{{ data.good.good_theme_url[index] || '' }}" id="upload_file_{{ index }}" onchange="change('#upload_file_{{ index }}', '#upload_file_tmp_{{ index }}');" hidden />
-              </div>
-            @endif
-          @endeach
+        <div class="field">
+          <label>商品图片集（单张图片上传大小 2M 内）</label>
+          <div class="ui tiny rounded bordered images" id="draggable">
+            @each((row, index) in data.good.good_theme_url)
+            <div class="ui image image-{{ index }}" style="background-image: url({{ row }})" id="image{{ index }}">
+              <input type="text" name="theme_url[]" value="{{ row }}" id="upload_file_{{ index }}" onchange="change('#upload_file_{{ index }}', '#upload_file_tmp_{{ index }}');" hidden />
+              <i class="close link icon" onclick="removeImage('image-{{ index }}')"></i>
+            </div>
+            @endeach
+            <img class="ignore-elements ui small rounded bordered image" onclick="upload_file.click()" id="upload_file_tmp" src="https://semantic-ui.com/images/wireframe/white-image.png">
+            <input type="file" name="theme_url[]" value="{{ data.good.good_theme_url || '' }}" id="upload_file" onchange="change('#upload_file', '#upload_file_tmp');" hidden />
+          </div>
         </div>
         {{--  <div class="field">
           <label>主图
@@ -121,7 +133,21 @@
 
 @section('script')
 <script src="/lib/wangeditor/index.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.8.3/Sortable.min.js" charset="utf-8"></script>
 <script type="text/javascript">
+  new Sortable(document.getElementById('draggable'), { animation: 150, ghostClass: 'blue-background-class', filter: ".ignore-elements", });
+
+  function removeImage (className) {
+    $('.ui.image.' + className).remove()
+  }
+
+  $('.level-0.dropdown').dropdown({
+    onChange: function(value, text, $selectedItem) {
+      $('.level-1 .item').hide()
+      $('.level-1 .item-parent-catalog-' + value).show()
+    }
+  })
+
   const { createEditor, createToolbar } = window.wangEditor
 
   const editor = createEditor({

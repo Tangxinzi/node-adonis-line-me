@@ -17,7 +17,7 @@
   <body>
     <div class="ui container" style="padding-top: 1em;">
       @if(flashMessages.get('message'))
-        @!component('land.components.alert', {
+        @!component('land/components/alert', {
           type: [flashMessages.get('message.type')],
           header: [flashMessages.get('message.header')],
           message: [flashMessages.get('message.message')]

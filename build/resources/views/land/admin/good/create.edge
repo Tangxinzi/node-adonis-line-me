@@ -1,4 +1,4 @@
-@layout('land.components.layouts.main')
+@layout('land/components/layouts/main')
 
 @section('title')
 <meta name="keywords" content="" />
@@ -22,7 +22,7 @@
 @section('content')
   <div class="ui stackable four column grid">
     <div class="three wide column">
-      @!component('land.components.navbar-menus', data=data, csrf=csrfField())
+      @!component('land/components/navbar-menus', data=data, csrf=csrfField())
     </div>
     <div class="thirteen wide column">
       <div class="flex-between">
@@ -41,19 +41,33 @@
             </div>
           </div>
         </div>
-        <div class="field">
-          <label>目录</label>
-          <div class="ui selection dropdown">
-            <input type="hidden" name="good_catalog" value="" />
-            <i class="dropdown icon"></i>
-            <div class="default text">点击选择</div>
-            <div class="menu">
-              @each(catalog in data.catalog)
-                <!-- <div class="item" data-value="{{ catalog.id }}">{{ catalog.name }}</div> -->
-                @each(sub_catalog in catalog.sub_catalog)
-                  <div class="item" data-value="{{ sub_catalog.id }}">-- {{ sub_catalog.name }}</div>
+        <div class="two fields">
+          <div class="field">
+            <label>一级目录</label>
+            <div class="ui level-0 selection dropdown">
+              <input type="hidden" name="good_parent_catalog" value="" />
+              <i class="dropdown icon"></i>
+              <div class="default text">点击选择</div>
+              <div class="menu">
+                @each(catalog in data.catalog)
+                  <div class="item item-catalog-{{ catalog.id }}" data-value="{{ catalog.id }}">- {{ catalog.name }}</div>
                 @endeach
-              @endeach
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label>二级目录</label>
+            <div class="ui level-1 selection dropdown">
+              <input type="hidden" name="good_catalog" value="" />
+              <i class="dropdown icon"></i>
+              <div class="default text">点击选择</div>
+              <div class="menu">
+                @each(catalog in data.catalog)
+                  @each(sub_catalog in catalog.sub_catalog)
+                    <div class="item item-parent-catalog-{{ sub_catalog.parent_catalog_id }}" data-value="{{ sub_catalog.id }}">-- {{ sub_catalog.name }}</div>
+                  @endeach
+                @endeach
+              </div>
             </div>
           </div>
         </div>
@@ -98,6 +112,13 @@
 @section('script')
 <script src="/lib/wangeditor/index.js"></script>
 <script type="text/javascript">
+  $('.level-0.dropdown').dropdown({
+    onChange: function(value, text, $selectedItem) {
+      $('.level-1 .item').hide()
+      $('.level-1 .item-parent-catalog-' + value).show()
+    }
+  })
+
   const { createEditor, createToolbar } = window.wangEditor
 
   const editor = createEditor({

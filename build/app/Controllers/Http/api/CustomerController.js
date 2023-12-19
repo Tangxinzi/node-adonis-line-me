@@ -47,70 +47,105 @@ class CustomerController {
         }
         return zodiacSigns[0];
     }
+    async customerFormat(customer, session) {
+        for (let index = 0; index < customer.length; index++) {
+            if (customer[index].relation_log_id) {
+                customer[index] = {
+                    ...customer[index],
+                    ...await Database_1.default.from('customer_log').select('*').where('id', customer[index].relation_log_id).first(),
+                    parent: await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].user_id).first()
+                };
+            }
+            if (customer[index].relation_user_id) {
+                customer[index] = {
+                    ...customer[index],
+                    ...await Database_1.default.from('users').select('*').where('user_id', customer[index].relation_user_id).first(),
+                    parent: await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].relation_user_id).first()
+                };
+            }
+            customer[index].like = await Database_1.default.from('likes').select('id').where({ status: 1, type: 'customer', relation_type_id: customer[index].cid, user_id: session.get('user_id') }).first() || {};
+            customer[index]['photos'] = customer[index]['photos'] ? JSON.parse(customer[index]['photos']) : [];
+            customer[index]['videos'] = customer[index]['videos'] ? JSON.parse(customer[index]['videos']) : [];
+            customer[index]['zodiac_sign'] = this.getZodiacSign((0, moment_1.default)(customer[index]['birthday']).format('DD'), (0, moment_1.default)(customer[index]['birthday']).format('MM'));
+            customer[index]['age'] = (0, moment_1.default)().diff(customer[index]['birthday'], 'years');
+            customer[index].relation = RELATION[customer[index].relation];
+            customer[index].salary = customer[index].salary ? SALARY_RANGE[customer[index].salary].value : '';
+            customer[index]['work'] = customer[index]['work'] ? JSON.parse(customer[index]['work']) : [];
+            if (customer[index]['work']['value']) {
+                customer[index]['work']['text'] = await zpData.data(customer[index]['work']['value'][0], customer[index]['work']['value'][1]);
+            }
+            if (customer[index].relation_wechat_open_id) {
+                let _answer = [[], [], []];
+                const answer = (await Database_1.default.rawQuery("select questions.type, questions.title, questions.description, answer.content, answer.user_id from answer left outer join questions on answer.relation_question_id = questions.id where answer.user_id = :user_id order by type asc;", {
+                    user_id: customer[index].relation_user_id
+                }))[0];
+                for (let index = 0; index < answer.length; index++) {
+                    switch (answer[index].type) {
+                        case '0':
+                            _answer[0].push(answer[index]);
+                            break;
+                        case '1':
+                            _answer[1].push(answer[index]);
+                            break;
+                        case '2':
+                            _answer[2].push(answer[index]);
+                            break;
+                    }
+                }
+                customer[index].answer = _answer;
+            }
+            if (customer[index].ip) {
+                await (0, axios_1.default)({
+                    url: `http://whois.pconline.com.cn/ipJson.jsp?ip=${customer[index].ip}&json=true`,
+                    responseType: "arraybuffer"
+                }).then((response) => {
+                    const data = iconv_lite_1.default.decode(response.data, 'gbk');
+                    customer[index].ip = data ? JSON.parse(data) : '';
+                }).catch((error) => {
+                });
+            }
+        }
+        return customer;
+    }
     async index({ request, session }) {
         try {
             const all = request.all();
-            const customer = await Database_1.default.from('customer').select('id  as cid', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id').where({ status: 1, recommend: 1 }).orderBy('recommend_at', 'desc').limit(10);
-            for (let index = 0; index < customer.length; index++) {
-                if (customer[index].relation_log_id) {
-                    customer[index] = {
-                        ...customer[index],
-                        ...await Database_1.default.from('customer_log').select('*').where('id', customer[index].relation_log_id).first(),
-                        parent: await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].user_id).first()
-                    };
-                }
-                if (customer[index].relation_user_id) {
-                    customer[index] = {
-                        ...customer[index],
-                        ...await Database_1.default.from('users').select('*').where('user_id', customer[index].relation_user_id).first(),
-                        parent: await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].relation_user_id).first()
-                    };
-                }
-                customer[index].like = await Database_1.default.from('likes').select('id').where({ status: 1, type: 'customer', relation_type_id: customer[index].cid, user_id: session.get('user_id') }).first() || {};
-                customer[index]['photos'] = customer[index]['photos'] ? JSON.parse(customer[index]['photos']) : [];
-                customer[index]['videos'] = customer[index]['videos'] ? JSON.parse(customer[index]['videos']) : [];
-                customer[index]['zodiac_sign'] = this.getZodiacSign((0, moment_1.default)(customer[index]['birthday']).format('DD'), (0, moment_1.default)(customer[index]['birthday']).format('MM'));
-                customer[index]['age'] = (0, moment_1.default)().diff(customer[index]['birthday'], 'years');
-                customer[index].relation = RELATION[customer[index].relation];
-                customer[index].salary = customer[index].salary ? SALARY_RANGE[customer[index].salary].value : '';
-                customer[index]['work'] = customer[index]['work'] ? JSON.parse(customer[index]['work']) : [];
-                if (customer[index]['work']['value']) {
-                    customer[index]['work']['text'] = await zpData.data(customer[index]['work']['value'][0], customer[index]['work']['value'][1]);
-                }
-                if (customer[index].relation_wechat_open_id) {
-                    let _answer = [[], [], []];
-                    const answer = (await Database_1.default.rawQuery("select questions.type, questions.title, questions.description, answer.content, answer.user_id from answer left outer join questions on answer.relation_question_id = questions.id where answer.user_id = :user_id order by type asc;", {
-                        user_id: customer[index].relation_user_id
-                    }))[0];
-                    for (let index = 0; index < answer.length; index++) {
-                        switch (answer[index].type) {
-                            case '0':
-                                _answer[0].push(answer[index]);
-                                break;
-                            case '1':
-                                _answer[1].push(answer[index]);
-                                break;
-                            case '2':
-                                _answer[2].push(answer[index]);
-                                break;
-                        }
-                    }
-                    customer[index].answer = _answer;
-                }
-                if (customer[index].ip) {
-                    await (0, axios_1.default)({
-                        url: `http://whois.pconline.com.cn/ipJson.jsp?ip=${customer[index].ip}&json=true`,
-                        responseType: "arraybuffer"
-                    }).then((response) => {
-                        const data = iconv_lite_1.default.decode(response.data, 'gbk');
-                        customer[index].ip = data ? JSON.parse(data) : '';
-                    }).catch((error) => {
-                    });
-                }
-            }
-            return customer;
+            const customer = await Database_1.default.from('customer').select('id as cid', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id').where({ status: 1, recommend: 1 }).orderBy('recommend_at', 'desc').limit(10);
+            return await this.customerFormat(customer, session);
         }
         catch (error) {
+            console.log(error);
+            Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
+        }
+    }
+    async filter({ params, response, request, session }) {
+        try {
+            let all = request.all(), data = [];
+            switch (params.type) {
+                case 'distance':
+                    const location = await Database_1.default.from('users_location').where('user_id', session.get('user_id')).first();
+                    const distance = await Database_1.default.rawQuery(`SELECT user_id, latitude, longitude, ST_DISTANCE_SPHERE(point(longitude, latitude), point(${location.longitude}, ${location.latitude})) AS distance FROM users_location WHERE user_id != '${session.get('user_id')}' ORDER BY distance;`);
+                    let database = [];
+                    for (let index = 0; index < distance[0].length; index++)
+                        database[index] = distance[0][index].user_id;
+                    console.log(database);
+                    const customer = await Database_1.default.from('customer').select('id as cid', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id').where({ status: 1, recommend: 1 }).whereIn('user_id', database).orderBy('recommend_at', 'desc').limit(10);
+                    data = await this.customerFormat(customer, session);
+                    for (let index = 0; index < location.length; index++) {
+                        for (let j = 0; j < data.length; j++) {
+                            if (distance[0][index].user_id == data[j].user_id) {
+                                data[j].distance = location[index].distance;
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+            return response.json({ status: 200, message: "ok", data });
+        }
+        catch (error) {
+            console.log(error);
             Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
         }
     }
@@ -206,35 +241,22 @@ class CustomerController {
         try {
             const all = request.all();
             const relation_log_id = await Database_1.default.table('customer_log').returning('id').insert({
-                nickname: all.nickname,
-                avatar_url: all.avatar_url || Avatar.data(all.sex),
+                nickname: all.nickname || '',
+                avatar_url: all.avatar_url || Avatar.data(all.sex || 0),
                 birthday: all.birthday || '',
-                height: all.height,
-                sex: all.sex,
+                height: all.height || 0,
+                sex: all.sex || 0,
                 work: JSON.stringify(all.work || ''),
                 photos: JSON.stringify(all.photos || [])
             });
             const customer_id = await Database_1.default.table('customer').insert({
+                status: 2,
                 user_id: session.get('user_id'),
                 relation_log_id: relation_log_id,
                 relation: all.relation,
                 introduction: all.introduction || '',
                 userinfo: JSON.stringify(all)
             });
-            if (customer_id.length && relation_log_id.length) {
-                await Verification.regularData({
-                    user_id: session.get('user_id'),
-                    table: 'customer',
-                    field: '',
-                    before: '',
-                    value: JSON.stringify({
-                        user_id: session.get('user_id'),
-                        customer_id: customer_id[0],
-                        relation_log_id: relation_log_id[0],
-                    }),
-                    ip: request.ip()
-                });
-            }
             response.json({
                 status: 200,
                 sms: "ok",
@@ -242,6 +264,7 @@ class CustomerController {
             });
         }
         catch (error) {
+            console.log(error);
             Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
             response.json({
                 status: 500,

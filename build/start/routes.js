@@ -35,6 +35,7 @@ Route_1.default.group(() => {
     Route_1.default.get('/user/moment/lists', 'api/MomentsController.lists');
     Route_1.default.post('/user/moment/create', 'api/MomentsController.create');
     Route_1.default.get('/customs', 'api/CustomerController.index');
+    Route_1.default.get('/customer/filter/:type', 'api/CustomerController.filter');
     Route_1.default.get('/customer/userinfo/:id', 'api/CustomerController.customerInfo');
     Route_1.default.post('/customer/field/update/:id', 'api/CustomerController.updateCustomerField');
     Route_1.default.get('/customer/userlist', 'api/CustomerController.customerList');
@@ -73,7 +74,7 @@ Route_1.default.group(() => {
     Route_1.default.get('/users/update', 'admin/UsersController.update');
     Route_1.default.get('/customers', 'admin/CustomersController.index');
     Route_1.default.get('/customers/edit/:id', 'admin/CustomersController.edit');
-    Route_1.default.post('/customers/update', 'admin/CustomersController.update');
+    Route_1.default.post('/customers/edit/:id', 'admin/CustomersController.edit');
     Route_1.default.post('/customers/field', 'admin/CustomersController.field');
     Route_1.default.get('/event/descovery', 'admin/EventController.descovery');
     Route_1.default.post('/event/descovery/:type', 'admin/EventController.dataType');
@@ -94,6 +95,7 @@ Route_1.default.group(() => {
 Route_1.default.group(() => {
     Route_1.default.get('/search', 'land/admin/SearchController.index');
     Route_1.default.post('/file/upload', 'land/admin/FilesController.upload');
+    Route_1.default.get('/user/index', 'land/admin/UserController.index');
     Route_1.default.get('/user/wx-login', 'land/admin/UserController.wxLogin');
     Route_1.default.get('/user/get-phone-number', 'land/admin/UserController.getPhoneNumber');
     Route_1.default.get('/user/info', 'land/admin/UserController.userinfo');

@@ -12,7 +12,6 @@ function record(data) {
                 resolve(false);
             const datas = await Database_1.default.from('datas').where({ table: data.table, field: data.field, field_value: data.field_value, user_id: data.user_id || '', wechat_open_id: data.wechat_open_id || '', category: data.category }).orderBy('created_at', 'desc').first() || {};
             const milliseconds = (0, moment_1.default)().diff(datas.created_at, 'milliseconds');
-            console.log('data milliseconds', data, milliseconds);
             if (milliseconds == 0 || milliseconds > 100 * 1000) {
                 await Database_1.default.table('datas').insert({ table: data.table, field: data.field, field_value: data.field_value, user_id: data.user_id || '', wechat_open_id: data.wechat_open_id || '', category: data.category, count: data.count });
                 resolve(true);

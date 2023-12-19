@@ -21,7 +21,7 @@ class GoodController {
                 goods = await Database_1.default.from('land_goods').select('*').where('status', all.status == 0 ? 0 : 1).orderBy('created_at', 'desc').forPage(request.input('page', 1), 20);
                 for (let index = 0; index < goods.length; index++) {
                     if (goods[index].good_supplier_id) {
-                        goods[index].good_supplier = await Database_1.default.from('land_supplier').select('*').where('id', goods[index].good_supplier_id).first();
+                        goods[index].good_supplier = await Database_1.default.from('land_supplier').select('*').where('id', goods[index].good_supplier_id).first() || {};
                     }
                     else {
                         goods[index].good_supplier = {};
@@ -184,7 +184,7 @@ class GoodController {
     async edit({ params, request, view, session }) {
         try {
             const all = request.all();
-            const good = await Database_1.default.from('land_goods').where('id', params.id).first();
+            const good = await Database_1.default.from('land_goods').where('id', params.id).first() || {};
             good.good_theme_url = good.good_theme_url ? JSON.parse(good.good_theme_url) : [];
             const catalog = await Database_1.default.from('land_goods_catalog').select('*').where({ level: 1, status: 1 }).orderBy('created_at', 'desc');
             for (let index = 0; index < catalog.length; index++) {
@@ -206,9 +206,10 @@ class GoodController {
     async save({ request, response, session }) {
         try {
             let all = request.all();
-            let good_theme_url = all.theme_url ? JSON.parse(all.theme_url) : [];
-            if (request.file('theme')) {
-                const themes = request.files('theme', {
+            let good_theme_url = all.theme_url || [];
+            good_theme_url = good_theme_url.filter(item => item !== null && item !== '');
+            if (request.file('theme_url')) {
+                const themes = request.files('theme_url', {
                     types: ['image'],
                     size: '2mb'
                 });
@@ -225,9 +226,7 @@ class GoodController {
                     good_theme_url[good_theme_url.length + index] = file.fileSrc;
                 }
             }
-            good_theme_url = good_theme_url.filter(item => item !== null && item !== '');
             if (request.method() == 'POST' && all.button == 'update') {
-                console.log(all);
                 await Database_1.default.from('land_goods').where('id', all.id).update({
                     status: all.status,
                     good_catalog: parseInt(parseInt(all.good_catalog)) || '',
@@ -277,6 +276,7 @@ class GoodController {
             const all = request.all();
             const supplier = await Database_1.default.from('land_supplier').select('*').orderBy('created_at', 'desc');
             for (let index = 0; index < supplier.length; index++) {
+                supplier[index].supplier_good_count = (await Database_1.default.from('land_goods').where({ good_supplier_id: supplier[index].id, status: 1 }).count('* as total'))[0].total || 0;
                 supplier[index].created_at = (0, moment_1.default)(supplier[index].created_at).format('YYYY-MM-DD H:mm:ss');
             }
             return view.render('land/admin/good/supplier', {

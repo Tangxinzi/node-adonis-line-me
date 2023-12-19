@@ -87,7 +87,7 @@ class SupplierController {
     async edit({ params, request, view, session }) {
         try {
             const all = request.all(), supplier = session.get('adonis-cookie-supplier');
-            const good = await Database_1.default.from('land_goods').where({ id: params.id, good_supplier_id: supplier.id }).first();
+            const good = await Database_1.default.from('land_goods').where({ id: params.id, good_supplier_id: supplier.id }).first() || {};
             good.good_theme_url = good.good_theme_url ? JSON.parse(good.good_theme_url) : [];
             const catalog = await Database_1.default.from('land_goods_catalog').select('*').where({ level: 1, status: 1 }).orderBy('created_at', 'desc');
             for (let index = 0; index < catalog.length; index++) {
@@ -113,9 +113,10 @@ class SupplierController {
                 session.flash('message', { type: 'error', header: '提交失败', message: `管理员限制「${supplier.supplier_name}」供应商上传商品数量 ${supplier.number}。` });
                 return response.redirect('back');
             }
-            let good_theme_url = all.theme_url ? JSON.parse(all.theme_url) : [];
-            if (request.file('theme')) {
-                const themes = request.files('theme', {
+            let good_theme_url = all.theme_url || [];
+            good_theme_url = good_theme_url.filter(item => item !== null && item !== '');
+            if (request.file('theme_url')) {
+                const themes = request.files('theme_url', {
                     types: ['image'],
                     size: '2mb'
                 });
@@ -137,7 +138,6 @@ class SupplierController {
                     good_theme_url[good_theme_url.length + index] = file.fileSrc;
                 }
             }
-            good_theme_url = good_theme_url.filter(item => item !== null && item !== '');
             if (request.method() == 'POST' && all.button == 'update') {
                 await Database_1.default.from('land_goods').where('id', all.id).update({
                     good_supplier_id: supplier.id,

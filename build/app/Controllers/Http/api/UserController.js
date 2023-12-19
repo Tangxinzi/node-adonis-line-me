@@ -63,16 +63,18 @@ class UserController {
     async getUserinfo({ request, session }) {
         try {
             const all = request.all();
-            const user = await Database_1.default.from('users').where('user_id', all.user_id || session.get('user_id')).first();
+            const user_id = all.user_id || session.get('user_id');
+            const user = await Database_1.default.from('users').where('user_id', user_id).first() || {};
             if (user) {
+                user.percent = await percentUserinfo(user_id);
                 const _geoip = geoip_lite_1.default.lookup(request.ip()) || {};
-                await Database_1.default.from('users').where('user_id', session.get('user_id')).update({ online_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss'), ip: request.ip(), ip_city: _geoip.city });
+                await Database_1.default.from('users').where('user_id', user_id).update({ online_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss'), ip: request.ip(), ip_city: _geoip.city });
                 user.photos = JSON.parse(user.photos);
                 user.location = user.location ? JSON.parse(user.location) : '';
                 user.videos = JSON.parse(user.videos);
                 user.zodiac_sign = this.getZodiacSign((0, moment_1.default)(user.birthday).format('DD'), (0, moment_1.default)(user.birthday).format('MM'));
                 user.age = (0, moment_1.default)().diff(user.birthday, 'years');
-                user.operates = await Database_1.default.from('users_operates').where({ user_id: session.get('user_id'), type: 'examine' }).first() ? true : false;
+                user.operates = await Database_1.default.from('users_operates').where({ user_id, type: 'examine' }).first() ? true : false;
                 user.introduces = await Database_1.default.from('answer').select('introduce_name', 'content').where({ type: 1, status: 1, recommend: 1, user_id: user.user_id }).orderBy('created_at', 'desc');
                 user['work'] = JSON.parse(user['work']);
                 if (user['work'] && user['work']['value']) {
@@ -98,12 +100,11 @@ class UserController {
                     });
                 }
             }
-            user.percent = await percentUserinfo(session.get('user_id'));
             return user;
         }
         catch (error) {
-            Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
-            return error;
+            Logger_1.default.error("error 获取失败 %s", error);
+            return {};
         }
     }
     watermark(mart) {
@@ -161,9 +162,29 @@ class UserController {
                             verify[index].table = '介绍好友';
                             verify[index].value = JSON.parse(verify[index].value);
                             break;
+                        case 'authentication_log.idcard':
+                            verify[index].table = '认证审核';
+                            verify[index].value = '用户身份';
+                            break;
+                        case 'authentication_log.school':
+                            verify[index].table = '认证审核';
+                            verify[index].value = '学校';
+                            break;
                         case 'authentication_log.company':
                             verify[index].table = '认证审核';
                             verify[index].value = '公司';
+                            break;
+                        case 'authentication_log.work':
+                            verify[index].table = '认证审核';
+                            verify[index].value = '职业';
+                            break;
+                        case 'authentication_log.job_title':
+                            verify[index].table = '认证审核';
+                            verify[index].value = '职位';
+                            break;
+                        case 'authentication_log.salary':
+                            verify[index].table = '认证审核';
+                            verify[index].value = '薪资';
                             break;
                     }
                 }
@@ -188,9 +209,14 @@ class UserController {
         try {
             let all = request.all(), data = {};
             if (request.method() == 'POST') {
-                const authentication = await Database_1.default.from('authentication_log').where({ user_id: session.get('user_id') }).first() || {};
-                if (!authentication.id) {
+                const authentication = await Database_1.default.from('authentication').where({ user_id: session.get('user_id') }).first() || {};
+                const authentication_log = await Database_1.default.from('authentication_log').where({ user_id: session.get('user_id') }).first() || {};
+                if (!authentication.id && !authentication_log.id) {
+                    await Database_1.default.table('authentication').insert({ user_id: session.get('user_id') });
                     switch (all.type) {
+                        case 'idcard':
+                            await Database_1.default.table('authentication_log').insert({ user_id: session.get('user_id'), idcard: all.value });
+                            break;
                         case 'school':
                             await Database_1.default.table('authentication_log').insert({ user_id: session.get('user_id'), school: all.value });
                             break;
@@ -209,6 +235,9 @@ class UserController {
                     }
                 }
                 switch (all.type) {
+                    case 'idcard':
+                        await Database_1.default.from('authentication_log').where({ user_id: session.get('user_id') }).update({ idcard: all.value });
+                        break;
                     case 'school':
                         await Database_1.default.from('authentication_log').where({ user_id: session.get('user_id') }).update({ school: all.value });
                         break;

@@ -35,7 +35,6 @@ class CustomersController {
     async index({ request, view, session }) {
         try {
             const all = request.all();
-            Logger_1.default.info("error 获取失败 %s", JSON.stringify(all));
             const customer = await Database_1.default.from('customer').select('id', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id', 'recommend').where('status', 1).orderBy('recommend', 'desc').orderBy('recommend_at', 'desc').forPage(request.input('page', 1), 20);
             for (let index = 0; index < customer.length; index++) {
                 if (customer[index].relation_log_id) {
@@ -93,15 +92,6 @@ class CustomersController {
             console.log(error);
         }
     }
-    async update({ params, request, response, session, view }) {
-        try {
-            const all = request.all();
-            return response.redirect('back');
-        }
-        catch (error) {
-            console.log(error);
-        }
-    }
     async edit({ params, request, response, session, view }) {
         try {
             const all = request.all();
@@ -109,6 +99,12 @@ class CustomersController {
             customer.relation_text = RELATION[customer.relation];
             if (customer.relation_log_id) {
                 customer.userinfo = await Database_1.default.from('customer_log').select('*').where({ 'id': customer.relation_log_id }).first();
+                if (request.method() == 'POST') {
+                    console.log(JSON.stringify(all.userinfo.photos || []));
+                    await Database_1.default.from('customer_log').where({ id: customer.userinfo.id }).update({ photos: JSON.stringify(all.userinfo.photos || []) });
+                    session.flash('message', { type: 'success', header: '更新成功', message: `` });
+                    return response.redirect('back');
+                }
             }
             else if (customer.relation_user_id) {
                 customer.userinfo = await Database_1.default.from('users').select('*').where({ 'user_id': customer.relation_user_id }).first();
@@ -131,11 +127,6 @@ class CustomersController {
         catch (error) {
             console.log(error);
             Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
-            response.json({
-                status: 500,
-                message: "internalServerError",
-                data: error
-            });
         }
     }
 }

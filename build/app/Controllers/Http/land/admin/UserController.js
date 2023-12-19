@@ -15,10 +15,35 @@ class UserController {
             if (user) {
                 return user;
             }
-            else {
-                const id = await Database_1.default.table('land_users').insert({ wechat_open_id: result.openid }).returning('id');
+            else if (result.openid) {
+                const id = await Database_1.default.table('land_users').insert({ wechat_open_id: result.openid, recommend: all.recommend || '', ip: request.ip() }).returning('id');
                 return await Database_1.default.from('land_users').where('id', id[0]).first();
             }
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+    async index({ request, response, view, session }) {
+        try {
+            const all = request.all();
+            const users = await Database_1.default.from('land_users').orderBy('created_at', 'desc').forPage(request.input('page', 1), 20);
+            for (let index = 0; index < users.length; index++) {
+                users[index].collection_num = (await Database_1.default.from('land_collection').where({ wechat_open_id: users[index].wechat_open_id, status: 1 }).count('* as total'))[0].total || 0;
+                users[index].recommend_num = (await Database_1.default.from('land_users').where({ recommend: users[index].wechat_open_id }).count('* as total'))[0].total || 0;
+                if (users[index].recommend) {
+                    users[index].recommend = await Database_1.default.from('land_users').where('wechat_open_id', users[index].recommend).first();
+                }
+                users[index].created_at = (0, moment_1.default)(users[index].created_at).format('YYYY-MM-DD HH:mm:ss');
+            }
+            return view.render('land/admin/user/index', {
+                data: {
+                    title: '用户',
+                    active: 'user',
+                    users,
+                    all
+                }
+            });
         }
         catch (error) {
             console.log(error);
