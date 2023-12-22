@@ -241,7 +241,7 @@ export default class CustomerController {
   public async verifyPhone({ session, request, response }: HttpContextContract) {
     try {
       const all = request.all()
-      const userPhone = (await Database.from('users').where({ phone: all.phone }).count('* as total'))[0].total, customerPhone = (await Database.from('customer_log').where({ phone: all.phone }).count('* as total'))[0].total
+      const userPhone = (await Database.from('users').where({ phone: all.phone }).count('* as total'))[0].total, customerPhone = (await Database.from('customer').where({ verify_phone: all.phone }).count('* as total'))[0].total
       if (userPhone || customerPhone) {
         return response.json({ status: 200, message: "error", data: '您验证的手机号当前被占用' })
       }
@@ -254,7 +254,7 @@ export default class CustomerController {
         } else {
           const customer = await Database.from('customer').where({ relation_log_id: all.id, user_id: session.get('user_id') }).first()
           if (customer.id) {
-            const result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ phone: all.phone })
+            const result = await Database.from('customer').where({ id: customer.id }).update({ verify_phone: all.phone })
             return response.json({ status: 200, message: "ok", data: '已验证' })
           }
         }
@@ -277,7 +277,7 @@ export default class CustomerController {
       const all = request.all()
       const relation_log_id = await Database.table('customer_log').returning('id').insert({
         nickname: all.nickname || '',
-        avatar_url: all.avatar_url || Avatar.data(all.sex || 0),
+        avatar_url: all.avatar_url || '',
         birthday: all.birthday || '',
         height: all.height || 0,
         sex: all.sex || 0,
@@ -313,7 +313,7 @@ export default class CustomerController {
       response.json({
         status: 200,
         sms: "ok",
-        data: customer
+        // data: customer
       })
     } catch (error) {
       console.log(error);
@@ -334,6 +334,13 @@ export default class CustomerController {
       if (user.work.value) {
         user.work.text = await zpData.data(user.work.value[0], user.work.value[1])
       }
+      const authentication = await Database.from('authentication').select('idcard', 'school', 'company', 'work', 'job_title', 'salary').where({ user_id: all.user_id || session.get('user_id') }).first() || {}
+      if (authentication.company && authentication.idcard && authentication.job_title && authentication.salary && authentication.school && authentication.work) {
+        user.authentication = true
+      } else {
+        user.authentication = false
+      }
+
 
       const customer = await Database.from('customer').select('id', 'user_id', 'relation', 'introduction', 'relation_log_id', 'relation_user_id', 'status', 'created_at').whereIn('status', [1, 2]).where('user_id', all.user_id || session.get('user_id')).orderBy('created_at', 'desc')
       for (let index = 0; index < customer.length; index++) {
@@ -371,6 +378,8 @@ export default class CustomerController {
         }
       })
     } catch (error) {
+      console.log(error);
+
       Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
@@ -383,7 +392,15 @@ export default class CustomerController {
   public async customerShow({ params, request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const customer = await Database.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'relation', 'relation_log_id', 'introduction').where({ 'id': params.id }).first()
+      const customer = await Database.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'relation', 'verify_phone', 'relation_log_id', 'introduction').where({ 'id': params.id }).first() || {}
+      if (customer.verify_phone) {
+        // 判断手机号格式
+        if (/^1[0-9]{10}$/.test(customer.verify_phone)) {
+          customer.verify_phone = customer.verify_phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
+        } else {
+          customer.verify_phone = "手机号格式不正确"
+        }
+      }
 
       customer.relation_text = RELATION[customer.relation]
       if (customer.relation_log_id) {
@@ -413,8 +430,7 @@ export default class CustomerController {
 
       customer.userinfo.created_at = Moment(customer.userinfo.created_at).format('YYYY-MM-DD')
       customer.userinfo.modified_at = Moment(customer.userinfo.modified_at).format('YYYY-MM-DD')
-
-      customer.like = await Database.from('likes').select('id').where({ status: 1, type: 'customer', relation_type_id: customer.cid, user_id: session.get('user_id') }).first() || {}
+      customer.like = await Database.from('likes').select('id').where({ status: 1, type: 'customer', relation_type_id: customer.cid, user_id: all.user_id || session.get('user_id') || '' }).first() || {}
 
       if (all.type == 'share') {
         // 创建小程序码
@@ -442,7 +458,7 @@ export default class CustomerController {
         // customer.qrcode = await QrCode.toDataURL('/pages/user-info-detail/user-info-detail?id=' + customer.cid, { width: 180 })
       }
 
-      if (session.get('user_id') == customer.user_id) {
+      if ((all.user_id || session.get('user_id')) == customer.user_id) {
         const review = await Database.from('datas').where({ status: 1, category: 0, table: 'customer', field_value: customer.cid }).count('* as total')
         const shareReview = await Database.from('datas').where({ status: 1, category: 2, table: 'customer', field_value: customer.cid }).count('* as total')
         const like = await Database.from('likes').where({ status: 1, type: 'customer', relation_type_id: customer.cid }).count('* as total')
@@ -456,15 +472,11 @@ export default class CustomerController {
         }
       }
 
-      response.json({
-        status: 200,
-        sms: "ok",
-        data: customer
-      })
+      response.json({ status: 200, sms: "ok", data: customer })
     } catch (error) {
       console.log(error);
 
-      Logger.error("error 获取失败 %s", JSON.stringify(error));
+      // Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
         sms: "internalServerError",
@@ -511,6 +523,9 @@ export default class CustomerController {
         case 'userinfo.height':
           var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ height: all.value })
           break;
+        case 'userinfo.weight':
+          var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ weight: all.value })
+          break;
         case 'userinfo.birthday':
           var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ birthday: all.value })
           break;
@@ -551,6 +566,37 @@ export default class CustomerController {
     }
   }
 
+  public async phoneUpdateCustomerData({ params, request, response, session }: HttpContextContract) {
+    try {
+      const all = request.all()
+      const customer = await Database.from('customer').where({ id: all.id, verify_phone: params.phone }).first() || {}
+      await Database.from('customer_log').where('phone', params.phone).update({
+        phone: all.phone || '',
+        nickname: all.nickname || '',
+        avatar_url: all.avatar_url || '',
+        photos: JSON.stringify(all.photos || []),
+        contact_wechat: all.contact_wechat || '',
+        expectation: all.expectation || '',
+        birthday: all.birthday || '',
+        height: all.height,
+        weight: all.weight,
+        work: JSON.stringify(all.work),
+        location: all.location,
+        school: all.school,
+        company: all.company,
+        salary: all.salary,
+        sex: all.sex,
+        ip: request.ip(),
+        modified_at: Moment().format('YYYY-MM-DD HH:mm:ss')
+      })
+
+      return response.json({ status: 200, sms: "ok" })
+    } catch (error) {
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
+      response.json({ status: 500, sms: "internalServerError", data: error })
+    }
+  }
+
   public async statusCustomer({ params, request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
@@ -560,7 +606,7 @@ export default class CustomerController {
         await Database.from('customer').where({ 'id': params.id, user_id: session.get('user_id') }).update({
           status: 1,
           modified_at: Moment().format('YYYY-MM-DD HH:mm:ss')
-        }, ['id'])
+        })
 
         await Verification.regularData({
           user_id: session.get('user_id'),

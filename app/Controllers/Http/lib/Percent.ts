@@ -3,7 +3,7 @@ import Database from '@ioc:Adonis/Lucid/Database';
 function percentUserinfo(user_id) {
   return new Promise(async (resolve, reject) => {
     let percent = 0, value = '', text = ''
-    const user = await Database.from('users').select('*').where({ user_id }).first()
+    const user = await Database.from('users').select('*').where({ user_id }).first() || {}
 
     if (user.nickname) percent += 5
     if (user.avatar_url) {

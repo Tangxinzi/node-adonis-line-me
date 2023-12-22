@@ -30,7 +30,7 @@ export default class FilesController {
             subtype: profile.subtype,
             status: profile.status,
             extname: profile.extname,
-            related_user_id: session.get('user_id')
+            related_user_id: session.get('user_id') || {}
           })
         }
 

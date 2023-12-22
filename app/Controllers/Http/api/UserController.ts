@@ -67,22 +67,22 @@ export default class UserController {
   public async getUserinfo({ request, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const user_id = all.user_id || session.get('user_id')
-      const user = await Database.from('users').where('user_id', user_id).first() || {}
+      const user_id = all.user_id || session.get('user_id') || ''
+      const user = await Database.from('users').where({ user_id }).first() || {}
 
       if (user) {
         user.percent = await percentUserinfo(user_id)
 
         // 格式数据
         const _geoip = GeoIP.lookup(request.ip()) || {}
-        await Database.from('users').where('user_id', user_id).update({ online_at: Moment().format('YYYY-MM-DD HH:mm:ss'), ip: request.ip(), ip_city: _geoip.city })
+        await Database.from('users').where({ user_id }).update({ online_at: Moment().format('YYYY-MM-DD HH:mm:ss'), ip: request.ip(), ip_city: _geoip.city })
         user.photos = JSON.parse(user.photos)
         user.location = user.location ? JSON.parse(user.location) : ''
         user.videos = JSON.parse(user.videos)
         user.zodiac_sign = this.getZodiacSign(Moment(user.birthday).format('DD'), Moment(user.birthday).format('MM'))
         user.age = Moment().diff(user.birthday, 'years')
         user.operates = await Database.from('users_operates').where({ user_id, type: 'examine' }).first() ? true : false
-        user.introduces = await Database.from('answer').select('introduce_name', 'content').where({ type: 1, status: 1, recommend: 1, user_id: user.user_id }).orderBy('created_at', 'desc')
+        user.introduces = await Database.from('answer').select('introduce_name', 'content').where({ type: 1, status: 1, recommend: 1, user_id }).orderBy('created_at', 'desc')
 
         user['work'] = JSON.parse(user['work'])
         if (user['work'] && user['work']['value']) {
@@ -91,12 +91,12 @@ export default class UserController {
 
         user['number'] = {
           message: 0,
-          introduction: (await Database.from('answer').where({ type: 1, status: 1, user_id: session.get('user_id') }).count('* as total'))[0].total,
-          like: (await Database.from('likes').where({ type: 'customer', status: 1, user_id: session.get('user_id') }).count('* as total'))[0].total,
+          introduction: (await Database.from('answer').where({ type: 1, status: 1, user_id }).count('* as total'))[0].total,
+          like: (await Database.from('likes').where({ type: 'customer', status: 1, user_id }).count('* as total'))[0].total,
           visitor: 0,
-          moment: (await Database.from('moments').where('user_id', session.get('user_id')).count('* as total'))[0].total,
-          answer: (await Database.from('answer').where({ type: 0, status: 1, user_id: session.get('user_id') }).count('* as total'))[0].total,
-          customer: (await Database.from('customer').where({ status: 1, user_id: session.get('user_id') }).count('* as total'))[0].total,
+          moment: (await Database.from('moments').where({ user_id }).count('* as total'))[0].total,
+          answer: (await Database.from('answer').where({ type: 0, status: 1, user_id }).count('* as total'))[0].total,
+          customer: (await Database.from('customer').where({ status: 1, user_id }).count('* as total'))[0].total,
         }
 
         // 头像主色
@@ -401,6 +401,9 @@ export default class UserController {
           break;
         case 'height':
           await Database.from('users').where('user_id', session.get('user_id')).update({ height: all.value })
+          break;
+        case 'weight':
+          await Database.from('users').where('user_id', session.get('user_id')).update({ weight: all.value })
           break;
         case 'work':
           await Database.from('users').where('user_id', session.get('user_id')).update({ work: JSON.stringify(all.value || '') })
