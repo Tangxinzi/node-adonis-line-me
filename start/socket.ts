@@ -45,8 +45,7 @@ const getChatsMessage = async (data, chat_id) => {
 
       if (chats[index].chat_content_type == 'customer') {
         chats[index].chat_content_type = 'text'
-        const customer = await Database.from('customer').select('relation_user_id', 'relation_log_id').where({ id: chats[index].chat_content }).first()
-
+        const customer = await Database.from('customer').select('relation_user_id', 'relation_log_id').where({ id: chats[index].chat_content }).first() || {}
         // 红娘自行发布 / 关联已存在用户
         if (customer.relation_log_id) {
           const customer_log = await Database.from('customer_log').select('avatar_url', 'nickname').where('id', customer.relation_log_id).first()

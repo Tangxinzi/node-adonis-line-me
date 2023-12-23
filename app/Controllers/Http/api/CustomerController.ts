@@ -149,6 +149,16 @@ export default class CustomerController {
     try {
       let all = request.all(), data = []
       switch (params.type) {
+        case '2':
+          data = await Database.from('users').where({ type: 2, status: 1 }).orderBy('id', 'desc').forPage(request.input('page', 1), 10)
+          for (let index = 0; index < data.length; index++) {
+            data[index].customer_num = (await Database.from('customer').where({ user_id: data[index].user_id, status: 1 }).count('* as total'))[0].total            
+            data[index].work = JSON.parse(data[index].work)
+            if (data[index].work && data[index].work['value']) {
+              data[index].work.text = await zpData.data(data[index].work['value'][0], data[index].work['value'][1])
+            }
+          }
+          break;
         case 'distance':
           const location = await Database.from('users_location').where('user_id', session.get('user_id')).first()
           const distance = await Database.rawQuery(`SELECT user_id, latitude, longitude, ST_DISTANCE_SPHERE(point(longitude, latitude), point(${ location.longitude }, ${ location.latitude })) AS distance FROM users_location WHERE user_id != '${ session.get('user_id') }' ORDER BY distance;`)

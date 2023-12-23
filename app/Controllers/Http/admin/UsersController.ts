@@ -45,11 +45,11 @@ export default class UsersController {
   public async index({ request, view, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const users = await Database.from('users').orderBy(all.orderBy || 'id', 'desc').forPage(request.input('page', 1), 20)
+      const users = await Database.from('users').whereIn('type', all.type ? all.type.split(',') : [1, 2]).orderBy(all.orderBy || 'id', 'desc').forPage(request.input('page', 1), 20)
       for (let index = 0; index < users.length; index++) {
         users[index].work = JSON.parse(users[index].work)
         if (users[index].work && users[index].work['value']) {
-          users[index].work['text'] = await zpData.data(users[index].work['value'][0], users[index].work['value'][1])
+          users[index].work.text = await zpData.data(users[index].work['value'][0], users[index].work['value'][1])
         }
 
         users[index].percent = await percentUserinfo(users[index].user_id)
