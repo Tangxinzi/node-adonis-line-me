@@ -6,8 +6,8 @@ export default class AdminCheck {
     // code for middleware goes here. ABOVE THE NEXT CALL
     try {
       const sign = session.get('adonis-cookie-sign')
-
       if (sign) {
+        const verify = Jwt.verifyPublicKey(sign || '')
         await next()
       } else if (!sign && request.url() != '/admin/login') {
         await next()

@@ -149,10 +149,11 @@ export default class CustomerController {
     try {
       let all = request.all(), data = []
       switch (params.type) {
+        case 2:
         case '2':
           data = await Database.from('users').where({ type: 2, status: 1 }).orderBy('id', 'desc').forPage(request.input('page', 1), 10)
           for (let index = 0; index < data.length; index++) {
-            data[index].customer_num = (await Database.from('customer').where({ user_id: data[index].user_id, status: 1 }).count('* as total'))[0].total            
+            data[index].customer_num = (await Database.from('customer').where({ user_id: data[index].user_id, status: 1 }).count('* as total'))[0].total
             data[index].work = JSON.parse(data[index].work)
             if (data[index].work && data[index].work['value']) {
               data[index].work.text = await zpData.data(data[index].work['value'][0], data[index].work['value'][1])
@@ -174,9 +175,6 @@ export default class CustomerController {
               }
             }
           }
-          break;
-
-        default:
           break;
       }
 
@@ -339,7 +337,7 @@ export default class CustomerController {
   public async customerList({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const user = await Database.from('users').select('user_id', 'nickname', 'avatar_url', 'detail', 'company', 'work', 'job_title').where('user_id', all.user_id || session.get('user_id')).first()
+      const user = await Database.from('users').select('user_id', 'nickname', 'avatar_url', 'sex', 'detail', 'company', 'work', 'job_title').where('user_id', all.user_id || session.get('user_id')).first()
       user.work = user.work ? JSON.parse(user.work) : []
       if (user.work.value) {
         user.work.text = await zpData.data(user.work.value[0], user.work.value[1])

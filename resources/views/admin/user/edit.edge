@@ -21,7 +21,7 @@
       <div class="ui header-title flex-between">
         <span>编辑 {{ data.user.nickname }}</span>
       </div>
-      <form class="ui segments form" method="post" action="{{ route('admin/UsersController.update') }}">
+      <form class="ui segments form" method="post" action="{{ route('admin/UsersController.update', { user_id: data.user.user_id }) }}">
         <div class="ui segment">
           <div class="four fields">
             <div class="field">
@@ -39,12 +39,12 @@
             </div>
             <div class="field">
               <label>生日</label>
-              <input type="text" name="birthday" value="{{ data.user.birthday }}" placeholder="" />
+              <input type="text" name="birthday" value="{{ data.user.birthday || '' }}" placeholder="" />
             </div>
             <div class="field">
               <label>身高</label>
               <div class="ui right labeled input">
-                <input type="text" name="height" value="{{ data.user.height }}" placeholder="" />
+                <input type="text" name="height" value="{{ data.user.height || '' }}" placeholder="" />
                 <div class="ui basic label">cm</div>
               </div>
             </div>
@@ -125,9 +125,21 @@
               <label>薪资</label>
               <input type="text" name="salary" value="{{ data.user.salary || '' }}" placeholder="" />
             </div>
-            <div class="field">
+            {{-- <div class="field">
               <label>个人视频</label>
               <input type="text" name="videos" value="{{ JSON.stringify(data.user.videos) }}" placeholder="" />
+            </div> --}}
+            <div class="field">
+              <label>类别</label>
+              <div class="ui selection dropdown">
+                <input type="hidden" name="type" value="{{ data.user.type }}" />
+                <i class="dropdown icon"></i>
+                <div class="default text">点击选择</div>
+                <div class="menu">
+                  <div class="item" data-value="1">普通用户</div>
+                  <div class="item" data-value="2">介绍人</div>
+                </div>
+              </div>
             </div>
           </div>
           <div class="field">

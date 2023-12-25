@@ -18,7 +18,6 @@ export default class UsersController {
             return response.redirect().status(301).toRoute('admin/CustomersController.index')
           } else {
             console.log('login error');
-
             return response.redirect().status(301).toRoute('admin/UsersController.login')
           }
         } else {
@@ -50,6 +49,13 @@ export default class UsersController {
         users[index].work = JSON.parse(users[index].work)
         if (users[index].work && users[index].work['value']) {
           users[index].work.text = await zpData.data(users[index].work['value'][0], users[index].work['value'][1])
+        }
+
+        let authentication = await Database.from('authentication').select('idcard', 'school', 'company', 'work', 'job_title', 'salary').where({ user_id: users[index].user_id || session.get('user_id') }).first() || {}
+        if (authentication.company && authentication.idcard && authentication.job_title && authentication.salary && authentication.school && authentication.work) {
+          users[index].authentication = true
+        } else {
+          users[index].authentication = false
         }
 
         users[index].percent = await percentUserinfo(users[index].user_id)
@@ -84,7 +90,7 @@ export default class UsersController {
 
       user.photos = JSON.parse(user.photos)
       user.ip = GeoIP.lookup(user.ip) || {}
-      user.online_at = Moment(user.online_at).fromNow()
+      user.online_at = Moment(user.online_at).format('YYYY-MM-DD HH:mm:ss')
       user.created_at = Moment(user.created_at).format('YYYY-MM-DD HH:mm:ss')
 
       return view.render('admin/user/edit', {
@@ -107,12 +113,27 @@ export default class UsersController {
   public async update({ params, request, response, session, view }: HttpContextContract) {
     try {
       const all = request.all()
-      console.log(all);
+      if (all.button == 'update') {
+        await Database.from('users').where({ user_id: params.user_id }).update({
+          type: all.type,
+          sex: all.sex,
+          nickname: all.nickname || '',
+          avatar_url: all.avatar_url || '',
+          birthday: all.birthday || '',
+          phone: all.phone || '',
+          school: all.school || '',
+          company: all.company || '',
+          job_title: all.job_title || '',
+          contact_wechat: all.contact_wechat || '',
+          detail: all.detail || '',
+          expectation: all.expectation || '',
+          work: all.work || {},
+          photos: JSON.stringify(all.photos || []),
+        })
 
-      // await Database.from('customer_log').where({ id: customer.id }).update({ photos: JSON.stringify(all.photos || []) })
-      //
-      // session.flash('message', { type: 'success', header: '更新成功', message: `` })
-      return response.redirect('back')
+        session.flash('message', { type: 'success', header: '更新成功', message: `` })
+        return response.redirect('back')
+      }
       return all
     } catch (error) {
       console.log(error);

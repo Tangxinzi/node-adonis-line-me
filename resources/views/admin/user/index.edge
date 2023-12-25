@@ -49,6 +49,7 @@
               <th>职业信息</th>
               <th class="two wide">介绍内容</th>
               <th>手机</th>
+              <th>认证</th>
               <th>性别</th>
               <th>照片</th>
               <th>出生</th>
@@ -90,6 +91,7 @@
                   <span class="activating click one-line" data-content="{{ row.detail }}" data-position="bottom center" data-inverted="">{{ row.detail || '' }}</span>
                 </td>
                 <td class="td">{{ row.phone || '' }}</td>
+                <td class="td"><i class="{{ row.authentication ? 'blue check circle' : 'circle outline' }} icon"></i></td>
                 <td class="td">{{ row.sex == 1 ? '男' : '' }}{{ row.sex == 0 ? '女' : '' }}</td>
                 <td class="td">{{ row.photos.length }}</td>
                 <td class="td">{{ row.birthday || '' }}</td>
