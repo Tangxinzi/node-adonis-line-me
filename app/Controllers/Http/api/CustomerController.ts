@@ -138,6 +138,9 @@ export default class CustomerController {
     try {
       const all = request.all()
       const customer = await Database.from('customer').select('id as cid', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id').where({ status: 1, recommend: 1 }).orderBy('recommend_at', 'desc').limit(10)
+      for (let index = 0; index < customer.length; index++) {
+        customer[index].created_at = Moment(customer[index].created_at).format('YYYY-MM-DD')
+      }
       return await this.customerFormat(customer, session)
     } catch (error) {
       console.log(error);
@@ -349,7 +352,6 @@ export default class CustomerController {
         user.authentication = false
       }
 
-
       const customer = await Database.from('customer').select('id', 'user_id', 'relation', 'introduction', 'relation_log_id', 'relation_user_id', 'status', 'created_at').whereIn('status', [1, 2]).where('user_id', all.user_id || session.get('user_id')).orderBy('created_at', 'desc')
       for (let index = 0; index < customer.length; index++) {
         if (customer[index].relation_user_id) {
@@ -366,6 +368,7 @@ export default class CustomerController {
           }
         }
 
+        customer[index].introduces = await Database.from('answer').select('introduce_name', 'content').where({ type: 1, status: 1, user_id: customer[index].user_id }).orderBy('created_at', 'desc')
         customer[index].age = Moment().diff(customer[index].birthday, 'years')
         customer[index].photos = customer[index].photos ? JSON.parse(customer[index].photos) : []
         customer[index].relation = RELATION[customer[index].relation]
