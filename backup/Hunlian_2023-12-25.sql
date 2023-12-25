@@ -1,13 +1,13 @@
 # ************************************************************
 # Sequel Ace SQL dump
-# 版本号： 20062
+# 版本号： 20058
 #
 # https://sequel-ace.com/
 # https://github.com/Sequel-Ace/Sequel-Ace
 #
-# 主机: localhost (MySQL 5.7.34)
-# 数据库: Hunlian
-# 生成时间: 2023-12-25 01:10:17 +0000
+# 主机: 127.0.0.1 (MySQL 5.7.26)
+# 数据库: hunlian
+# 生成时间: 2023-12-25 10:27:09 +0000
 # ************************************************************
 
 
@@ -499,7 +499,8 @@ VALUES
 	(50,0,0,'hl_a90915530',NULL,'0',53,'12',NULL,'{\"introduction\":\"12\",\"relation\":\"0\"}',NULL,'2023-12-18 17:54:09','2023-12-18 17:54:09','2023-12-20 18:10:10'),
 	(51,0,0,'hl_a90915530',NULL,'3',54,'MM是我同事，特别温柔、善良，在京IT行业上市工作工作，之前一直忙于工作，无暇找对象，MM的情况如下：88年，河北人，身高165cm，体重56kg，本科学历，IT行业，无婚史。期待一位以结婚为目的，两个人聊得来，情绪稳定，83-92年的男士。',NULL,'{\"introduction\":\"MM是我同事，特别温柔、善良，在京IT行业上市工作工作，之前一直忙于工作，无暇找对象，MM的情况如下：88年，河北人，身高165cm，体重56kg，本科学历，IT行业，无婚史。期待一位以结婚为目的，两个人聊得来，情绪稳定，83-92年的男士。\",\"relation\":\"3\"}',NULL,'2023-12-20 18:17:27','2023-12-20 18:17:27','2023-12-20 18:26:08'),
 	(52,2,0,'hl_a90915530',NULL,'3',55,'MM是我同事，特别温柔、善良，在京IT行业上市工作工作，之前一直忙于工作，无暇找对象，MM的情况如下：88年，河北人，身高165cm，体重56kg，本科学历，IT行业，无婚史。期待一位以结婚为目的，两个人聊得来，情绪稳定，83-92年的男士。','17725386753','{\"introduction\":\"MM是我同事，特别温柔、善良，在京IT行业上市工作工作，之前一直忙于工作，无暇找对象，MM的情况如下：88年，河北人，身高165cm，体重56kg，本科学历，IT行业，无婚史。期待一位以结婚为目的，两个人聊得来，情绪稳定，83-92年的男士。\",\"relation\":\"3\"}',NULL,'2023-12-20 18:26:18','2023-12-20 18:26:18',NULL),
-	(53,2,0,'hl_a46107145',NULL,'0',56,'。。。',NULL,'{\"introduction\":\"。。。\",\"relation\":\"0\"}',NULL,'2023-12-22 10:19:41','2023-12-22 10:19:41',NULL);
+	(53,2,0,'hl_a46107145',NULL,'0',56,'。。。',NULL,'{\"introduction\":\"。。。\",\"relation\":\"0\"}',NULL,'2023-12-22 10:19:41','2023-12-22 10:19:41',NULL),
+	(54,2,0,'hl_a15801803',NULL,'0',57,'性格温和，好相处','13965569171','{\"openid\":\"op02s4kHBcqXyB9pKj1Egeqio8Yk\",\"relation\":\"0\",\"introduction\":\"性格温和，好相处\",\"photos\":[\"/uploads/files/zP6bHS5wxwTu7oIOMMZrHH3JL89BoIYy.jpg\",\"/uploads/files/4bUjkf5Tjdq09bTTErVsWCcN5lD7pUV9.jpg\"],\"type\":1,\"avatar\":\"wxfile://tmp_d2c7a047abc62fa9cff569c9de8af34620ce64d36cb7d3c2.jpg\",\"avatar_url\":\"/uploads/files/N78332e7IWdXp0JVoWYqIIYDKCAHLFuW.jpg\",\"nickname\":\"珍珍\",\"sex\":\"0\",\"height\":160,\"birthday\":\"1995-05-27\",\"work\":{\"key\":\"zhipin\",\"value\":[0,0]}}',NULL,'2023-12-25 17:30:40','2023-12-25 17:30:40',NULL);
 
 /*!40000 ALTER TABLE `customer` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -591,7 +592,8 @@ VALUES
 	(53,NULL,'','/uploads/normal-avatars/sex-024.png','',0,NULL,1,'\"\"','[]',NULL,NULL,'希望70年以后为佳，身高165cm以上。大学本科及以上，有房或者有购房能力。精神独立，经济独立，不算计，有生育计划更佳。如若双方有意可交换证件。\n\n期待对方是一个内外兼修的良师益友， 互相扶持，共同进步。',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'2023-12-18 17:54:09','2023-12-18 17:54:09',NULL),
 	(54,NULL,'','/uploads/normal-avatars/sex-019.png','',0,NULL,0,'\"\"','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'',NULL,NULL,NULL,NULL,NULL,'2023-12-20 18:17:27','2023-12-20 18:17:27',NULL),
 	(55,NULL,'','','',0,NULL,0,'\"\"','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'',NULL,NULL,NULL,NULL,NULL,'2023-12-20 18:26:18','2023-12-20 18:26:18',NULL),
-	(56,NULL,'','','',0,NULL,0,'\"\"','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'2023-12-22 10:19:41','2023-12-22 10:19:41',NULL);
+	(56,NULL,'','','',0,NULL,0,'\"\"','[]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'2023-12-22 10:19:41','2023-12-22 10:19:41',NULL),
+	(57,NULL,'珍珍','/uploads/files/N78332e7IWdXp0JVoWYqIIYDKCAHLFuW.jpg','1995-05-27',160,NULL,0,'{\"key\":\"zhipin\",\"value\":[0,0]}','[\"/uploads/files/zP6bHS5wxwTu7oIOMMZrHH3JL89BoIYy.jpg\",\"/uploads/files/4bUjkf5Tjdq09bTTErVsWCcN5lD7pUV9.jpg\"]',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'2023-12-25 17:30:40','2023-12-25 17:30:40',NULL);
 
 /*!40000 ALTER TABLE `customer_log` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -785,7 +787,15 @@ VALUES
 	(189,'hl_a90915530','','customer','id','2','0',1,1,'2023-12-23 21:06:09.532',NULL,NULL),
 	(190,'hl_a90915530','','customer','id','2','1',2,1,'2023-12-23 21:06:11.595',NULL,NULL),
 	(191,'hl_a90915530','','customer','id','32','0',1,1,'2023-12-24 15:37:13.335',NULL,NULL),
-	(192,'hl_a90915530','','customer','id','32','1',5,1,'2023-12-24 15:37:18.331',NULL,NULL);
+	(192,'hl_a90915530','','customer','id','32','1',5,1,'2023-12-24 15:37:18.331',NULL,NULL),
+	(193,'hl_a15801803','','customer','id','2','0',1,1,'2023-12-25 16:17:35.376',NULL,NULL),
+	(194,'hl_a15801803','','customer','id','2','1',10,1,'2023-12-25 16:17:45.496',NULL,NULL),
+	(195,'hl_a15801803','','customer','id','24','0',1,1,'2023-12-25 18:10:29.825',NULL,NULL),
+	(196,'hl_a15801803','','customer','id','24','1',13,1,'2023-12-25 18:10:42.910',NULL,NULL),
+	(197,'hl_a15801803','','customer','id','41','0',1,1,'2023-12-25 18:10:47.054',NULL,NULL),
+	(198,'hl_a15801803','','customer','id','41','1',26,1,'2023-12-25 18:11:14.058',NULL,NULL),
+	(199,'hl_a15801803','','customer','id','2','0',1,1,'2023-12-25 18:21:05.783',NULL,NULL),
+	(200,'hl_a15801803','','customer','id','2','1',97,1,'2023-12-25 18:22:43.824',NULL,NULL);
 
 /*!40000 ALTER TABLE `datas` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -1797,7 +1807,27 @@ VALUES
 	(947,1,'hl_a07496427','tmp_e84d6238529b0e4a9678ef0153cf52a58c4badc52d8d5cc4.jpg','fr2pftrO2au3X4eggSgrvtK9Xdo5q5VZ.jpg','/uploads/files/fr2pftrO2au3X4eggSgrvtK9Xdo5q5VZ.jpg','files','52235','image','jpeg',NULL,'jpg','','2023-12-24 15:46:35',NULL,NULL),
 	(948,1,'hl_a07496427','tmp_e9d36ec36ed878d1d665deb1658a0fad0ef4c9f2dad0e2fc.jpg','wTW7X3YdSpzTjc9pf5u7WdPlEcgnQGfQ.jpg','/uploads/files/wTW7X3YdSpzTjc9pf5u7WdPlEcgnQGfQ.jpg','files','68453','image','jpeg',NULL,'jpg','','2023-12-24 15:46:35',NULL,NULL),
 	(949,1,'hl_a07496427','tmp_35c2172ca97a9e48918fbff1e9ae6e45a8bc5bc44bfdb4ba.jpg','t1i5jjr2FGlR0mtwQKm2nlBkDqSK7oF7.jpg','/uploads/files/t1i5jjr2FGlR0mtwQKm2nlBkDqSK7oF7.jpg','files','289758','image','jpeg',NULL,'jpg','','2023-12-24 15:46:35',NULL,NULL),
-	(950,1,'hl_a07496427','tmp_c66d7f00f34c08a346619ad8bdcd24eb78219fb7192559f0.jpg','e2tvuFpnzt6Hz029xhhrBAuRGiuQzXhC.jpg','/uploads/files/e2tvuFpnzt6Hz029xhhrBAuRGiuQzXhC.jpg','files','6467','image','jpeg',NULL,'jpg','','2023-12-24 15:47:10',NULL,NULL);
+	(950,1,'hl_a07496427','tmp_c66d7f00f34c08a346619ad8bdcd24eb78219fb7192559f0.jpg','e2tvuFpnzt6Hz029xhhrBAuRGiuQzXhC.jpg','/uploads/files/e2tvuFpnzt6Hz029xhhrBAuRGiuQzXhC.jpg','files','6467','image','jpeg',NULL,'jpg','','2023-12-24 15:47:10',NULL,NULL),
+	(951,1,'hl_a15801803','tmp_0a98ac913ee59a4615b527e7e8f31fb6e39d830dc237eb5d.jpg','Ifln34T6YYvZ87Lk8yWec9p552bMuu4u.jpg','/uploads/files/Ifln34T6YYvZ87Lk8yWec9p552bMuu4u.jpg','files','44302','image','jpeg',NULL,'jpg','','2023-12-25 16:21:08',NULL,NULL),
+	(952,1,'hl_a15801803','tmp_965e6c40e94155f32b4cac3324aa67455eed58fa524595c5.jpg','Gv7saz4pw7sNKZfzL6Up9IlBdRdUfm9b.jpg','/uploads/files/Gv7saz4pw7sNKZfzL6Up9IlBdRdUfm9b.jpg','files','33399','image','jpeg',NULL,'jpg','','2023-12-25 16:21:44',NULL,NULL),
+	(953,1,'hl_a15801803','tmp_d2c7a047abc62fa9cff569c9de8af34620ce64d36cb7d3c2.jpg','N78332e7IWdXp0JVoWYqIIYDKCAHLFuW.jpg','/uploads/files/N78332e7IWdXp0JVoWYqIIYDKCAHLFuW.jpg','files','48489','image','jpeg',NULL,'jpg','','2023-12-25 17:29:23',NULL,NULL),
+	(954,1,'hl_a15801803','tmp_7812537cc3db53893244ea5e26bbd2a1524ae7ba31c79b0d.jpg','zP6bHS5wxwTu7oIOMMZrHH3JL89BoIYy.jpg','/uploads/files/zP6bHS5wxwTu7oIOMMZrHH3JL89BoIYy.jpg','files','48489','image','jpeg',NULL,'jpg','','2023-12-25 17:30:37',NULL,NULL),
+	(955,1,'hl_a15801803','tmp_c5db685c5e4ae8a9989ba558b68c22f009337d3fd966b137.jpg','4bUjkf5Tjdq09bTTErVsWCcN5lD7pUV9.jpg','/uploads/files/4bUjkf5Tjdq09bTTErVsWCcN5lD7pUV9.jpg','files','46046','image','jpeg',NULL,'jpg','','2023-12-25 17:30:37',NULL,NULL),
+	(956,1,'hl_a90915530','U4VexWE6HiJJb4d9c0adc1f76ab4282ee2ed7a0672bc.jpg','t6WUFa7ZYt321xhtMvC9XPWkujCdoiaQ.jpg','/uploads/files/t6WUFa7ZYt321xhtMvC9XPWkujCdoiaQ.jpg','files','12917','image','jpeg',NULL,'jpg','','2023-12-25 18:14:08',NULL,NULL),
+	(957,1,'hl_a90915530','NRVULqYGH23Ib4d9c0adc1f76ab4282ee2ed7a0672bc.jpg','N05fj0eprzkcarkgKSmqfJHOfFVy0jWO.jpg','/uploads/files/N05fj0eprzkcarkgKSmqfJHOfFVy0jWO.jpg','files','12917','image','jpeg',NULL,'jpg','','2023-12-25 18:15:00',NULL,NULL),
+	(958,1,'hl_a90915530','rMM9a1vcXrjgb4d9c0adc1f76ab4282ee2ed7a0672bc.jpg','IpvMi8TKkAA8I91cUcZeetENu1Lsawon.jpg','/uploads/files/IpvMi8TKkAA8I91cUcZeetENu1Lsawon.jpg','files','12917','image','jpeg',NULL,'jpg','','2023-12-25 18:15:55',NULL,NULL),
+	(959,1,'hl_a90915530','PrPB0vgsiE4Vb4d9c0adc1f76ab4282ee2ed7a0672bc.jpg','ppqD29Vjth7sLvUtTyjuiY4Q4r5WqBHl.jpg','/uploads/files/ppqD29Vjth7sLvUtTyjuiY4Q4r5WqBHl.jpg','files','12917','image','jpeg',NULL,'jpg','','2023-12-25 18:16:31',NULL,NULL),
+	(960,1,'hl_a90915530','nfgAlbeulxlTb4d9c0adc1f76ab4282ee2ed7a0672bc.jpg','fuKp98qq18tes82GrwwExxQnCRoQBi0Z.jpg','/uploads/files/fuKp98qq18tes82GrwwExxQnCRoQBi0Z.jpg','files','12917','image','jpeg',NULL,'jpg','','2023-12-25 18:18:26',NULL,NULL),
+	(961,1,'hl_a90915530','Q83IWADurwNM90f359057b1a489994f637edef6aaffd.png','rC6jcsIY8t5AxD8Vh412XrrbUVYKppRI.png','/uploads/files/rC6jcsIY8t5AxD8Vh412XrrbUVYKppRI.png','files','3672','image','png',NULL,'png','','2023-12-25 18:18:54',NULL,NULL),
+	(962,1,'hl_a90915530','wU9S9OQyep8E90f359057b1a489994f637edef6aaffd.png','wHEwFImvVfwsP9IQQ8fTwiIQ8KR7wSYt.png','/uploads/files/wHEwFImvVfwsP9IQQ8fTwiIQ8KR7wSYt.png','files','3672','image','png',NULL,'png','','2023-12-25 18:19:05',NULL,NULL),
+	(963,1,'hl_a90915530','qs1n2mIQx1lUb4d9c0adc1f76ab4282ee2ed7a0672bc.jpg','tk4PFstf7EeKTZEVQnDTS74Ct4RvvvT0.jpg','/uploads/files/tk4PFstf7EeKTZEVQnDTS74Ct4RvvvT0.jpg','files','12917','image','jpeg',NULL,'jpg','','2023-12-25 18:19:05',NULL,NULL),
+	(964,1,'hl_a90915530','ixaR9DQKyNDsb9314d1261ea6d5c64aac0033f2d1df4.jpg','asqgXIP0UmvACwKEEgLFtfg3w6GEzrAe.jpg','/uploads/files/asqgXIP0UmvACwKEEgLFtfg3w6GEzrAe.jpg','files','65879','image','jpeg',NULL,'jpg','','2023-12-25 18:19:05',NULL,NULL),
+	(965,1,'hl_a15801803','tmp_5f3552bbc4a1574812615b88f65364ff603afdd86e7faf88.jpg','RM5PSgqX5Nn84Yh4K7WzkViJ3ftU2y4a.jpg','/uploads/files/RM5PSgqX5Nn84Yh4K7WzkViJ3ftU2y4a.jpg','files','68467','image','jpeg',NULL,'jpg','','2023-12-25 18:24:42',NULL,NULL),
+	(966,1,'hl_a15801803','tmp_f4d20b40b0b82ed050985cbf1ddd29d65f49ddae26e94c40.jpg','ayYcLvw9neBUsJNXk50LYbdEb1sefSi7.jpg','/uploads/files/ayYcLvw9neBUsJNXk50LYbdEb1sefSi7.jpg','files','74788','image','jpeg',NULL,'jpg','','2023-12-25 18:24:42',NULL,NULL),
+	(967,1,'hl_a15801803','tmp_826c546a3e0b95d32585f8ca2e388dfa820c6cbc472b395f.jpg','MfHlRZuxPCU4SUjzeRJGnS3w4E2CDbc6.jpg','/uploads/files/MfHlRZuxPCU4SUjzeRJGnS3w4E2CDbc6.jpg','files','38241','image','jpeg',NULL,'jpg','','2023-12-25 18:24:42',NULL,NULL),
+	(968,1,'hl_a15801803','tmp_502ff8e449ec2a80980cead0f734b29636f1dd8065e04d3b.jpg','15RKwSUHmP46UzyapCosu9lHZsFEKiSR.jpg','/uploads/files/15RKwSUHmP46UzyapCosu9lHZsFEKiSR.jpg','files','49267','image','jpeg',NULL,'jpg','','2023-12-25 18:24:42',NULL,NULL),
+	(969,1,'hl_a15801803','tmp_89193d248aa221bdc67922d5a3993e073bcbb3a12ee4f400.jpg','1CX49rXyAoSzq1GAOn3pfWcvSbYsy8rd.jpg','/uploads/files/1CX49rXyAoSzq1GAOn3pfWcvSbYsy8rd.jpg','files','80006','image','jpeg',NULL,'jpg','','2023-12-25 18:24:42',NULL,NULL),
+	(970,1,'hl_a15801803','tmp_121ed6574e68fb92980b0ad9d3db008b3261d9e8e4441ad6.jpg','SyJpjyW6w6iokXFk9eHti35Lms0UWxcX.jpg','/uploads/files/SyJpjyW6w6iokXFk9eHti35Lms0UWxcX.jpg','files','3922','image','jpeg',NULL,'jpg','','2023-12-25 18:27:03',NULL,NULL);
 
 /*!40000 ALTER TABLE `files` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -2419,7 +2449,9 @@ VALUES
 	(6,'hl_a90915530','17725386753','0636',1,'{\"Message\":\"OK\",\"RequestId\":\"1C4FC544-5F28-58F6-914A-4F37E37AAC2F\",\"Code\":\"OK\",\"BizId\":\"379022603125752486^0\"}','10.0.8.14','2023-12-21 10:29:12','2023-12-21 10:29:12',NULL),
 	(7,'hl_a90915530','17725386753','9984',1,'{\"Message\":\"OK\",\"RequestId\":\"0B86BD15-DBB9-576F-9BAB-FE24638DC3DC\",\"Code\":\"OK\",\"BizId\":\"212914903213255090^0\"}','10.0.8.14','2023-12-22 10:47:35','2023-12-22 10:47:35',NULL),
 	(8,'hl_a90915530','17725386753','7192',1,'{\"Message\":\"OK\",\"RequestId\":\"43CE20B9-92BB-52A9-A522-7EE550510827\",\"Code\":\"OK\",\"BizId\":\"694811303214044914^0\"}','10.0.8.14','2023-12-22 11:00:44','2023-12-22 11:00:44',NULL),
-	(9,'hl_a90915530','17725386753','9846',1,'{\"Message\":\"OK\",\"RequestId\":\"FDC83824-440F-5813-9DDE-3D626EDE2622\",\"Code\":\"OK\",\"BizId\":\"720114203214556834^0\"}','10.0.8.14','2023-12-22 11:09:16','2023-12-22 11:09:16',NULL);
+	(9,'hl_a90915530','17725386753','9846',1,'{\"Message\":\"OK\",\"RequestId\":\"FDC83824-440F-5813-9DDE-3D626EDE2622\",\"Code\":\"OK\",\"BizId\":\"720114203214556834^0\"}','10.0.8.14','2023-12-22 11:09:16','2023-12-22 11:09:16',NULL),
+	(10,'hl_a15801803','15222027650','5486',1,'{\"Message\":\"OK\",\"RequestId\":\"353E094F-6127-53C5-BF7F-1E3D4B85AE84\",\"Code\":\"OK\",\"BizId\":\"251716903498404050^0\"}','10.0.8.14','2023-12-25 18:00:04','2023-12-25 18:00:04',NULL),
+	(11,'hl_a15801803','13965569171','3512',1,'{\"Message\":\"OK\",\"RequestId\":\"6D59835D-E638-5835-8215-B366E9492D6E\",\"Code\":\"OK\",\"BizId\":\"674121703498484285^0\"}','10.0.8.14','2023-12-25 18:01:24','2023-12-25 18:01:24',NULL);
 
 /*!40000 ALTER TABLE `sms` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -2472,8 +2504,8 @@ LOCK TABLES `users` WRITE;
 
 INSERT INTO `users` (`id`, `status`, `type`, `user_id`, `nickname`, `avatar_url`, `birthday`, `height`, `weight`, `sex`, `photos`, `videos`, `detail`, `expectation`, `contact_wechat`, `school`, `company`, `work`, `job_title`, `location`, `realname`, `salary`, `phone`, `wechat_union_id`, `wechat_open_id`, `wechat_platform_open_id`, `parent_id`, `ip`, `ip_city`, `online_at`, `created_at`, `modified_at`, `deleted_at`)
 VALUES
-	(25,1,1,'hl_a90915530','KMT 184.05','/uploads/files/wbbt794Ntfu7ghCJQJh5V2cfyV34acyL.jpeg','1997-01-01',173,3,1,'[\"/uploads/files/HTgqBbfGyz0ayH1XhY7IOoTeoXPKwSK2.jpg\",\"/uploads/files/1kffOShqmyQc8ffahuwlYWRXLIbr75LI.jpg\",\"/uploads/files/9J8m9Olfw29dkSSNWJI2UdmwIpnF9mUI.jpg\"]',NULL,'他的名字叫小帅','希望70年以后为佳，身高165cm以上。大学本科及以上，有房或者有购房能力。精神独立，经济独立，不算计，有生育计划更佳。如若双方有意可交换证件。\n\n期待对方是一个内外兼修的良师益友， 互相扶持，共同进步。','1126638303','香港大学','北京华品博睿网络技术有限公司','{\"key\":\"zhipin\",\"value\":[0,4]}','开发工程师','{\"value\":[\"北京市\",\"北京市\",\"东城区\"],\"code\":[\"110000\",\"110100\",\"110101\"],\"postcode\":\"100010\"}',NULL,'2','17725386753',NULL,'op02s4vhiiLffHPfdB7LKmpMdr_I',NULL,NULL,'10.0.8.14','Beijing','2023-12-24 17:11:15','2023-10-24 17:48:25','2023-12-12 10:21:30',NULL),
-	(29,1,1,'hl_a77713707','💐','/uploads/files/iU8zhMAB2cAKEfC83YrkpJ68rA1vtWFO.jpg','1997-01-01',167,NULL,0,'[\"/uploads/files/YGhHtO4sCfZYjmztwj6EtYDI5SHoMxoL.png\",\"/uploads/files/tZQWFUl2Y1BZljRLRI0HCgDr3BibZ4c9.jpg\"]',NULL,NULL,NULL,NULL,NULL,NULL,'{\"key\":\"zhipin\",\"value\":[5,0]}',NULL,NULL,NULL,NULL,NULL,NULL,'op02s4vkWz17jyhDWsWuzDrV41_E',NULL,NULL,'1.202.45.19','Beijing','2023-12-22 18:16:34','2023-10-25 18:05:17','2023-10-25 18:06:13',NULL),
+	(25,1,2,'hl_a90915530','KMT 184.05','/uploads/files/wbbt794Ntfu7ghCJQJh5V2cfyV34acyL.jpeg','1997-01-01',173,3,1,'[\"/uploads/files/HTgqBbfGyz0ayH1XhY7IOoTeoXPKwSK2.jpg\",\"/uploads/files/1kffOShqmyQc8ffahuwlYWRXLIbr75LI.jpg\",\"/uploads/files/9J8m9Olfw29dkSSNWJI2UdmwIpnF9mUI.jpg\"]',NULL,'他的名字叫小帅','希望70年以后为佳，身高165cm以上。大学本科及以上，有房或者有购房能力。精神独立，经济独立，不算计，有生育计划更佳。如若双方有意可交换证件。\n\n期待对方是一个内外兼修的良师益友， 互相扶持，共同进步。','1126638303','香港大学','北京华品博睿网络技术有限公司','{\"key\":\"zhipin\",\"value\":[0,4]}','开发工程师','{\"value\":[\"北京市\",\"北京市\",\"东城区\"],\"code\":[\"110000\",\"110100\",\"110101\"],\"postcode\":\"100010\"}',NULL,'2','17725386753',NULL,'op02s4vhiiLffHPfdB7LKmpMdr_I',NULL,NULL,'10.0.8.14','Beijing','2023-12-25 18:26:03','2023-10-24 17:48:25','2023-12-12 10:21:30',NULL),
+	(29,1,1,'hl_a77713707','💐','/uploads/files/iU8zhMAB2cAKEfC83YrkpJ68rA1vtWFO.jpg','1997-01-01',167,NULL,0,'[\"/uploads/files/YGhHtO4sCfZYjmztwj6EtYDI5SHoMxoL.png\",\"/uploads/files/tZQWFUl2Y1BZljRLRI0HCgDr3BibZ4c9.jpg\"]',NULL,NULL,NULL,NULL,NULL,NULL,'{\"key\":\"zhipin\",\"value\":[5,0]}',NULL,NULL,NULL,NULL,NULL,NULL,'op02s4vkWz17jyhDWsWuzDrV41_E',NULL,NULL,'10.0.8.14','Beijing','2023-12-25 14:48:34','2023-10-25 18:05:17','2023-10-25 18:06:13',NULL),
 	(30,1,1,'hl_a94942316',NULL,NULL,NULL,NULL,NULL,NULL,'[]',NULL,NULL,NULL,NULL,NULL,NULL,'{}',NULL,NULL,NULL,NULL,NULL,NULL,'op02s4mdlhDDXIVKQE2sg3kf_lcI',NULL,NULL,NULL,'','2023-10-26 13:46:48','2023-10-26 13:46:48','2023-10-26 13:46:48',NULL),
 	(31,1,1,'hl_a45082499','与月亮私奔',NULL,NULL,162,NULL,NULL,'[]',NULL,'日落即是温柔，人间浪漫',NULL,NULL,'陕西科技大学','空军军医大学第一附属医院','{\"key\":\"zhipin\",\"value\":[4,1]}',NULL,NULL,NULL,NULL,'18523584230',NULL,'op02s4t9pXQZwBdxtCfToEHwIaTY',NULL,NULL,'10.0.8.14','','2023-10-26 16:04:35','2023-10-26 15:17:37','2023-10-26 15:17:37',NULL),
 	(32,1,1,'hl_a79908519','热爱山海',NULL,NULL,165,NULL,NULL,'[]',NULL,NULL,NULL,NULL,NULL,NULL,'{\"key\":\"zhipin\",\"value\":[0,0]}',NULL,NULL,NULL,NULL,'19860918085',NULL,'op02s4gT-Hr2uxbC_vEHOjf234dE',NULL,NULL,'10.0.8.14','','2023-10-26 16:02:08','2023-10-26 15:17:56','2023-10-26 15:17:56',NULL),
@@ -2529,11 +2561,11 @@ VALUES
 	(84,1,1,'hl_a07590044',NULL,NULL,NULL,NULL,NULL,NULL,'[]',NULL,NULL,NULL,NULL,NULL,NULL,'{}',NULL,NULL,NULL,NULL,NULL,NULL,'op02s4r_dv3Dt7iQV36ivLTnobL8',NULL,NULL,NULL,NULL,'2023-11-21 14:54:12','2023-11-21 14:54:12','2023-11-21 14:54:12',NULL),
 	(85,1,1,'hl_a95945501',NULL,NULL,NULL,NULL,NULL,NULL,'[]',NULL,NULL,NULL,NULL,NULL,NULL,'{}',NULL,NULL,NULL,NULL,NULL,NULL,'op02s4qROcEI8fqkX626QweBlLnA',NULL,NULL,'10.0.8.14',NULL,'2023-12-15 14:23:54','2023-11-27 12:55:04','2023-11-27 12:55:04',NULL),
 	(86,1,1,'hl_a25711052',NULL,NULL,NULL,NULL,NULL,NULL,'[]',NULL,NULL,NULL,NULL,NULL,NULL,'{}',NULL,NULL,NULL,NULL,NULL,NULL,'op02s4kmJWiy70DEKZK9UpLXJhZA',NULL,NULL,NULL,NULL,'2023-11-28 10:07:15','2023-11-28 10:07:15','2023-11-28 10:07:15',NULL),
-	(94,1,1,'hl_a73928204','Charles正泉','/uploads/files/uOwJU9phWiCKdUMfvrj3LLu9yCmLBba8.jpg','',NULL,NULL,1,'[]',NULL,'所有美好的故事，都从相遇开始。此刻，我们在打造全世界最打动人心的社交产品。','','','','北京华品博睿网络科技有限公司','{\"key\":\"zhipin\",\"value\":[6,3],\"text\":\"人力资源服务\"}','Boss 直聘总经理','',NULL,NULL,'',NULL,'op02s4vllnME96C7JPHus0K0IjGE',NULL,NULL,'10.0.8.14',NULL,'2023-12-11 16:27:24','2023-12-11 16:27:07','2023-12-11 16:27:24',NULL),
+	(94,1,2,'hl_a73928204','Charles正泉','/uploads/files/uOwJU9phWiCKdUMfvrj3LLu9yCmLBba8.jpg','',NULL,NULL,1,'[]',NULL,'所有美好的故事，都从相遇开始。此刻，我们在打造全世界最打动人心的社交产品。','','','','北京华品博睿网络科技有限公司','{\"key\":\"zhipin\",\"value\":[6,3],\"text\":\"人力资源服务\"}','Boss 直聘总经理','',NULL,NULL,'',NULL,'op02s4vllnME96C7JPHus0K0IjGE',NULL,NULL,'10.0.8.14',NULL,'2023-12-11 16:27:24','2023-12-11 16:27:07','2023-12-11 16:27:24',NULL),
 	(95,1,2,'hl_a46107145','·J ·','/uploads/files/zUpqDAJ2dQW1BGpZ6tCBmhUORfLMmE8F.jpg','',NULL,NULL,0,'[]',NULL,'','','','','','{\"key\":\"zhipin\",\"value\":[13,3],\"text\":\"其他行业\"}','',NULL,NULL,NULL,'',NULL,'op02s4sk1nt3ZG1ac93ogcpe6GM0',NULL,NULL,'10.0.8.14',NULL,'2023-12-22 10:30:33','2023-12-22 10:16:15','2023-12-22 10:17:06',NULL),
 	(96,1,2,'hl_a18714289','不粘郭😈','/uploads/files/h8jBEh6powvlxsRqbzsOMjNePWlmpPyq.jpg','',NULL,NULL,0,'[]',NULL,'','','','','','{\"key\":\"zhipin\",\"value\":[0,4],\"text\":\"数据服务\"}','',NULL,NULL,NULL,'',NULL,'op02s4kpufGzzlzdfkUKObdIUP38',NULL,NULL,'10.0.8.14',NULL,'2023-12-22 11:04:03','2023-12-22 10:45:27','2023-12-22 10:46:17',NULL),
 	(97,1,2,'hl_a74787720','HSZY-Chuan','/uploads/files/WHf7BHX0xuCCi4XGr3oEcroiqEjiSBFC.jpg',NULL,NULL,NULL,1,'[]',NULL,NULL,NULL,NULL,NULL,NULL,'{\"key\":\"zhipin\",\"value\":[1,2]}',NULL,NULL,NULL,NULL,NULL,NULL,'op02s4hK3HmjRpoxdDEn7f9sX68A',NULL,NULL,'112.19.68.98',NULL,'2023-12-22 15:20:46','2023-12-22 15:20:46','2023-12-22 15:20:46',NULL),
-	(98,1,2,'hl_a15801803','月月','/uploads/files/QIURzgbzFxeNOD8H5EwmUcIbvjT6Gdn6.jpg','1996-01-07',150,NULL,0,'[\"/uploads/files/VoCSdprL9GIonCib4AZDIM7ADJ0IHtqu.jpg\"]',NULL,NULL,NULL,NULL,NULL,NULL,'{\"key\":\"zhipin\",\"value\":[11,5]}',NULL,NULL,NULL,NULL,NULL,NULL,'op02s4kHBcqXyB9pKj1Egeqio8Yk',NULL,NULL,'111.32.77.202','Tianjin','2023-12-23 10:07:52','2023-12-23 09:48:28','2023-12-23 09:50:29',NULL),
+	(98,1,2,'hl_a15801803','月月','/uploads/files/QIURzgbzFxeNOD8H5EwmUcIbvjT6Gdn6.jpg','1996-01-07',150,NULL,0,'[\"/uploads/files/VoCSdprL9GIonCib4AZDIM7ADJ0IHtqu.jpg\"]',NULL,'双鱼座♓性格温柔，浪漫主义者，爱好旅游，绘画',NULL,NULL,NULL,NULL,'{\"key\":\"zhipin\",\"value\":[11,5]}',NULL,NULL,NULL,NULL,NULL,NULL,'op02s4kHBcqXyB9pKj1Egeqio8Yk',NULL,NULL,'10.0.8.14','Tianjin','2023-12-25 18:27:06','2023-12-23 09:48:28','2023-12-23 09:50:29',NULL),
 	(100,1,1,'hl_a60998258',NULL,NULL,NULL,NULL,NULL,NULL,'[]',NULL,NULL,NULL,NULL,NULL,NULL,'{}',NULL,NULL,NULL,NULL,NULL,NULL,'op02s4lnKP1Y1ijjtjYyNLKE48Fg',NULL,NULL,NULL,NULL,'2023-12-24 15:40:05','2023-12-24 15:40:05','2023-12-24 15:40:05',NULL),
 	(101,1,2,'hl_a07496427','Alan','/uploads/files/e2tvuFpnzt6Hz029xhhrBAuRGiuQzXhC.jpg','1993-12-31',167,3,1,'[\"/uploads/files/t1i5jjr2FGlR0mtwQKm2nlBkDqSK7oF7.jpg\",\"/uploads/files/fr2pftrO2au3X4eggSgrvtK9Xdo5q5VZ.jpg\",\"/uploads/files/wTW7X3YdSpzTjc9pf5u7WdPlEcgnQGfQ.jpg\"]',NULL,'喵没有留下任何脚印，并转身离开了','温柔善良情绪稳定','','南京信息工程大学','','{\"key\":\"zhipin\",\"value\":[0,2],\"text\":\"媒体\"}','视觉传达','{\"value\":[\"北京市\",\"北京市\",\"朝阳区\"],\"code\":[\"110000\",\"110100\",\"110105\"],\"postcode\":\"100020\"}',NULL,'2','',NULL,'op02s4qhlxX2STOmQbF1puW25pPw',NULL,NULL,'10.0.8.14',NULL,'2023-12-24 15:53:15','2023-12-24 15:42:27','2023-12-24 15:42:27',NULL);
 
@@ -2562,11 +2594,11 @@ LOCK TABLES `users_location` WRITE;
 
 INSERT INTO `users_location` (`id`, `user_id`, `longitude`, `latitude`, `created_at`, `modified_at`, `deleted_at`)
 VALUES
-	(1,'hl_a90915530','116.55311897269598','39.92243618556571','2023-12-15 18:01:45','2023-12-15 18:01:45',NULL),
+	(1,'hl_a90915530','116.44355','39.9219','2023-12-15 18:01:45','2023-12-15 18:01:45',NULL),
 	(2,'hl_a77713707','116.45888518999996','39.911079399999984','2023-12-15 18:02:42','2023-12-15 18:02:42',NULL),
 	(3,'hl_a18714289','120.1927938584471','30.210470793531776','2023-12-22 10:46:38','2023-12-22 10:46:38',NULL),
 	(4,'hl_a27802648','116.38279425502084','39.961713946637424','2023-12-22 21:52:33','2023-12-22 21:52:33',NULL),
-	(5,'hl_a15801803','117.31459','39.730262','2023-12-23 09:50:55','2023-12-23 09:50:55',NULL),
+	(5,'hl_a15801803','117.314647','39.730267','2023-12-23 09:50:55','2023-12-23 09:50:55',NULL),
 	(6,'hl_a07496427','116.553007','39.922282','2023-12-24 15:46:01','2023-12-24 15:46:01',NULL);
 
 /*!40000 ALTER TABLE `users_location` ENABLE KEYS */;
@@ -2673,7 +2705,9 @@ VALUES
 	(17,'hl_a90915530','authentication_log','school','','/uploads/files/ui4X7qfsZrztRflp129IL9aEnBjKhNSL.png',1,'approved','','hl_a90915530','10.0.8.14','2023-12-15 09:07:23','2023-12-15 09:13:17',NULL),
 	(18,'hl_a90915530','authentication_log','school','','/uploads/files/gAsoNo4Pd4uHM2T9SPkfUyb4mFKEmXlw.png',1,'approved','','hl_a90915530','10.0.8.14','2023-12-15 09:19:08','2023-12-15 10:39:34',NULL),
 	(19,'hl_a07496427','users','photos','[]','[\"/uploads/files/t1i5jjr2FGlR0mtwQKm2nlBkDqSK7oF7.jpg\",\"/uploads/files/fr2pftrO2au3X4eggSgrvtK9Xdo5q5VZ.jpg\",\"/uploads/files/wTW7X3YdSpzTjc9pf5u7WdPlEcgnQGfQ.jpg\"]',1,'approved','','hl_a90915530','10.0.8.14','2023-12-24 15:46:35','2023-12-24 15:53:14',NULL),
-	(20,'hl_a07496427','users','avatar_url',NULL,'/uploads/files/e2tvuFpnzt6Hz029xhhrBAuRGiuQzXhC.jpg',1,'approved','','hl_a90915530','10.0.8.14','2023-12-24 15:47:10','2023-12-24 15:53:20',NULL);
+	(20,'hl_a07496427','users','avatar_url',NULL,'/uploads/files/e2tvuFpnzt6Hz029xhhrBAuRGiuQzXhC.jpg',1,'approved','','hl_a90915530','10.0.8.14','2023-12-24 15:47:10','2023-12-24 15:53:20',NULL),
+	(21,'hl_a15801803','users','photos','[\"/uploads/files/VoCSdprL9GIonCib4AZDIM7ADJ0IHtqu.jpg\"]','[\"/uploads/files/RM5PSgqX5Nn84Yh4K7WzkViJ3ftU2y4a.jpg\",\"/uploads/files/ayYcLvw9neBUsJNXk50LYbdEb1sefSi7.jpg\",\"/uploads/files/15RKwSUHmP46UzyapCosu9lHZsFEKiSR.jpg\",\"/uploads/files/MfHlRZuxPCU4SUjzeRJGnS3w4E2CDbc6.jpg\",\"/uploads/files/1CX49rXyAoSzq1GAOn3pfWcvSbYsy8rd.jpg\"]',0,'pending',NULL,NULL,'10.0.8.14','2023-12-25 18:24:42',NULL,NULL),
+	(22,'hl_a15801803','users','avatar_url','/uploads/files/QIURzgbzFxeNOD8H5EwmUcIbvjT6Gdn6.jpg','/uploads/files/SyJpjyW6w6iokXFk9eHti35Lms0UWxcX.jpg',0,'pending',NULL,NULL,'10.0.8.14','2023-12-25 18:27:03',NULL,NULL);
 
 /*!40000 ALTER TABLE `verification` ENABLE KEYS */;
 UNLOCK TABLES;
