@@ -231,7 +231,12 @@ export default class EventController {
   public async datas({ params, request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      return await Data.record({ table: 'customer', field: 'id', field_value: all.field_value, user_id: session.get('user_id'), wechat_open_id: all.wechat_open_id, category: all.category, count: all.count || 1 })
+      const customer = await Database.from('customer').where({ id: all.field_value, status: 1 }).first() || {}
+      if (customer.id) {
+        return await Data.record({ table: 'customer', field: 'id', field_value: all.field_value, user_id: session.get('user_id'), wechat_open_id: all.wechat_open_id, category: all.category, count: all.count || 1 })
+      } else {
+        return
+      }
     } catch (error) {
       console.log(error);
     }
