@@ -51,11 +51,18 @@ class UsersController {
     async index({ request, view, session }) {
         try {
             const all = request.all();
-            const users = await Database_1.default.from('users').orderBy(all.orderBy || 'id', 'desc').forPage(request.input('page', 1), 20);
+            const users = await Database_1.default.from('users').whereIn('type', all.type ? all.type.split(',') : [1, 2]).orderBy(all.orderBy || 'id', 'desc').forPage(request.input('page', 1), 20);
             for (let index = 0; index < users.length; index++) {
                 users[index].work = JSON.parse(users[index].work);
                 if (users[index].work && users[index].work['value']) {
-                    users[index].work['text'] = await zpData.data(users[index].work['value'][0], users[index].work['value'][1]);
+                    users[index].work.text = await zpData.data(users[index].work['value'][0], users[index].work['value'][1]);
+                }
+                let authentication = await Database_1.default.from('authentication').select('idcard', 'school', 'company', 'work', 'job_title', 'salary').where({ user_id: users[index].user_id || session.get('user_id') }).first() || {};
+                if (authentication.company && authentication.idcard && authentication.job_title && authentication.salary && authentication.school && authentication.work) {
+                    users[index].authentication = true;
+                }
+                else {
+                    users[index].authentication = false;
                 }
                 users[index].percent = await percentUserinfo(users[index].user_id);
                 users[index].photos = JSON.parse(users[index].photos);
@@ -87,7 +94,7 @@ class UsersController {
             }
             user.photos = JSON.parse(user.photos);
             user.ip = geoip_lite_1.default.lookup(user.ip) || {};
-            user.online_at = (0, moment_1.default)(user.online_at).fromNow();
+            user.online_at = (0, moment_1.default)(user.online_at).format('YYYY-MM-DD HH:mm:ss');
             user.created_at = (0, moment_1.default)(user.created_at).format('YYYY-MM-DD HH:mm:ss');
             return view.render('admin/user/edit', {
                 data: {
@@ -109,8 +116,26 @@ class UsersController {
     async update({ params, request, response, session, view }) {
         try {
             const all = request.all();
-            console.log(all);
-            return response.redirect('back');
+            if (all.button == 'update') {
+                await Database_1.default.from('users').where({ user_id: params.user_id }).update({
+                    type: all.type,
+                    sex: all.sex,
+                    nickname: all.nickname || '',
+                    avatar_url: all.avatar_url || '',
+                    birthday: all.birthday || '',
+                    phone: all.phone || '',
+                    school: all.school || '',
+                    company: all.company || '',
+                    job_title: all.job_title || '',
+                    contact_wechat: all.contact_wechat || '',
+                    detail: all.detail || '',
+                    expectation: all.expectation || '',
+                    work: all.work || {},
+                    photos: JSON.stringify(all.photos || []),
+                });
+                session.flash('message', { type: 'success', header: '更新成功', message: `` });
+                return response.redirect('back');
+            }
             return all;
         }
         catch (error) {

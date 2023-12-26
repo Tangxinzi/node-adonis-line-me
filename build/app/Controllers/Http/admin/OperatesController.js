@@ -107,7 +107,7 @@ class OperatesController {
             const all = request.all(), verification = await Database_1.default.from('verification').where({ id: params.id }).first();
             if (request.method() == 'GET') {
                 if (verification.is_verified == 0) {
-                    var user = await Database_1.default.from('users').where('id', Jwt_1.default.verifyPublicKey(all.sign || session.get('adonis-cookie-sign'))).first();
+                    var user = await Database_1.default.from('users').where('id', Jwt_1.default.verifyPublicKey(all.sign || session.get('adonis-cookie-sign'))).first() || {};
                 }
                 else {
                     var user = await Database_1.default.from('users').where('user_id', verification.verification_user_id).first() || {};

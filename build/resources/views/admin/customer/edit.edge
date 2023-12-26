@@ -60,7 +60,7 @@
           </div>
           <div class="field">
             <label>介绍信息</label>
-            <textarea name="description" rows="8" cols="80">{{ data.customer.introduction }}</textarea>
+            <textarea name="introduction" rows="8" cols="80">{{ data.customer.introduction || '' }}</textarea>
           </div>
         </div>
         <div class="ui segment">
@@ -163,7 +163,7 @@
           </div>
           <div class="field">
             <label>期待的 ta</label>
-            <textarea name="expectation" rows="8" cols="80">{{ data.customer.expectation || '' }}</textarea>
+            <textarea name="userinfo.expectation" rows="8" cols="80">{{ data.customer.userinfo.expectation || '' }}</textarea>
           </div>
         </div>
         <div class="ui segment" {{ data.customer.relation_user_id ? 'hidden' : '' }}>

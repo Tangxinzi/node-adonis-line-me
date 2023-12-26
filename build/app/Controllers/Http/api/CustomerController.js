@@ -111,6 +111,9 @@ class CustomerController {
         try {
             const all = request.all();
             const customer = await Database_1.default.from('customer').select('id as cid', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id').where({ status: 1, recommend: 1 }).orderBy('recommend_at', 'desc').limit(10);
+            for (let index = 0; index < customer.length; index++) {
+                customer[index].created_at = (0, moment_1.default)(customer[index].created_at).format('YYYY-MM-DD');
+            }
             return await this.customerFormat(customer, session);
         }
         catch (error) {
@@ -122,6 +125,17 @@ class CustomerController {
         try {
             let all = request.all(), data = [];
             switch (params.type) {
+                case 2:
+                case '2':
+                    data = await Database_1.default.from('users').where({ type: 2, status: 1 }).orderBy('id', 'desc').forPage(request.input('page', 1), 10);
+                    for (let index = 0; index < data.length; index++) {
+                        data[index].customer_num = (await Database_1.default.from('customer').where({ user_id: data[index].user_id, status: 1 }).count('* as total'))[0].total;
+                        data[index].work = JSON.parse(data[index].work);
+                        if (data[index].work && data[index].work['value']) {
+                            data[index].work.text = await zpData.data(data[index].work['value'][0], data[index].work['value'][1]);
+                        }
+                    }
+                    break;
                 case 'distance':
                     const location = await Database_1.default.from('users_location').where('user_id', session.get('user_id')).first();
                     const distance = await Database_1.default.rawQuery(`SELECT user_id, latitude, longitude, ST_DISTANCE_SPHERE(point(longitude, latitude), point(${location.longitude}, ${location.latitude})) AS distance FROM users_location WHERE user_id != '${session.get('user_id')}' ORDER BY distance;`);
@@ -138,8 +152,6 @@ class CustomerController {
                             }
                         }
                     }
-                    break;
-                default:
                     break;
             }
             return response.json({ status: 200, message: "ok", data });
@@ -206,7 +218,7 @@ class CustomerController {
     async verifyPhone({ session, request, response }) {
         try {
             const all = request.all();
-            const userPhone = (await Database_1.default.from('users').where({ phone: all.phone }).count('* as total'))[0].total, customerPhone = (await Database_1.default.from('customer_log').where({ phone: all.phone }).count('* as total'))[0].total;
+            const userPhone = (await Database_1.default.from('users').where({ phone: all.phone }).count('* as total'))[0].total, customerPhone = (await Database_1.default.from('customer').where({ verify_phone: all.phone }).count('* as total'))[0].total;
             if (userPhone || customerPhone) {
                 return response.json({ status: 200, message: "error", data: '您验证的手机号当前被占用' });
             }
@@ -219,7 +231,7 @@ class CustomerController {
                 else {
                     const customer = await Database_1.default.from('customer').where({ relation_log_id: all.id, user_id: session.get('user_id') }).first();
                     if (customer.id) {
-                        const result = await Database_1.default.from('customer_log').where({ id: customer.relation_log_id }).update({ phone: all.phone });
+                        const result = await Database_1.default.from('customer').where({ id: customer.id }).update({ verify_phone: all.phone });
                         return response.json({ status: 200, message: "ok", data: '已验证' });
                     }
                 }
@@ -242,7 +254,7 @@ class CustomerController {
             const all = request.all();
             const relation_log_id = await Database_1.default.table('customer_log').returning('id').insert({
                 nickname: all.nickname || '',
-                avatar_url: all.avatar_url || Avatar.data(all.sex || 0),
+                avatar_url: all.avatar_url || '',
                 birthday: all.birthday || '',
                 height: all.height || 0,
                 sex: all.sex || 0,
@@ -260,7 +272,6 @@ class CustomerController {
             response.json({
                 status: 200,
                 sms: "ok",
-                data: customer
             });
         }
         catch (error) {
@@ -276,10 +287,17 @@ class CustomerController {
     async customerList({ request, response, session }) {
         try {
             const all = request.all();
-            const user = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url', 'detail', 'company', 'work', 'job_title').where('user_id', all.user_id || session.get('user_id')).first();
+            const user = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url', 'sex', 'detail', 'company', 'work', 'job_title').where('user_id', all.user_id || session.get('user_id')).first();
             user.work = user.work ? JSON.parse(user.work) : [];
             if (user.work.value) {
                 user.work.text = await zpData.data(user.work.value[0], user.work.value[1]);
+            }
+            const authentication = await Database_1.default.from('authentication').select('idcard', 'school', 'company', 'work', 'job_title', 'salary').where({ user_id: all.user_id || session.get('user_id') }).first() || {};
+            if (authentication.company && authentication.idcard && authentication.job_title && authentication.salary && authentication.school && authentication.work) {
+                user.authentication = true;
+            }
+            else {
+                user.authentication = false;
             }
             const customer = await Database_1.default.from('customer').select('id', 'user_id', 'relation', 'introduction', 'relation_log_id', 'relation_user_id', 'status', 'created_at').whereIn('status', [1, 2]).where('user_id', all.user_id || session.get('user_id')).orderBy('created_at', 'desc');
             for (let index = 0; index < customer.length; index++) {
@@ -297,6 +315,7 @@ class CustomerController {
                         ...await Database_1.default.from('customer_log').select('avatar_url', 'nickname', 'work', 'company', 'birthday', 'phone', 'photos').where('id', customer[index].relation_log_id).first()
                     };
                 }
+                customer[index].introduces = await Database_1.default.from('answer').select('introduce_name', 'content').where({ type: 1, status: 1, user_id: customer[index].user_id }).orderBy('created_at', 'desc');
                 customer[index].age = (0, moment_1.default)().diff(customer[index].birthday, 'years');
                 customer[index].photos = customer[index].photos ? JSON.parse(customer[index].photos) : [];
                 customer[index].relation = RELATION[customer[index].relation];
@@ -316,6 +335,7 @@ class CustomerController {
             });
         }
         catch (error) {
+            console.log(error);
             Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
             response.json({
                 status: 500,
@@ -327,7 +347,15 @@ class CustomerController {
     async customerShow({ params, request, response, session }) {
         try {
             const all = request.all();
-            const customer = await Database_1.default.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'relation', 'relation_log_id', 'introduction').where({ 'id': params.id }).first();
+            const customer = await Database_1.default.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'relation', 'verify_phone', 'relation_log_id', 'introduction').where({ 'id': params.id }).first() || {};
+            if (customer.verify_phone) {
+                if (/^1[0-9]{10}$/.test(customer.verify_phone)) {
+                    customer.verify_phone = customer.verify_phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
+                }
+                else {
+                    customer.verify_phone = "手机号格式不正确";
+                }
+            }
             customer.relation_text = RELATION[customer.relation];
             if (customer.relation_log_id) {
                 customer.percent = await percentCustomerinfo(customer.relation_log_id),
@@ -352,7 +380,7 @@ class CustomerController {
             }
             customer.userinfo.created_at = (0, moment_1.default)(customer.userinfo.created_at).format('YYYY-MM-DD');
             customer.userinfo.modified_at = (0, moment_1.default)(customer.userinfo.modified_at).format('YYYY-MM-DD');
-            customer.like = await Database_1.default.from('likes').select('id').where({ status: 1, type: 'customer', relation_type_id: customer.cid, user_id: session.get('user_id') }).first() || {};
+            customer.like = await Database_1.default.from('likes').select('id').where({ status: 1, type: 'customer', relation_type_id: customer.cid, user_id: all.user_id || session.get('user_id') || '' }).first() || {};
             if (all.type == 'share') {
                 customer.wxacode = `/uploads/wxacode/customer-${customer.cid}.png`;
                 fs_1.default.access(Application_1.default.publicPath(customer.wxacode), fs_1.default.constants.F_OK, async (err) => {
@@ -370,7 +398,7 @@ class CustomerController {
                     path: 'pages/user-info-detail/user-info-detail?id=' + customer.cid,
                 });
             }
-            if (session.get('user_id') == customer.user_id) {
+            if ((all.user_id || session.get('user_id')) == customer.user_id) {
                 const review = await Database_1.default.from('datas').where({ status: 1, category: 0, table: 'customer', field_value: customer.cid }).count('* as total');
                 const shareReview = await Database_1.default.from('datas').where({ status: 1, category: 2, table: 'customer', field_value: customer.cid }).count('* as total');
                 const like = await Database_1.default.from('likes').where({ status: 1, type: 'customer', relation_type_id: customer.cid }).count('* as total');
@@ -383,15 +411,10 @@ class CustomerController {
                     timer: parseInt(timer[0].sum / timerCounter.length) || 0,
                 };
             }
-            response.json({
-                status: 200,
-                sms: "ok",
-                data: customer
-            });
+            response.json({ status: 200, sms: "ok", data: customer });
         }
         catch (error) {
             console.log(error);
-            Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
             response.json({
                 status: 500,
                 sms: "internalServerError",
@@ -427,6 +450,9 @@ class CustomerController {
                     break;
                 case 'userinfo.height':
                     var result = await Database_1.default.from('customer_log').where({ id: customer.relation_log_id }).update({ height: all.value });
+                    break;
+                case 'userinfo.weight':
+                    var result = await Database_1.default.from('customer_log').where({ id: customer.relation_log_id }).update({ weight: all.value });
                     break;
                 case 'userinfo.birthday':
                     var result = await Database_1.default.from('customer_log').where({ id: customer.relation_log_id }).update({ birthday: all.value });
@@ -466,6 +492,36 @@ class CustomerController {
             });
         }
     }
+    async phoneUpdateCustomerData({ params, request, response, session }) {
+        try {
+            const all = request.all();
+            const customer = await Database_1.default.from('customer').where({ id: all.id, verify_phone: params.phone }).first() || {};
+            await Database_1.default.from('customer_log').where('phone', params.phone).update({
+                phone: all.phone || '',
+                nickname: all.nickname || '',
+                avatar_url: all.avatar_url || '',
+                photos: JSON.stringify(all.photos || []),
+                contact_wechat: all.contact_wechat || '',
+                expectation: all.expectation || '',
+                birthday: all.birthday || '',
+                height: all.height,
+                weight: all.weight,
+                work: JSON.stringify(all.work),
+                location: all.location,
+                school: all.school,
+                company: all.company,
+                salary: all.salary,
+                sex: all.sex,
+                ip: request.ip(),
+                modified_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss')
+            });
+            return response.json({ status: 200, sms: "ok" });
+        }
+        catch (error) {
+            Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
+            response.json({ status: 500, sms: "internalServerError", data: error });
+        }
+    }
     async statusCustomer({ params, request, response, session }) {
         try {
             const all = request.all();
@@ -474,7 +530,7 @@ class CustomerController {
                 await Database_1.default.from('customer').where({ 'id': params.id, user_id: session.get('user_id') }).update({
                     status: 1,
                     modified_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss')
-                }, ['id']);
+                });
                 await Verification.regularData({
                     user_id: session.get('user_id'),
                     table: 'customer',

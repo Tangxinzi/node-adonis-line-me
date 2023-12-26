@@ -1,10 +1,15 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const Jwt_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/Jwt"));
 class AdminCheck {
     async handle({ request, response, session }, next) {
         try {
             const sign = session.get('adonis-cookie-sign');
             if (sign) {
+                const verify = Jwt_1.default.verifyPublicKey(sign || '');
                 await next();
             }
             else if (!sign && request.url() != '/admin/login') {

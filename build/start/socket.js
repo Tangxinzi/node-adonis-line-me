@@ -46,7 +46,7 @@ const getChatsMessage = async (data, chat_id) => {
             }
             if (chats[index].chat_content_type == 'customer') {
                 chats[index].chat_content_type = 'text';
-                const customer = await Database_1.default.from('customer').select('relation_user_id', 'relation_log_id').where({ id: chats[index].chat_content }).first();
+                const customer = await Database_1.default.from('customer').select('relation_user_id', 'relation_log_id').where({ id: chats[index].chat_content }).first() || {};
                 if (customer.relation_log_id) {
                     const customer_log = await Database_1.default.from('customer_log').select('avatar_url', 'nickname').where('id', customer.relation_log_id).first();
                     chats[index].chat_content = `Hi，我想认识下您介绍的好友「${customer_log.nickname}」😄`;

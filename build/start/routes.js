@@ -38,6 +38,7 @@ Route_1.default.group(() => {
     Route_1.default.get('/customer/filter/:type', 'api/CustomerController.filter');
     Route_1.default.get('/customer/userinfo/:id', 'api/CustomerController.customerInfo');
     Route_1.default.post('/customer/field/update/:id', 'api/CustomerController.updateCustomerField');
+    Route_1.default.post('/customer/data/phone/:phone', 'api/CustomerController.phoneUpdateCustomerData');
     Route_1.default.get('/customer/userlist', 'api/CustomerController.customerList');
     Route_1.default.get('/customer/userlist/show/:id', 'api/CustomerController.customerShow');
     Route_1.default.post('/customer/create', 'api/CustomerController.createCustomerinfo');
@@ -58,6 +59,7 @@ Route_1.default.group(() => {
     Route_1.default.get('/query/company', 'api/QueryController.company');
 }).middleware('apiCheck').prefix('/api');
 Route_1.default.group(() => {
+    Route_1.default.get('/customer/invite-friends-fill', 'web/CustomersController.inviteFriendsFill');
     Route_1.default.get('/operates/verification/review/:id', 'admin/OperatesController.review');
     Route_1.default.post('/operates/verification/review/:id', 'admin/OperatesController.review');
 }).prefix('/web');
@@ -71,8 +73,7 @@ Route_1.default.group(() => {
     Route_1.default.post('/operates/verification/review/:id', 'admin/OperatesController.review');
     Route_1.default.get('/users', 'admin/UsersController.index');
     Route_1.default.get('/users/edit/:user_id', 'admin/UsersController.edit');
-    Route_1.default.get('/users/update', 'admin/UsersController.update');
-    Route_1.default.post('/users/update', 'admin/UsersController.update');
+    Route_1.default.post('/users/update/:user_id', 'admin/UsersController.update');
     Route_1.default.get('/customers', 'admin/CustomersController.index');
     Route_1.default.get('/customers/edit/:id', 'admin/CustomersController.edit');
     Route_1.default.post('/customers/edit/:id', 'admin/CustomersController.edit');
@@ -93,56 +94,4 @@ Route_1.default.group(() => {
     Route_1.default.get('/login', 'admin/UsersController.login');
     Route_1.default.post('/login', 'admin/UsersController.login');
 }).middleware('adminCheck').prefix('/admin');
-Route_1.default.group(() => {
-    Route_1.default.get('/search', 'land/admin/SearchController.index');
-    Route_1.default.post('/file/upload', 'land/admin/FilesController.upload');
-    Route_1.default.get('/user/index', 'land/admin/UserController.index');
-    Route_1.default.get('/user/wx-login', 'land/admin/UserController.wxLogin');
-    Route_1.default.get('/user/get-phone-number', 'land/admin/UserController.getPhoneNumber');
-    Route_1.default.get('/user/info', 'land/admin/UserController.userinfo');
-    Route_1.default.get('/user/collection', 'land/admin/UserController.collection');
-    Route_1.default.post('/user/info/upload', 'land/admin/UserController.userinfo');
-    Route_1.default.get('/user/like/:id', 'land/admin/UserController.like');
-    Route_1.default.post('/user/like/:id', 'land/admin/UserController.like');
-    Route_1.default.get('/designer', 'land/admin/DesignerController.index');
-    Route_1.default.get('/designer/catalog/:catalog', 'land/admin/DesignerController.catalog');
-    Route_1.default.get('/designer/create', 'land/admin/DesignerController.create');
-    Route_1.default.get('/designer/show/:id', 'land/admin/DesignerController.show');
-    Route_1.default.get('/designer/edit/:id', 'land/admin/DesignerController.edit');
-    Route_1.default.post('/designer/save', 'land/admin/DesignerController.save');
-    Route_1.default.post('/designer/delete', 'land/admin/DesignerController.delete');
-    Route_1.default.get('/work', 'land/admin/WorkController.index');
-    Route_1.default.get('/work/catalog/:catalog', 'land/admin/WorkController.catalog');
-    Route_1.default.get('/work/create', 'land/admin/WorkController.create');
-    Route_1.default.get('/work/show/:id', 'land/admin/WorkController.show');
-    Route_1.default.get('/work/edit/:id', 'land/admin/WorkController.edit');
-    Route_1.default.post('/work/save', 'land/admin/WorkController.save');
-    Route_1.default.post('/work/delete', 'land/admin/WorkController.delete');
-    Route_1.default.get('/article', 'land/admin/ArticleController.index');
-    Route_1.default.get('/article/catalog/:catalog', 'land/admin/ArticleController.catalog');
-    Route_1.default.get('/article/create', 'land/admin/ArticleController.create');
-    Route_1.default.get('/article/show/:id', 'land/admin/ArticleController.show');
-    Route_1.default.get('/article/edit/:id', 'land/admin/ArticleController.edit');
-    Route_1.default.post('/article/save', 'land/admin/ArticleController.save');
-    Route_1.default.post('/article/delete', 'land/admin/ArticleController.delete');
-    Route_1.default.get('/good', 'land/admin/GoodController.index');
-    Route_1.default.get('/good/catalog', 'land/admin/GoodController.catalog');
-    Route_1.default.get('/good/supplier', 'land/admin/GoodController.supplier');
-    Route_1.default.post('/good/supplier/save', 'land/admin/GoodController.supplierSave');
-    Route_1.default.post('/good/catalog', 'land/admin/GoodController.catalog');
-    Route_1.default.get('/good/create', 'land/admin/GoodController.create');
-    Route_1.default.get('/good/show/:id', 'land/admin/GoodController.show');
-    Route_1.default.get('/good/edit/:id', 'land/admin/GoodController.edit');
-    Route_1.default.post('/good/save', 'land/admin/GoodController.save');
-    Route_1.default.post('/good/delete', 'land/admin/GoodController.delete');
-}).prefix('/land');
-Route_1.default.group(() => {
-    Route_1.default.get('/supplier/login/:supplier_name_login', 'land/admin/SupplierController.login');
-    Route_1.default.post('/supplier/login/:supplier_name_login', 'land/admin/SupplierController.login');
-    Route_1.default.get('/supplier/goods', 'land/admin/SupplierController.index');
-    Route_1.default.get('/supplier/goods/create', 'land/admin/SupplierController.create');
-    Route_1.default.get('/supplier/goods/edit/:id', 'land/admin/SupplierController.edit');
-    Route_1.default.post('/supplier/goods/create', 'land/admin/SupplierController.save');
-    Route_1.default.post('/supplier/goods/delete', 'land/admin/SupplierController.delete');
-}).prefix('/land');
 //# sourceMappingURL=routes.js.map

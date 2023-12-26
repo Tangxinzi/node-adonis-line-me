@@ -63,31 +63,31 @@ class UserController {
     async getUserinfo({ request, session }) {
         try {
             const all = request.all();
-            const user_id = all.user_id || session.get('user_id');
-            const user = await Database_1.default.from('users').where('user_id', user_id).first() || {};
+            const user_id = all.user_id || session.get('user_id') || '';
+            const user = await Database_1.default.from('users').where({ user_id }).first() || {};
             if (user) {
                 user.percent = await percentUserinfo(user_id);
                 const _geoip = geoip_lite_1.default.lookup(request.ip()) || {};
-                await Database_1.default.from('users').where('user_id', user_id).update({ online_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss'), ip: request.ip(), ip_city: _geoip.city });
+                await Database_1.default.from('users').where({ user_id }).update({ online_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss'), ip: request.ip(), ip_city: _geoip.city });
                 user.photos = JSON.parse(user.photos);
                 user.location = user.location ? JSON.parse(user.location) : '';
                 user.videos = JSON.parse(user.videos);
                 user.zodiac_sign = this.getZodiacSign((0, moment_1.default)(user.birthday).format('DD'), (0, moment_1.default)(user.birthday).format('MM'));
                 user.age = (0, moment_1.default)().diff(user.birthday, 'years');
                 user.operates = await Database_1.default.from('users_operates').where({ user_id, type: 'examine' }).first() ? true : false;
-                user.introduces = await Database_1.default.from('answer').select('introduce_name', 'content').where({ type: 1, status: 1, recommend: 1, user_id: user.user_id }).orderBy('created_at', 'desc');
+                user.introduces = await Database_1.default.from('answer').select('introduce_name', 'content').where({ type: 1, status: 1, recommend: 1, user_id }).orderBy('created_at', 'desc');
                 user['work'] = JSON.parse(user['work']);
                 if (user['work'] && user['work']['value']) {
                     user['work']['text'] = await zpData.data(user['work']['value'][0], user['work']['value'][1]);
                 }
                 user['number'] = {
                     message: 0,
-                    introduction: (await Database_1.default.from('answer').where({ type: 1, status: 1, user_id: session.get('user_id') }).count('* as total'))[0].total,
-                    like: (await Database_1.default.from('likes').where({ type: 'customer', status: 1, user_id: session.get('user_id') }).count('* as total'))[0].total,
+                    introduction: (await Database_1.default.from('answer').where({ type: 1, status: 1, user_id }).count('* as total'))[0].total,
+                    like: (await Database_1.default.from('likes').where({ type: 'customer', status: 1, user_id }).count('* as total'))[0].total,
                     visitor: 0,
-                    moment: (await Database_1.default.from('moments').where('user_id', session.get('user_id')).count('* as total'))[0].total,
-                    answer: (await Database_1.default.from('answer').where({ type: 0, status: 1, user_id: session.get('user_id') }).count('* as total'))[0].total,
-                    customer: (await Database_1.default.from('customer').where({ status: 1, user_id: session.get('user_id') }).count('* as total'))[0].total,
+                    moment: (await Database_1.default.from('moments').where({ user_id }).count('* as total'))[0].total,
+                    answer: (await Database_1.default.from('answer').where({ type: 0, status: 1, user_id }).count('* as total'))[0].total,
+                    customer: (await Database_1.default.from('customer').where({ status: 1, user_id }).count('* as total'))[0].total,
                 };
                 if (user.ip) {
                     await (0, axios_1.default)({
@@ -343,6 +343,9 @@ class UserController {
                     break;
                 case 'height':
                     await Database_1.default.from('users').where('user_id', session.get('user_id')).update({ height: all.value });
+                    break;
+                case 'weight':
+                    await Database_1.default.from('users').where('user_id', session.get('user_id')).update({ weight: all.value });
                     break;
                 case 'work':
                     await Database_1.default.from('users').where('user_id', session.get('user_id')).update({ work: JSON.stringify(all.value || '') });

@@ -7,7 +7,7 @@ const Database_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Lucid/D
 function percentUserinfo(user_id) {
     return new Promise(async (resolve, reject) => {
         let percent = 0, value = '', text = '';
-        const user = await Database_1.default.from('users').select('*').where({ user_id }).first();
+        const user = await Database_1.default.from('users').select('*').where({ user_id }).first() || {};
         if (user.nickname)
             percent += 5;
         if (user.avatar_url) {

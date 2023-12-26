@@ -10,7 +10,7 @@ class ApiCheck {
         try {
             const userSign = request.header('User-Sign');
             if (userSign) {
-                const user = await Database_1.default.from('users').where('id', Jwt_1.default.verifyPublicKey(userSign || '')).first();
+                const user = await Database_1.default.from('users').where('id', Jwt_1.default.verifyPublicKey(userSign || '')).first() || {};
                 session.put('user_id', user.user_id);
             }
             await next();

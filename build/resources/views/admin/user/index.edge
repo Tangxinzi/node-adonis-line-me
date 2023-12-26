@@ -17,64 +17,96 @@
     <div class="sixteen wide column">
       <div class="ui header-title flex-between">
         <span>{{ data.title }}</span>
-        <div class="ui mini selection dropdown">
-          <input type="hidden" name="type" value="{{ data.all.orderBy || '' }}" />
-          <i class="dropdown icon"></i>
-          <div class="default text">排序</div>
-          <div class="menu">
-            <a href="" class="item" data-value="">默认</a>
-            <a href="?orderBy=online_at" class="item" data-value="online_at">最近上线</a>
+        <div class="">
+          <div class="ui mini selection dropdown">
+            <input type="hidden" name="type" value="{{ data.all.type || '' }}" />
+            <i class="dropdown icon"></i>
+            <div class="default text">类型</div>
+            <div class="menu">
+              <a href="?type=1,2" class="item" data-value="1,2">全部</a>
+              <a href="?type=1" class="item" data-value="1">用户</a>
+              <a href="?type=2" class="item" data-value="2">介绍人</a>
+            </div>
+          </div>
+          <div class="ui mini selection dropdown">
+            <input type="hidden" name="type" value="{{ data.all.orderBy || '' }}" />
+            <i class="dropdown icon"></i>
+            <div class="default text">排序</div>
+            <div class="menu">
+              <a href="" class="item" data-value="">默认</a>
+              <a href="?orderBy=online_at" class="item" data-value="online_at">最近上线</a>
+            </div>
           </div>
         </div>
       </div>
-      <table class="ui celled center aligned table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>头像昵称</th>
-            <th>手机</th>
-            <th>性别</th>
-            <th>类别</th>
-            <th>照片</th>
-            <th>出生</th>
-            <th>资料</th>
-            <th>IP 属地</th>
-            <th>最近上线</th>
-            <th>注册时间</th>
-            <!-- <th>操作</th> -->
-          </tr>
-        </thead>
-        <tbody>
-          @each(row in data.users)
+      <div class="scroll-container" style="width: 100%; overflow-x: scroll; margin: 1em 0;">
+        <table class="ui celled center aligned table" style="width: 140%;">
+          <thead>
             <tr>
-              <td class="td">{{ row.id }}</td>
-              <td class="td">
-                <a class="ui image label" title="{{ row.user_id }}" href="{{ route('admin/UsersController.edit', { user_id: row.user_id }) }}">
-                  @if(row.avatar_url)
-                  <img src="{{ row.avatar_url }}" />
-                  @endif
-                  {{ row.nickname || ('Unnamed ' + row.user_id) }}
-                  @if(row.work.text)
-                  <div class="detail">{{ row.work.text }}</div>
-                  @endif
-                </a>
-              </td>
-              <td class="td">{{ row.phone || '' }}</td>
-              <td class="td">{{ row.sex == 1 ? '男' : '' }}{{ row.sex == 0 ? '女' : '' }}</td>
-              <td class="td">{{ row.type == 1 ? '用户' : '' }}{{ row.type == 2 ? '红娘' : '' }}</td>
-              <td class="td">{{ row.photos.length }}</td>
-              <td class="td">{{ row.birthday || '' }}</td>
-              <td class="td" title="{{ row.percent.text }}">{{ row.percent.value }}</td>
-              <td class="td">{{ row.ip ? row.ip.city : (row.ip || '') }}</td>
-              <td class="td">{{ row.online_at }}</td>
-              <td class="td">{{ row.created_at }}</td>
-              <!-- <td class="td">
-                <a href="{{ route('admin/UsersController.edit', { user_id: row.user_id }) }}">编辑</a>
-              </td> -->
+              <th>ID</th>
+              <th>类别</th>
+              <th>头像昵称</th>
+              <th>职业信息</th>
+              <th class="two wide">介绍内容</th>
+              <th>手机</th>
+              <th>认证</th>
+              <th>性别</th>
+              <th>照片</th>
+              <th>出生</th>
+              <th>资料</th>
+              <th>IP 属地</th>
+              <th>最近上线</th>
+              <th>注册时间</th>
+              <!-- <th>操作</th> -->
             </tr>
-          @endeach
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @each(row in data.users)
+              <tr>
+                <td class="td">{{ row.id }}</td>
+                <td class="td">{{ row.type == 1 ? '用户' : '' }}{{ row.type == 2 ? '介绍人' : '' }}</td>
+                <td class="td">
+                  <a class="ui image label" title="{{ row.user_id }}" href="{{ route('admin/UsersController.edit', { user_id: row.user_id }) }}">
+                    @if(row.avatar_url)
+                    <img src="{{ row.avatar_url }}" />
+                    @endif
+                    {{ row.nickname || ('Unnamed ' + row.user_id) }}
+                    @if(row.work.text)
+                    <div class="detail">{{ row.work.text }}</div>
+                    @endif
+                  </a>
+                </td>
+                <td class="td">
+                  @if(row.company)
+                  <span class="ui label">{{ row.company || '' }}</span>
+                  @endif
+                  @if(row.job_title)
+                  <span class="ui label">{{ row.job_title || '' }}</span>
+                  @endif
+                  @if(row.work)
+                  <span class="ui label">{{ row.work.text || '' }}</span>
+                  @endif
+                </td>
+                <td class="td" style="position: relative;">
+                  <span class="activating click one-line" data-content="{{ row.detail }}" data-position="bottom center" data-inverted="">{{ row.detail || '' }}</span>
+                </td>
+                <td class="td">{{ row.phone || '' }}</td>
+                <td class="td"><i class="{{ row.authentication ? 'blue check circle' : 'circle outline' }} icon"></i></td>
+                <td class="td">{{ row.sex == 1 ? '男' : '' }}{{ row.sex == 0 ? '女' : '' }}</td>
+                <td class="td">{{ row.photos.length }}</td>
+                <td class="td">{{ row.birthday || '' }}</td>
+                <td class="td" title="{{ row.percent.text }}">{{ row.percent.value }}</td>
+                <td class="td">{{ row.ip ? row.ip.city : (row.ip || '') }}</td>
+                <td class="td">{{ row.online_at }}</td>
+                <td class="td">{{ row.created_at }}</td>
+                <!-- <td class="td">
+                  <a href="{{ route('admin/UsersController.edit', { user_id: row.user_id }) }}">编辑</a>
+                </td> -->
+              </tr>
+            @endeach
+          </tbody>
+        </table>
+      </div>
       @!component('components/pagination', all=data.all)
     </div>
   </div>

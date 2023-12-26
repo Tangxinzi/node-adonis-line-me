@@ -98,9 +98,11 @@ class CustomersController {
             const customer = await Database_1.default.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'relation', 'relation_log_id', 'introduction', 'recommend', 'created_at').where({ 'id': params.id, status: 1 }).first();
             customer.relation_text = RELATION[customer.relation];
             if (customer.relation_log_id) {
+                console.log(all);
                 customer.userinfo = await Database_1.default.from('customer_log').select('*').where({ 'id': customer.relation_log_id }).first();
                 if (request.method() == 'POST') {
-                    await Database_1.default.from('customer_log').where({ id: customer.userinfo.id }).update({ photos: JSON.stringify(all.userinfo.photos || []) });
+                    await Database_1.default.from('customer').where({ id: customer.cid }).update({ introduction: all.introduction });
+                    await Database_1.default.from('customer_log').where({ id: customer.userinfo.id }).update({ expectation: all.userinfo.expectation || '', photos: JSON.stringify(all.userinfo.photos || []) });
                     session.flash('message', { type: 'success', header: '更新成功', message: `` });
                     return response.redirect('back');
                 }
