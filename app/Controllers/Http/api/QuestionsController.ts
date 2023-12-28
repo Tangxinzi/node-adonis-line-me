@@ -59,11 +59,15 @@ export default class QuestionsController {
   public async answerLists({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const answer = (await Database.rawQuery("select questions.id as qid, questions.type, questions.title, questions.description, answer.content, answer.id as id, answer.user_id from answer left outer join questions on answer.relation_question_id = questions.id where answer.type = 0 and answer.user_id = :user_id order by type asc;", {
+      const answer = (await Database.rawQuery("select questions.id as qid, questions.type, questions.title, questions.description, answer.content, answer.id as id, answer.user_id, answer.photos from answer left outer join questions on answer.relation_question_id = questions.id where answer.type = 0 and answer.user_id = :user_id order by type asc;", {
         user_id: all.user_id || session.get('user_id')
       }))[0]
 
-      response.json({ status: 200, message: "ok", data: answer })
+      for (let index = 0; index < answer.length; index++) {
+        answer[index].photos = answer[index].photos ? JSON.parse(answer[index].photos) : []
+      }
+
+      return response.json({ status: 200, message: "ok", data: answer })
     } catch (error) {
       Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
@@ -133,7 +137,7 @@ export default class QuestionsController {
         }
 
         question.photos = JSON.parse(question.photos || '[]')
-        response.json({ status: 200, message: "ok", data: question })
+        return response.json({ status: 200, message: "ok", data: question })
       }
 
       if (request.method() == 'POST') {
@@ -141,7 +145,7 @@ export default class QuestionsController {
           case '0':
             // 个性化问答接口
             var data = await Database.from('answer').where({ relation_question_id: params.id, type: 0, user_id: session.get('user_id') }).first() || {}
-            if (!ansdatawer.id) {
+            if (!data.id) {
               const id = await Database.table('answer').returning('id').insert({
                 user_id: session.get('user_id'),
                 relation_question_id: params.id,
@@ -149,10 +153,10 @@ export default class QuestionsController {
                 photos: JSON.stringify(all.photos || []),
               })
 
-              response.json({ status: 200, message: "ok", data: id })
+              return response.json({ status: 200, message: "ok", data: id })
             } else {
-              await Database.from('answer').where({ relation_question_id: params.id, type: all.type, user_id: session.get('user_id') }).update({ content: all.content || '', modified_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
-              response.json({ status: 200, message: "ok" })
+              await Database.from('answer').where({ relation_question_id: params.id, type: all.type, user_id: session.get('user_id') }).update({ content: all.content || '', photos: JSON.stringify(all.photos || []), modified_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
+              return response.json({ status: 200, message: "ok" })
             }
             break;
           case '1':
@@ -162,8 +166,6 @@ export default class QuestionsController {
               var result = await Database.from('answer').where({ id: params.id, type: 1, user_id: session.get('user_id') }).update({ recommend: data.recommend ? 0 : 1, modified_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
               return response.json({ status: 200, message: "ok", data: result })
             }
-
-            console.log(data);
 
             if (!data.id) {
               const id = await Database.table('answer').returning('id').insert({

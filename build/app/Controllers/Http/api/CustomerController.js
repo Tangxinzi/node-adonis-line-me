@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Application_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Core/Application"));
 const Database_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Lucid/Database"));
 const Logger_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Core/Logger"));
-const Jwt_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/Jwt"));
 const axios_1 = __importDefault(require("axios"));
 const iconv_lite_1 = __importDefault(require("iconv-lite"));
 const moment_1 = __importDefault(require("moment"));
@@ -164,18 +163,28 @@ class CustomerController {
     async relationCustomerinfo({ request, response, session }) {
         try {
             const all = request.all();
-            const user = await Database_1.default.from('users').where('id', Jwt_1.default.verifyPublicKey(all.relation_sign)).first();
-            const id = await Database_1.default.table('customer').returning('id').insert({
-                status: 1,
-                user_id: session.get('user_id'),
-                relation: all.relation || '',
-                relation_user_id: user.user_id || '',
-                introduction: all.introduction,
-                userinfo: JSON.stringify(all.userinfo)
-            });
-            response.json({ status: 200, sms: "ok" });
+            const user = await Database_1.default.from('users').where('user_id', all.userinfo.user_id).first() || {};
+            if (user.user_id == session.get('user_id')) {
+                return response.json({ status: 200, sms: "error", data: '关联失败，不能成为自己的介绍人哦。' });
+            }
+            const customer = await Database_1.default.from('customer').where({ user_id: session.get('user_id'), relation_user_id: user.user_id }).first() || {};
+            if (customer.id) {
+                return response.json({ status: 200, sms: "error", data: '当前用户已被关联，请被解除后再进行操作。' });
+            }
+            else {
+                const id = await Database_1.default.table('customer').returning('id').insert({
+                    status: 1,
+                    user_id: session.get('user_id'),
+                    relation: all.relation || '',
+                    relation_user_id: user.user_id || '',
+                    introduction: all.introduction,
+                    userinfo: JSON.stringify(all.userinfo)
+                });
+                return response.json({ status: 200, sms: "ok" });
+            }
         }
         catch (error) {
+            console.log(error);
             Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
             response.json({
                 status: 500,

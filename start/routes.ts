@@ -28,6 +28,7 @@ Route.group(() => {
   Route.get('/user/wxa-login', 'api/UserController.wxaLogin')
   Route.get('/user/info', 'api/UserController.getUserinfo')
   Route.post('/user/info', 'api/UserController.updateUserinfo')
+  Route.post('/user/find/:type', 'api/UserController.findUser')
   Route.post('/user/change-type', 'api/UserController.changeType')
   Route.post('/user/field', 'api/UserController.updateUserField')
   Route.post('/user/recommend/home', 'api/UserController.recommendHome')

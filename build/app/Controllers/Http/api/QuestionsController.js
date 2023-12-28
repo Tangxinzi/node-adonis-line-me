@@ -63,10 +63,13 @@ class QuestionsController {
     async answerLists({ request, response, session }) {
         try {
             const all = request.all();
-            const answer = (await Database_1.default.rawQuery("select questions.id as qid, questions.type, questions.title, questions.description, answer.content, answer.id as id, answer.user_id from answer left outer join questions on answer.relation_question_id = questions.id where answer.type = 0 and answer.user_id = :user_id order by type asc;", {
+            const answer = (await Database_1.default.rawQuery("select questions.id as qid, questions.type, questions.title, questions.description, answer.content, answer.id as id, answer.user_id, answer.photos from answer left outer join questions on answer.relation_question_id = questions.id where answer.type = 0 and answer.user_id = :user_id order by type asc;", {
                 user_id: all.user_id || session.get('user_id')
             }))[0];
-            response.json({ status: 200, message: "ok", data: answer });
+            for (let index = 0; index < answer.length; index++) {
+                answer[index].photos = answer[index].photos ? JSON.parse(answer[index].photos) : [];
+            }
+            return response.json({ status: 200, message: "ok", data: answer });
         }
         catch (error) {
             Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
@@ -133,24 +136,24 @@ class QuestionsController {
                     ...await Database_1.default.from('questions').select('title').where('id', question.relation_question_id).first()
                 };
                 question.photos = JSON.parse(question.photos || '[]');
-                response.json({ status: 200, message: "ok", data: question });
+                return response.json({ status: 200, message: "ok", data: question });
             }
             if (request.method() == 'POST') {
                 switch (all.type) {
                     case '0':
                         var data = await Database_1.default.from('answer').where({ relation_question_id: params.id, type: 0, user_id: session.get('user_id') }).first() || {};
-                        if (!ansdatawer.id) {
+                        if (!data.id) {
                             const id = await Database_1.default.table('answer').returning('id').insert({
                                 user_id: session.get('user_id'),
                                 relation_question_id: params.id,
                                 content: all.content || '',
                                 photos: JSON.stringify(all.photos || []),
                             });
-                            response.json({ status: 200, message: "ok", data: id });
+                            return response.json({ status: 200, message: "ok", data: id });
                         }
                         else {
-                            await Database_1.default.from('answer').where({ relation_question_id: params.id, type: all.type, user_id: session.get('user_id') }).update({ content: all.content || '', modified_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss') });
-                            response.json({ status: 200, message: "ok" });
+                            await Database_1.default.from('answer').where({ relation_question_id: params.id, type: all.type, user_id: session.get('user_id') }).update({ content: all.content || '', photos: JSON.stringify(all.photos || []), modified_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss') });
+                            return response.json({ status: 200, message: "ok" });
                         }
                         break;
                     case '1':
@@ -159,7 +162,6 @@ class QuestionsController {
                             var result = await Database_1.default.from('answer').where({ id: params.id, type: 1, user_id: session.get('user_id') }).update({ recommend: data.recommend ? 0 : 1, modified_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss') });
                             return response.json({ status: 200, message: "ok", data: result });
                         }
-                        console.log(data);
                         if (!data.id) {
                             const id = await Database_1.default.table('answer').returning('id').insert({
                                 type: 1,

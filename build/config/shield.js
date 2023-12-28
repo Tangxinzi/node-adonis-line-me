@@ -18,6 +18,7 @@ exports.csrf = {
         '/api/customer/:status/:id',
         '/api/customer/field/update/:id',
         '/api/customer/data/phone/:phone',
+        '/api/user/find/:type',
         '/api/user/custom/create',
         '/api/user/recommend/home',
         '/api/user/authentication/verification',

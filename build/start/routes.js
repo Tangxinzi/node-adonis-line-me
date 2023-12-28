@@ -11,6 +11,7 @@ Route_1.default.group(() => {
     Route_1.default.get('/user/wxa-login', 'api/UserController.wxaLogin');
     Route_1.default.get('/user/info', 'api/UserController.getUserinfo');
     Route_1.default.post('/user/info', 'api/UserController.updateUserinfo');
+    Route_1.default.post('/user/find/:type', 'api/UserController.findUser');
     Route_1.default.post('/user/change-type', 'api/UserController.changeType');
     Route_1.default.post('/user/field', 'api/UserController.updateUserField');
     Route_1.default.post('/user/recommend/home', 'api/UserController.recommendHome');

@@ -138,6 +138,30 @@ class UserController {
             return error;
         }
     }
+    async findUser({ params, request, response, session }) {
+        try {
+            const all = request.all();
+            switch (params.type) {
+                case 'phone':
+                    var user = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where({ phone: all.value, status: 1 }).first() || {};
+                    return response.json({ status: 200, message: "ok", data: user });
+                    break;
+                case 'wx_openid':
+                    var user = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where({ wechat_open_id: all.value, status: 1 }).first() || {};
+                    return response.json({ status: 200, message: "ok", data: user });
+                    break;
+                case 'user_id':
+                    var user = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where({ user_id: all.value, status: 1 }).first() || {};
+                    return response.json({ status: 200, message: "ok", data: user });
+                    break;
+            }
+            return response.json({ status: 404, message: "ok", data: {} });
+        }
+        catch (error) {
+            Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
+            return error;
+        }
+    }
     async verification({ request, response, session }) {
         try {
             const all = request.all(), operates = await Database_1.default.from('users_operates').where({ user_id: session.get('user_id'), type: 'examine' }).first() ? true : false;

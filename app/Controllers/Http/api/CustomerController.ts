@@ -192,18 +192,29 @@ export default class CustomerController {
   public async relationCustomerinfo({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const user = await Database.from('users').where('id', Jwt.verifyPublicKey(all.relation_sign)).first()
-      const id = await Database.table('customer').returning('id').insert({
-        status: 1,
-        user_id: session.get('user_id'),
-        relation: all.relation || '',
-        relation_user_id: user.user_id || '',
-        introduction: all.introduction,
-        userinfo: JSON.stringify(all.userinfo)
-      })
+      const user = await Database.from('users').where('user_id', all.userinfo.user_id).first() || {}
+      if (user.user_id == session.get('user_id')) {
+        return response.json({ status: 200, sms: "error", data: '关联失败，不能成为自己的介绍人哦。' })
+      }
 
-      response.json({ status: 200, sms: "ok" })
+      const customer = await Database.from('customer').where({ user_id: session.get('user_id'), relation_user_id: user.user_id }).first() || {}
+      if (customer.id) {
+        return response.json({ status: 200, sms: "error", data: '当前用户已被关联，请被解除后再进行操作。' })
+      } else {
+        const id = await Database.table('customer').returning('id').insert({
+          status: 1,
+          user_id: session.get('user_id'),
+          relation: all.relation || '',
+          relation_user_id: user.user_id || '',
+          introduction: all.introduction,
+          userinfo: JSON.stringify(all.userinfo)
+        })
+
+        return response.json({ status: 200, sms: "ok" })
+      }
     } catch (error) {
+      console.log(error);
+
       Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
