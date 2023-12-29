@@ -1,5 +1,6 @@
 import Database from '@ioc:Adonis/Lucid/Database';
 import Moment from 'moment';
+const Messages = require('./Messages');
 
 function regularData(data) {
   return new Promise(async (resolve, reject) => {
@@ -46,6 +47,7 @@ function action(data, value) {
 
       // 拒绝
       if (result && value.verification_status == 'rejected') {
+        await Messages.push({ user_id: data.user_id, content: '您提交的认证信息被拒绝，请重新提交。' }) // 拒绝
         switch (`${ data.table }.${ data.field }`) {
           case 'customer.':
             data.value = JSON.parse(data.value)
@@ -74,6 +76,7 @@ function action(data, value) {
 
       // 通过
       if (result && value.verification_status == 'approved') {
+        await Messages.push({ user_id: data.user_id, content: '您提交的认证信息已通过。' }) // 通过
         switch (`${ data.table }.${ data.field }`) {
           case 'users.avatar_url':
             await Database.from('users').where('user_id', data.user_id).update({ avatar_url: data.value })

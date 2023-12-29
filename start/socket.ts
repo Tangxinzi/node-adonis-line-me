@@ -94,16 +94,32 @@ const lastJoinChat = async (user, chat_id) => {
   }
 }
 
-const countUnread = async (user_id, chat_id)  => {
+const countUnread = async (user_id, chat_id) => {
   try {
     const chat_log = await Database.from('chats_log').whereIn('user_id', [user_id]).where({ chat_id, user_id }).first()
     if (chat_log) {
       const count = await Database.from('chats').where({ chat_id }).where('created_at', '>', chat_log.last_at).count('* as total')
       return count[0].total || 0
-    } else {
-
     }
+  } catch (error) {
+    console.log(error);
+  }
+}
 
+const getMessages = async (user_id) => {
+  try {
+    const message = await Database.from('messages').select('content', 'created_at').where({ user_id, status: 1 }).orderBy('created_at', 'desc').first() || {}
+    const messages_log = await Database.from('messages_log').where({ user_id }).first() || {}
+    const count = await Database.from('messages').where({ user_id }).where('created_at', '>', messages_log.last_at).count('* as total')
+
+    message.created_at = message.created_at ? Moment(message.created_at).fromNow() : ''
+
+    return {
+      notice: {
+        ...message,
+        unread: count[0].total || 0
+      },
+    }
   } catch (error) {
     console.log(error);
   }
@@ -129,7 +145,10 @@ Ws.io.on('connection', async (socket) => {
 
     // tab 消息列表
     socket.on('chatroom', async (data) => {
-      socket.emit('chatroom list', await getChatroom(user.user_id))
+      socket.emit('chatroom list', {
+        messages: await getMessages(user.user_id),
+        chatroom: await getChatroom(user.user_id)
+      })
     }
 
     // page 初次进入消息数据
@@ -171,7 +190,10 @@ Ws.io.on('connection', async (socket) => {
         for (let index = 0; index < chatroom.chat_users_id.length; index++) {
           const user_id = chatroom.chat_users_id[index];
           // socket.emit('chatroom list', await getChatroom(user_id))
-          socket.broadcast.to(user_id).emit('chatroom list', await getChatroom(user_id))
+          socket.broadcast.to(user_id).emit('chatroom list', {
+            messages: await getMessages(user_id),
+            chatroom: await getChatroom(user_id)
+          })
         }
       }
     })

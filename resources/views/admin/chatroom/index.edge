@@ -17,7 +17,10 @@
     <div class="sixteen wide column">
       <div class="ui header-title flex-between">
         <span>{{ data.title }}</span>
-        <a class="ui tiny button" href="#" onclick="modal()">添加房间</a>
+        <div class="">
+          <a class="ui tiny button" href="#" onclick="modal('messages')">推送消息</a>
+          <a class="ui tiny button" href="#" onclick="modal('chatroom')">添加房间</a>
+        </div>
       </div>
       <table class="ui celled table center aligned">
         <thead>
@@ -68,29 +71,61 @@
       </table>
     </div>
   </div>
-  <form class="ui modal tiny form" action="{{ route('admin/ChatroomController.store') }}" method="POST" enctype="multipart/form-data">
+  <form class="ui modal form chatroom" action="{{ route('admin/ChatroomController.store') }}" method="POST" enctype="multipart/form-data">
     <i class="close icon"></i>
     <div class="header">
       添加房间
     </div>
     <div class="content">
       <div class="required field">
-        <label for="users">标签名称</label>
-        <input id="users" type="text" name="users" value="" placeholder="房间用户需要两人以上，填写用户 ID，使用英文逗号「,」分割 ID。" />
+        <label for="users_ids">用户 Ids</label>
+        <input id="users_ids" type="text" name="users" value="" placeholder="房间用户需要两人以上，填写用户 ID，使用英文逗号「,」分割 ID。" />
       </div>
       {{ csrfField() }}
     </div>
     <div class="actions">
       <div class="ui black deny button">取消</div>
-      <button class="ui positive right labeled icon button" type="submit" name="button">提交<i class="checkmark icon"></i></button>
+      <button class="ui positive right labeled icon button" type="submit" name="button" value="chatroom">提交<i class="checkmark icon"></i></button>
+    </div>
+  </form>
+  <form class="ui modal form messages" action="{{ route('admin/ChatroomController.store') }}" method="POST" enctype="multipart/form-data">
+    <i class="close icon"></i>
+    <div class="header">
+      推送消息
+    </div>
+    <div class="content">
+      <div class="field">
+        <label>类别</label>
+        <div class="ui selection dropdown">
+          <input type="hidden" name="type" value="0" />
+          <i class="dropdown icon"></i>
+          <div class="default text">点击选择</div>
+          <div class="menu">
+            <div class="item" data-value="0">通知</div>
+          </div>
+        </div>
+      </div>
+      <div class="required field">
+        <label for="user_id">user_id</label>
+        <input id="user_id" type="text" name="user_id" value="" placeholder="" />
+      </div>
+      <div class="required field">
+        <label for="content">消息内容</label>
+        <textarea id="content" name="content" rows="8" cols="80"></textarea>
+      </div>
+      {{ csrfField() }}
+    </div>
+    <div class="actions">
+      <div class="ui black deny button">取消</div>
+      <button class="ui positive right labeled icon button" type="submit" name="button" value="messages">提交<i class="checkmark icon"></i></button>
     </div>
   </form>
 @endsection
 
 @section('script')
 <script type="text/javascript">
-  function modal () {
-    $('.ui.modal').modal('show')
+  function modal (value) {
+    $('.ui.modal.' + value).modal('show')
   }
 
   $('.activating').popup({

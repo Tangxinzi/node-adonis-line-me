@@ -17,6 +17,7 @@ const Avatar = require('../lib/Avatar');
 const { percentUserinfo } = require('../lib/Percent');
 const { jscode2session } = require('../lib/Weixin');
 const Verification = require('../lib/Verification');
+const Messages = require('../lib/Messages');
 
 export default class UserController {
   getZodiacSign(day, month) {
@@ -49,11 +50,10 @@ export default class UserController {
       const result = await jscode2session(all.code)
       result.user = await Database.from('users').where('wechat_open_id', result.openid).first() || {}
       if (!result.user.id) {
-        const id = await Database.table('users').returning('id').insert({
-          user_id: 'hl_a' + RandomString.generate({ length: 8, charset: ['numeric'] }),
-          wechat_open_id: result.openid,
-        })
+        const user_id = 'hl_a' + RandomString.generate({ length: 8, charset: ['numeric'] })
+        const id = await Database.table('users').returning('id').insert({ user_id wechat_open_id: result.openid })
         result.user.id = id[0]
+        await Messages.push({ user_id, content: '相亲交友找对象，熟人介绍更靠谱。欢迎使用体验，如您在体验中遇任何问题请与管理员联系。' }) // 推送注册成功消息
       }
       delete result.session_key // 删除 jscode2session session key
       result.user.sign = await Jwt.signPrivateKey(result.user.id)
@@ -601,6 +601,32 @@ export default class UserController {
         status: 200,
         message: "ok",
         data: id
+      })
+    } catch (error) {
+      console.log(error);
+      response.json({
+        status: 500,
+        message: "ok",
+        data: error
+      })
+    }
+  }
+
+  public async messages({ request, response, session }: HttpContextContract) {
+    try {
+      const all = request.all(), user_id = session.get('user_id')
+      const messages = await Database.from('messages').where({ user_id, status: 1 }).orderBy('created_at', 'asc').forPage(request.input('page', 1), 20)
+      const messages_log = await Database.from('messages_log').where({ user_id }).first() || {}
+      if (messages_log.id) {
+        await Database.from('messages_log').where({ user_id }).update({ last_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
+      } else {
+        await Database.table('messages_log').insert({ user_id, last_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
+      }
+
+      return response.json({
+        status: 200,
+        message: "ok",
+        data: messages
       })
     } catch (error) {
       console.log(error);
