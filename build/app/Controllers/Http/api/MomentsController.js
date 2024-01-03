@@ -82,6 +82,9 @@ class MomentsController {
     async create({ request, response, session }) {
         try {
             const all = request.all();
+            if (!all.content && all.photos.length == 0) {
+                return response.json({ status: 400, message: "error", data: '' });
+            }
             let id = await Database_1.default.table('moments').returning('id').insert({
                 user_id: session.get('user_id'),
                 content: all.content,
@@ -89,10 +92,10 @@ class MomentsController {
                 ip: request.ip()
             });
             if (id[0]) {
-                response.json({ status: 200, message: "ok" });
+                return response.json({ status: 200, message: "ok" });
             }
             else {
-                response.json({
+                return response.json({
                     status: 500,
                     message: "internalServerError",
                     data: 'err'

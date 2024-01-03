@@ -8,6 +8,9 @@ Route_1.default.get('/', async ({ view }) => {
     return view.render('welcome');
 });
 Route_1.default.group(() => {
+    Route_1.default.get('/filter', 'api/FiltersController.index');
+    Route_1.default.post('/filter', 'api/FiltersController.index');
+    Route_1.default.get('/filter/customer', 'api/FiltersController.customer');
     Route_1.default.get('/user/wxa-login', 'api/UserController.wxaLogin');
     Route_1.default.get('/user/info', 'api/UserController.getUserinfo');
     Route_1.default.post('/user/info', 'api/UserController.updateUserinfo');
@@ -19,6 +22,7 @@ Route_1.default.group(() => {
     Route_1.default.get('/user/qrcode', 'api/UserController.qrcode');
     Route_1.default.get('/user/chat', 'api/UserController.chat');
     Route_1.default.get('/user/chat/send', 'api/UserController.chatSend');
+    Route_1.default.get('/user/chat/messages', 'api/UserController.messages');
     Route_1.default.get('/user/location', 'api/UserController.location');
     Route_1.default.get('/user/verification', 'api/UserController.verification');
     Route_1.default.get('/user/verification/review/:table/:field', 'api/UserController.review');

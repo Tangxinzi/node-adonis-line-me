@@ -106,20 +106,6 @@ class CustomerController {
         }
         return customer;
     }
-    async index({ request, session }) {
-        try {
-            const all = request.all();
-            const customer = await Database_1.default.from('customer').select('id as cid', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id').where({ status: 1, recommend: 1 }).orderBy('recommend_at', 'desc').limit(10);
-            for (let index = 0; index < customer.length; index++) {
-                customer[index].created_at = (0, moment_1.default)(customer[index].created_at).format('YYYY-MM-DD');
-            }
-            return await this.customerFormat(customer, session);
-        }
-        catch (error) {
-            console.log(error);
-            Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
-        }
-    }
     async filter({ params, response, request, session }) {
         try {
             let all = request.all(), data = [];
@@ -141,7 +127,6 @@ class CustomerController {
                     let database = [];
                     for (let index = 0; index < distance[0].length; index++)
                         database[index] = distance[0][index].user_id;
-                    console.log(database);
                     const customer = await Database_1.default.from('customer').select('id as cid', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id').where({ status: 1, recommend: 1 }).whereIn('user_id', database).orderBy('recommend_at', 'desc').limit(10);
                     data = await this.customerFormat(customer, session);
                     for (let index = 0; index < location.length; index++) {

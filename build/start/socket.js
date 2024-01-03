@@ -99,8 +99,23 @@ const countUnread = async (user_id, chat_id) => {
             const count = await Database_1.default.from('chats').where({ chat_id }).where('created_at', '>', chat_log.last_at).count('* as total');
             return count[0].total || 0;
         }
-        else {
-        }
+    }
+    catch (error) {
+        console.log(error);
+    }
+};
+const getMessages = async (user_id) => {
+    try {
+        const message = await Database_1.default.from('messages').select('content', 'created_at').where({ user_id, status: 1 }).orderBy('created_at', 'desc').first() || {};
+        const messages_log = await Database_1.default.from('messages_log').where({ user_id }).first() || {};
+        const count = await Database_1.default.from('messages').where({ user_id }).where('created_at', '>', messages_log.last_at).count('* as total');
+        message.created_at = message.created_at ? (0, moment_1.default)(message.created_at).fromNow() : '';
+        return {
+            notice: {
+                ...message,
+                unread: count[0].total || 0
+            },
+        };
     }
     catch (error) {
         console.log(error);
@@ -117,7 +132,10 @@ Ws_1.default.io.on('connection', async (socket) => {
             socket.join(room);
         });
         socket.on('chatroom', async (data) => {
-            socket.emit('chatroom list', await getChatroom(user.user_id));
+            socket.emit('chatroom list', {
+                messages: await getMessages(user.user_id),
+                chatroom: await getChatroom(user.user_id)
+            });
         }, socket.on('chat list', async (room, data) => {
             if (chat_id) {
                 await lastJoinChat(user, chat_id);
@@ -141,7 +159,10 @@ Ws_1.default.io.on('connection', async (socket) => {
                 chatroom.chat_users_id = chatroom.chat_users_id.split(',');
                 for (let index = 0; index < chatroom.chat_users_id.length; index++) {
                     const user_id = chatroom.chat_users_id[index];
-                    socket.broadcast.to(user_id).emit('chatroom list', await getChatroom(user_id));
+                    socket.broadcast.to(user_id).emit('chatroom list', {
+                        messages: await getMessages(user_id),
+                        chatroom: await getChatroom(user_id)
+                    });
                 }
             }
         }))));

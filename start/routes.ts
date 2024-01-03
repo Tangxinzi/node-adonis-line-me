@@ -25,6 +25,10 @@ Route.get('/', async ({ view }) => {
 })
 
 Route.group(() => {
+  Route.get('/filter', 'api/FiltersController.index')
+  Route.post('/filter', 'api/FiltersController.index')
+  Route.get('/filter/customer', 'api/FiltersController.customer')
+
   Route.get('/user/wxa-login', 'api/UserController.wxaLogin')
   Route.get('/user/info', 'api/UserController.getUserinfo')
   Route.post('/user/info', 'api/UserController.updateUserinfo')

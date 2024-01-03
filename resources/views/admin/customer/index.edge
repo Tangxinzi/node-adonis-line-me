@@ -50,7 +50,7 @@
             <th class="three wide">介绍内容</th>
             <th>关系</th>
             <th>性别</th>
-            <th>联系</th>
+            <th class="one wide">联系</th>
             <th>手机验证</th>
             <th>照片</th>
             <th>资料</th>
@@ -89,7 +89,9 @@
               </td>
               <td class="td">{{ row.relation || '' }}</td>
               <td class="td">{{ row.sex == 1 ? '男' : '' }}{{ row.sex == 0 ? '女' : '' }}</td>
-              <td class="td">{{ row.contact_wechat || '' }}</td>
+              <td class="td" title="{{ row.contact_wechat }}">
+                <span class="one-line">{{ row.contact_wechat || '' }}</span>
+              </td>
               <td class="td">{{ row.phone || '' }}</td>
               <td class="td">
                 <span class="activating fluid click one-line" data-variation="small" data-html="

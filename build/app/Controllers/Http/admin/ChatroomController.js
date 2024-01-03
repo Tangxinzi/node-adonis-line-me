@@ -61,15 +61,29 @@ class ChatroomController {
     async store({ request, response, view, session }) {
         try {
             const all = request.all();
-            if (all.users.split(',').length >= 2) {
-                const chat_id = (0, uuid_1.v4)();
-                await Database_1.default.table('chatroom').insert({ chat_id, chat_users_id: all.users });
-                session.flash('success', { type: 'success', header: '', message: `房间号「${all.id}」更新成功。` });
+            switch (all.button) {
+                case 'chatroom':
+                    if (all.users.split(',').length >= 2) {
+                        const chat_id = (0, uuid_1.v4)();
+                        await Database_1.default.table('chatroom').insert({ chat_id, chat_users_id: all.users });
+                        session.flash('success', { type: 'success', header: '', message: `房间号「${all.id}」更新成功。` });
+                    }
+                    else {
+                        session.flash('error', { type: 'error', header: '', message: `创建失败，房间需要 2 人以上，请插入多个 ID。` });
+                    }
+                    break;
+                    return response.redirect('back');
+                case 'messages':
+                    if (all.user_id && all.content) {
+                        await Database_1.default.table('messages').insert({ content: all.content, user_id: all.user_id });
+                        session.flash('success', { type: 'success', header: '', message: `已为「${all.user_id}」推送消息。` });
+                    }
+                    else {
+                        session.flash('error', { type: 'error', header: '', message: `推送消息失败，请检查。` });
+                    }
+                    return response.redirect('back');
+                    break;
             }
-            else {
-                session.flash('error', { type: 'error', header: '', message: `创建失败，房间需要 2 人以上，请插入多个 ID。` });
-            }
-            return response.redirect('back');
         }
         catch (error) {
             console.log(error);

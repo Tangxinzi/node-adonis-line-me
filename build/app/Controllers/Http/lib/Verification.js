@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const Database_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Lucid/Database"));
 const moment_1 = __importDefault(require("moment"));
+const Messages = require('./Messages');
 function regularData(data) {
     return new Promise(async (resolve, reject) => {
         try {
@@ -47,6 +48,7 @@ function action(data, value) {
                 modified_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss')
             });
             if (result && value.verification_status == 'rejected') {
+                await Messages.push({ user_id: data.user_id, content: '您提交的认证信息被拒绝，请重新提交。' });
                 switch (`${data.table}.${data.field}`) {
                     case 'customer.':
                         data.value = JSON.parse(data.value);
@@ -73,6 +75,7 @@ function action(data, value) {
                 }
             }
             if (result && value.verification_status == 'approved') {
+                await Messages.push({ user_id: data.user_id, content: '您提交的认证信息已通过。' });
                 switch (`${data.table}.${data.field}`) {
                     case 'users.avatar_url':
                         await Database_1.default.from('users').where('user_id', data.user_id).update({ avatar_url: data.value });

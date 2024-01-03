@@ -96,8 +96,10 @@ export default class UserController {
           visitor: 0,
           moment: (await Database.from('moments').where({ user_id }).count('* as total'))[0].total,
           answer: (await Database.from('answer').where({ type: 0, status: 1, user_id }).count('* as total'))[0].total,
-          customer: (await Database.from('customer').where({ status: 1, user_id }).count('* as total'))[0].total,
+          customer: (await Database.from('customer').where({ status: 1, relation_user_id: user_id }).count('* as total'))[0].total,
         }
+
+        // user.customer = (await Database.from('customer').where({ status: 1, user_id }).count('* as total'))[0].total
 
         // 头像主色
         // if (user.avatar_url) {

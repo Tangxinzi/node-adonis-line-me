@@ -5,7 +5,7 @@ import Jwt from 'App/Models/Jwt';
 import * as Vibrant from 'node-vibrant'
 import axios from "axios";
 import iconv from 'iconv-lite';
-import Moment from'moment';
+import Moment from 'moment';
 import QrCode from 'qrcode';
 import fs from "fs";
 
@@ -134,19 +134,19 @@ export default class CustomerController {
     return customer
   }
 
-  public async index({ request, session }: HttpContextContract) {
-    try {
-      const all = request.all()
-      const customer = await Database.from('customer').select('id as cid', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id').where({ status: 1, recommend: 1 }).orderBy('recommend_at', 'desc').limit(10)
-      for (let index = 0; index < customer.length; index++) {
-        customer[index].created_at = Moment(customer[index].created_at).format('YYYY-MM-DD')
-      }
-      return await this.customerFormat(customer, session)
-    } catch (error) {
-      console.log(error);
-      Logger.error("error 获取失败 %s", JSON.stringify(error));
-    }
-  }
+  // public async index({ request, session }: HttpContextContract) {
+  //   try {
+  //     const all = request.all()
+  //     const customer = await Database.from('customer').select('id as cid', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id').where({ status: 1, recommend: 1 }).orderBy('recommend_at', 'desc').limit(10)
+  //     for (let index = 0; index < customer.length; index++) {
+  //       customer[index].created_at = Moment(customer[index].created_at).format('YYYY-MM-DD')
+  //     }
+  //     return await this.customerFormat(customer, session)
+  //   } catch (error) {
+  //     console.log(error);
+  //     Logger.error("error 获取失败 %s", JSON.stringify(error));
+  //   }
+  // }
 
   public async filter({ params, response, request, session }: HttpContextContract) {
     try {
@@ -168,7 +168,7 @@ export default class CustomerController {
           const distance = await Database.rawQuery(`SELECT user_id, latitude, longitude, ST_DISTANCE_SPHERE(point(longitude, latitude), point(${ location.longitude }, ${ location.latitude })) AS distance FROM users_location WHERE user_id != '${ session.get('user_id') }' ORDER BY distance;`)
           let database = []
           for (let index = 0; index < distance[0].length; index++) database[index] = distance[0][index].user_id
-          console.log(database);
+
           const customer = await Database.from('customer').select('id as cid', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id').where({ status: 1, recommend: 1 }).whereIn('user_id', database).orderBy('recommend_at', 'desc').limit(10)
           data = await this.customerFormat(customer, session)
           for (let index = 0; index < location.length; index++) {
