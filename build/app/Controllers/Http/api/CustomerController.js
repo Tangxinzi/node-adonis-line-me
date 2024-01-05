@@ -201,6 +201,7 @@ class CustomerController {
             });
         }
         catch (error) {
+            console.log(error);
             Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
             response.json({
                 status: 500,
@@ -235,6 +236,7 @@ class CustomerController {
             }
         }
         catch (error) {
+            console.log(error);
             Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
             response.json({
                 status: 500,
@@ -299,14 +301,14 @@ class CustomerController {
                     customer[index] = {
                         ...customer[index],
                         percent: await percentUserinfo(customer[index].relation_user_id),
-                        ...await Database_1.default.from('users').select('avatar_url', 'nickname', 'work', 'company', 'birthday', 'phone', 'photos').where('user_id', customer[index].relation_user_id).first()
+                        ...await Database_1.default.from('users').select('avatar_url', 'nickname', 'sex', 'work', 'company', 'birthday', 'phone', 'photos').where('user_id', customer[index].relation_user_id).first()
                     };
                 }
                 else if (customer[index].relation_log_id) {
                     customer[index] = {
                         ...customer[index],
                         percent: await percentCustomerinfo(customer[index].relation_log_id),
-                        ...await Database_1.default.from('customer_log').select('avatar_url', 'nickname', 'work', 'company', 'birthday', 'phone', 'photos').where('id', customer[index].relation_log_id).first()
+                        ...await Database_1.default.from('customer_log').select('avatar_url', 'nickname', 'sex', 'work', 'company', 'birthday', 'phone', 'photos').where('id', customer[index].relation_log_id).first()
                     };
                 }
                 customer[index].introduces = await Database_1.default.from('answer').select('introduce_name', 'content').where({ type: 1, status: 1, user_id: customer[index].user_id }).orderBy('created_at', 'desc');
@@ -409,6 +411,7 @@ class CustomerController {
         }
         catch (error) {
             console.log(error);
+            Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
             response.json({
                 status: 500,
                 sms: "internalServerError",
@@ -512,6 +515,7 @@ class CustomerController {
             return response.json({ status: 200, sms: "ok" });
         }
         catch (error) {
+            console.log(error);
             Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
             response.json({ status: 500, sms: "internalServerError", data: error });
         }
@@ -550,6 +554,7 @@ class CustomerController {
             });
         }
         catch (error) {
+            console.log(error);
             Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
             response.json({
                 status: 500,

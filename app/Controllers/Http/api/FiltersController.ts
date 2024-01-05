@@ -48,11 +48,14 @@ export default class FiltersController {
   // 用户筛选
   public async customer({ request, response, session }: HttpContextContract) {
     try {
-      let filter = await Database.from('users_filter').where('user_id', session.get('user_id')).first() || {}
-      if (filter.id) {
+      let all = request.all(), filter = await Database.from('users_filter').where('user_id', session.get('user_id')).first() || {}
+
+      if (all.type == 'match') {
+        filter.sex = all.sex, filter.age = [parseInt(all.age) - 5, parseInt(all.age) + 5]
+      } else if (filter.id) {
         filter.age = filter.age.split(',')
       } else {
-        filter.defaultFilter
+        filter = defaultFilter
       }
 
       let ageWhereSql = `(DATE_FORMAT(NOW(), '%Y-%m-%d') - DATE_FORMAT(IFNULL(customer_log.birthday, users.birthday), '%Y-%m-%d') BETWEEN ${ filter.age[0] } AND ${ filter.age[1] }) AND`

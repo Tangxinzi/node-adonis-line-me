@@ -184,7 +184,6 @@ export default class CustomerController {
       return response.json({ status: 200, message: "ok", data })
     } catch (error) {
       console.log(error);
-
       Logger.error("error 获取失败 %s", JSON.stringify(error));
     }
   }
@@ -214,7 +213,6 @@ export default class CustomerController {
       }
     } catch (error) {
       console.log(error);
-
       Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
@@ -251,6 +249,7 @@ export default class CustomerController {
         data: customer
       })
     } catch (error) {
+      console.log(error);
       Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
@@ -284,6 +283,7 @@ export default class CustomerController {
         return response.json({ status: 200, message: "error", data: '手机号或者验证码填写错误' })
       }
     } catch (error) {
+      console.log(error);
       Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
@@ -369,13 +369,13 @@ export default class CustomerController {
           customer[index] = {
             ...customer[index],
             percent: await percentUserinfo(customer[index].relation_user_id),
-            ...await Database.from('users').select('avatar_url', 'nickname', 'work', 'company', 'birthday', 'phone', 'photos').where('user_id', customer[index].relation_user_id).first()
+            ...await Database.from('users').select('avatar_url', 'nickname', 'sex', 'work', 'company', 'birthday', 'phone', 'photos').where('user_id', customer[index].relation_user_id).first()
           }
         } else if (customer[index].relation_log_id) {
           customer[index] = {
             ...customer[index],
             percent: await percentCustomerinfo(customer[index].relation_log_id),
-            ...await Database.from('customer_log').select('avatar_url', 'nickname', 'work', 'company', 'birthday', 'phone', 'photos').where('id', customer[index].relation_log_id).first()
+            ...await Database.from('customer_log').select('avatar_url', 'nickname', 'sex', 'work', 'company', 'birthday', 'phone', 'photos').where('id', customer[index].relation_log_id).first()
           }
         }
 
@@ -401,7 +401,6 @@ export default class CustomerController {
       })
     } catch (error) {
       console.log(error);
-
       Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
@@ -497,8 +496,7 @@ export default class CustomerController {
       response.json({ status: 200, sms: "ok", data: customer })
     } catch (error) {
       console.log(error);
-
-      // Logger.error("error 获取失败 %s", JSON.stringify(error));
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
         sms: "internalServerError",
@@ -578,7 +576,6 @@ export default class CustomerController {
       })
     } catch (error) {
       console.log(error);
-
       Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
@@ -614,6 +611,7 @@ export default class CustomerController {
 
       return response.json({ status: 200, sms: "ok" })
     } catch (error) {
+      console.log(error);
       Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({ status: 500, sms: "internalServerError", data: error })
     }
@@ -656,6 +654,7 @@ export default class CustomerController {
         sms: "ok"
       })
     } catch (error) {
+      console.log(error);
       Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,
