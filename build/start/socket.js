@@ -21,7 +21,7 @@ const getChatroom = async (user_id) => {
             chatroom[index].user = await new Promise((resolve) => {
                 chatroom[index].chat_users_id.map(async (item, key) => {
                     if (item != user_id) {
-                        chatroom[index].user = await Database_1.default.from('users').select('avatar_url', 'nickname').where({ user_id: item }).first();
+                        chatroom[index].user = await Database_1.default.from('users').select('type', 'avatar_url', 'nickname').where({ user_id: item }).first();
                         resolve(chatroom[index].user);
                     }
                 });
@@ -37,7 +37,7 @@ const getChatsMessage = async (data, chat_id) => {
     try {
         const chatroom = await Database_1.default.from('chatroom').where({ chat_id, status: 1 }).first();
         chatroom.chat_users_id = chatroom.chat_users_id.split(',');
-        const users = await Database_1.default.from('users').select('nickname', 'avatar_url').whereIn('user_id', chatroom.chat_users_id);
+        const users = await Database_1.default.from('users').select('type', 'nickname', 'avatar_url').whereIn('user_id', chatroom.chat_users_id);
         const chats = await Database_1.default.from('chats').select('id', 'chat_id', 'user_id', 'chat_content', 'chat_content_type', 'created_at').where({ chat_id, status: 1 }).orderBy('created_at', 'asc');
         for (let index = 0; index < chats.length; index++) {
             const indexOf = chatroom.chat_users_id.indexOf(chats[index].user_id);

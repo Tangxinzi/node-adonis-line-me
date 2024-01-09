@@ -11,107 +11,46 @@ export default class EventController {
   public async descovery({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const moments = await Database.from('moments').select('moments.id', 'moments.user_id', 'moments.content', 'moments.photos', 'moments.ip', 'moments.created_at', 'users.nickname', 'users.avatar_url', 'users.sex', 'users.work', 'users.birthday', 'users.user_id').join('users', 'moments.user_id', '=', 'users.user_id').where({ 'moments.status': 1, recommend: 1 }).limit(10).orderBy('moments.created_at', 'desc')
-      const answer = await Database.from('answer').select('answer.id', 'answer.relation_question_id', 'answer.user_id', 'answer.content', 'answer.photos', 'answer.ip', 'answer.created_at', 'users.nickname', 'users.avatar_url', 'users.sex', 'users.work', 'users.birthday', 'users.wechat_open_id').join('users', 'answer.user_id', '=', 'users.user_id').where({ 'answer.type': 0, 'answer.status': 1, recommend: 1 }).limit(10).orderBy('answer.created_at', 'desc')
+      let descovery = (await Database.rawQuery(`
+        SELECT am.type, am.id, am.user_id, users.nickname, users.avatar_url, users.sex, users.birthday, users.work, am.title, am.content, am.photos, am.relation_id, am.created_at FROM (
+        	SELECT 'answer' AS type, id, user_id, '' as title, content, photos, relation_question_id as relation_id, created_at FROM answer WHERE status = 1 AND type = 0
+        	UNION
+        	SELECT 'moment' AS type, id, user_id, '' as title, content, photos, '' as relation_id, created_at FROM moments WHERE status = 1
+        ) AS am
+        JOIN users ON am.user_id = users.user_id ORDER BY am.created_at DESC LIMIT 12 OFFSET ${ request.input('page', 1) }
+      `))[0]
 
-      let descovery = []
-      // descovery.push({
-      //   id: 0,
-      //   user_id: 'op02s4vhiiLffHPfdB7LKmpMdr_I',
-      //   nickname: 'Jiang',
-      //   avatar_url: '/uploads/files/c9WyMZmT3nl6QKrXhNivsFAvMcv7MPBd.png',
-      //   sex: '',
-      //   content: '我想向大家介绍一位非常出色的朋友，她叫小美。她今年 28 岁，是一名资深的市场营销专家，工作十分努力和聪明。小美是一个热情开朗、乐观向上的人，善于与人交往，总是能在困难时找到解决问题的方法。她热爱运动，经常参加慈善马拉松，并且对健康饮食有着很好的认识。此外，她还是一个优秀的画家，每幅画作都充满了她对生活的热爱和感悟。',
-      //   photos: ['/uploads/files/rMp4Y9km65FkpIC3XOYpQovkcyieSqUo.jpg'],
-      //   age: 0,
-      //   data_type: 'introduce',
-      //   ip: '',
-      //   created_at: Moment().fromNow()
-      // })
-
-      for (let index = 0; index < 10; index++) {
-        // moment
-        if (moments[index]) {
-          const like = await Database.from('likes').where({ relation_type_id: moments[index].id, type: 'moment', status: 1, user_id: session.get('user_id') || '' }).first()
-
-          if (moments[index].ip) {
-            await axios({
-              url: `http://whois.pconline.com.cn/ipJson.jsp?ip=${ moments[index].ip }&json=true`,
-              responseType: "arraybuffer"
-            }).then(function (response) {
-              const data = iconv.decode(response.data, 'gbk')
-              moments[index].ip = data ? JSON.parse(data) : ''
-            }).catch(function (error) {
-              // console.log(error)
-            })
-          }
-
-          moments[index]['work'] = JSON.parse(moments[index]['work'])
-          if (moments[index]['work'] && moments[index]['work']['value']) {
-            moments[index]['work']['text'] = await zpData.data(moments[index]['work']['value'][0], moments[index]['work']['value'][1])
-          }
-
-          descovery.push({
-            id: moments[index].id,
-            user_id: moments[index].user_id,
-            nickname: moments[index].nickname,
-            avatar_url: moments[index].avatar_url,
-            sex: moments[index].sex,
-            title: '发布了动态',
-            content: moments[index].content,
-            photos: moments[index].photos ? JSON.parse(moments[index].photos) : [],
-            age: Moment().diff(moments[index].birthday, 'years'),
-            work: moments[index].work,
-            data_type: 'moment',
-            like: like && like.id ? true : false,
-            likeNum: (await Database.from('likes').where({ relation_type_id: moments[index].id, type: 'moment', status: 1 }).count('* as total'))[0].total || 0,
-            commentNum: (await Database.from('comments').where({ relation_type_id: moments[index].id, type: 'moment', status: 1 }).count('* as total'))[0].total || 0,
-            ip: moments[index].ip,
-            created_at: Moment(moments[index].created_at).fromNow()
-          })
+      for (let index = 0; index < descovery.length; index++) {
+        descovery[index].photos = JSON.parse(descovery[index].photos)
+        descovery[index].age = Moment().diff(descovery[index].birthday, 'years')
+        descovery[index].created_at = Moment(descovery[index].created_at).fromNow()
+        descovery[index]['work'] = JSON.parse(descovery[index]['work'])
+        if (descovery[index]['work'] && descovery[index]['work']['value']) {
+          descovery[index]['work']['text'] = await zpData.data(descovery[index]['work']['value'][0], descovery[index]['work']['value'][1])
         }
 
-        // answer
-        if (answer[index]) {
-          const like = await Database.from('likes').where({ relation_type_id: answer[index].id, type: 'answer', status: 1, user_id: session.get('user_id') || '' }).first()
-          const question = await Database.from('questions').select('title').where('id', answer[index].relation_question_id).first() || {}
-
-          if (answer[index].ip) {
-            await axios({
-              url: `http://whois.pconline.com.cn/ipJson.jsp?ip=${ answer[index].ip }&json=true`,
-              responseType: "arraybuffer"
-            }).then(function (response) {
-              const data = iconv.decode(response.data, 'gbk')
-              answer[index].ip = data ? JSON.parse(data) : ''
-            }).catch(function (error) {
-              // console.log(error)
-            })
-          }
-
-          answer[index]['work'] = JSON.parse(answer[index]['work'])
-          if (answer[index]['work'] && answer[index]['work']['value']) {
-            answer[index]['work']['text'] = await zpData.data(answer[index]['work']['value'][0], answer[index]['work']['value'][1])
-          }
-
-          descovery.push({
-            id: answer[index].id,
-            user_id: answer[index].user_id,
-            nickname: answer[index].nickname,
-            avatar_url: answer[index].avatar_url,
-            sex: answer[index].sex,
-            title: question.title || '',
-            content: answer[index].content,
-            photos: answer[index].photos ? JSON.parse(answer[index].photos) : [],
-            age: Moment().diff(answer[index].birthday, 'years'),
-            work: answer[index].work,
-            data_type: 'answer',
-            like: like && like.id ? true : false,
-            likeNum: (await Database.from('likes').where({ relation_type_id: answer[index].id, type: 'answer', status: 1 }).count('* as total'))[0].total || 0,
-            commentNum: (await Database.from('comments').where({ relation_type_id: answer[index].id, type: 'answer', status: 1 }).count('* as total'))[0].total || 0,
-            ip: answer[index].ip,
-            created_at: Moment(answer[index].created_at).fromNow()
-          })
+        if (descovery[index].type == 'answer') {
+          const questions = await Database.from('questions').select('title').where('id', descovery[index].relation_id).first() || {}
+          descovery[index].title = questions.title
         }
+
+        const like = await Database.from('likes').where({ relation_type_id: descovery[index].id, type: descovery[index].type, status: 1, user_id: session.get('user_id') || '' }).first()
+        descovery[index].like = like && like.id ? true : false
+        descovery[index].likeNum = (await Database.from('likes').where({ relation_type_id: descovery[index].id, type: 'moment', status: 1 }).count('* as total'))[0].total || 0
+        descovery[index].commentNum = (await Database.from('comments').where({ relation_type_id: descovery[index].id, type: 'moment', status: 1 }).count('* as total'))[0].total || 0
+
+        // IP
+        // if (descovery[index].ip) {
+        //   await axios({
+        //     url: `http://whois.pconline.com.cn/ipJson.jsp?ip=${ descovery[index].ip }&json=true`,
+        //     responseType: "arraybuffer"
+        //   }).then(function (response) {
+        //     const data = iconv.decode(response.data, 'gbk')
+        //     descovery[index].ip = data ? JSON.parse(data) : ''
+        //   }).catch(function (error) {
+        //     // console.log(error)
+        //   })
+        // }
       }
 
       response.json({

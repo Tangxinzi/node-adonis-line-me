@@ -295,7 +295,7 @@ class CustomerController {
             else {
                 user.authentication = false;
             }
-            const customer = await Database_1.default.from('customer').select('id', 'user_id', 'relation', 'introduction', 'relation_log_id', 'relation_user_id', 'status', 'created_at').whereIn('status', [1, 2]).where('user_id', all.user_id || session.get('user_id')).orderBy('created_at', 'desc');
+            const customer = await Database_1.default.from('customer').select('id', 'user_id', 'relation', 'introduction', 'relation_log_id', 'relation_user_id', 'status', 'created_at').whereIn('status', all.status ? all.status.split(',') : [1, 2]).where('user_id', all.user_id || session.get('user_id')).orderBy('created_at', 'desc');
             for (let index = 0; index < customer.length; index++) {
                 if (customer[index].relation_user_id) {
                     customer[index] = {
@@ -336,7 +336,10 @@ class CustomerController {
             response.json({
                 status: 500,
                 sms: "internalServerError",
-                data: error
+                data: {
+                    user: {},
+                    customer: []
+                }
             });
         }
     }
