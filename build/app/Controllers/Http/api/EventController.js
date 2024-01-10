@@ -14,17 +14,17 @@ const Data = require('../lib/Data');
 class EventController {
     async descovery({ request, response, session }) {
         try {
-            const all = request.all();
-            let descovery = (await Database_1.default.rawQuery(`
-        SELECT am.type, am.id, am.user_id, users.nickname, users.avatar_url, users.sex, users.birthday, users.work, am.title, am.content, am.photos, am.relation_id, am.created_at FROM (
+            const all = request.all(), descovery = (await Database_1.default.rawQuery(`
+        SELECT am.content, am.type, am.id, am.user_id, users.nickname, users.avatar_url, users.sex, users.birthday, users.work, users.location, am.title, am.photos, am.relation_id, am.created_at FROM (
         	SELECT 'answer' AS type, id, user_id, '' as title, content, photos, relation_question_id as relation_id, created_at FROM answer WHERE status = 1 AND type = 0
         	UNION
         	SELECT 'moment' AS type, id, user_id, '' as title, content, photos, '' as relation_id, created_at FROM moments WHERE status = 1
         ) AS am
-        JOIN users ON am.user_id = users.user_id ORDER BY am.created_at DESC LIMIT 12 OFFSET ${request.input('page', 1)}
+        JOIN users ON am.user_id = users.user_id ORDER BY am.created_at DESC LIMIT 10 OFFSET ${request.input('page', 0)}
       `))[0];
             for (let index = 0; index < descovery.length; index++) {
                 descovery[index].photos = JSON.parse(descovery[index].photos);
+                descovery[index].location = descovery[index].location ? JSON.parse(descovery[index].location) : {};
                 descovery[index].age = (0, moment_1.default)().diff(descovery[index].birthday, 'years');
                 descovery[index].created_at = (0, moment_1.default)(descovery[index].created_at).fromNow();
                 descovery[index]['work'] = JSON.parse(descovery[index]['work']);

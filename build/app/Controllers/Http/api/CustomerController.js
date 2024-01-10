@@ -301,19 +301,20 @@ class CustomerController {
                     customer[index] = {
                         ...customer[index],
                         percent: await percentUserinfo(customer[index].relation_user_id),
-                        ...await Database_1.default.from('users').select('avatar_url', 'nickname', 'sex', 'work', 'company', 'birthday', 'phone', 'photos').where('user_id', customer[index].relation_user_id).first()
+                        ...await Database_1.default.from('users').select('avatar_url', 'nickname', 'sex', 'work', 'company', 'birthday', 'phone', 'photos', 'location').where('user_id', customer[index].relation_user_id).first()
                     };
                 }
                 else if (customer[index].relation_log_id) {
                     customer[index] = {
                         ...customer[index],
                         percent: await percentCustomerinfo(customer[index].relation_log_id),
-                        ...await Database_1.default.from('customer_log').select('avatar_url', 'nickname', 'sex', 'work', 'company', 'birthday', 'phone', 'photos').where('id', customer[index].relation_log_id).first()
+                        ...await Database_1.default.from('customer_log').select('avatar_url', 'nickname', 'sex', 'work', 'company', 'birthday', 'phone', 'photos', 'location').where('id', customer[index].relation_log_id).first()
                     };
                 }
                 customer[index].introduces = await Database_1.default.from('answer').select('introduce_name', 'content').where({ type: 1, status: 1, user_id: customer[index].user_id }).orderBy('created_at', 'desc');
                 customer[index].age = (0, moment_1.default)().diff(customer[index].birthday, 'years');
                 customer[index].photos = customer[index].photos ? JSON.parse(customer[index].photos) : [];
+                customer[index].location = customer[index].location ? JSON.parse(customer[index].location) : [];
                 customer[index].relation = RELATION[customer[index].relation];
                 customer[index].work = customer[index].work ? JSON.parse(customer[index].work) : [];
                 if (customer[index].work.value) {
