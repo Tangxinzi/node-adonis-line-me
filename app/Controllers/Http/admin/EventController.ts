@@ -5,6 +5,7 @@ Moment.locale('zh-cn')
 import axios from "axios";
 import iconv from 'iconv-lite';
 import GeoIP from 'geoip-lite';
+import zpData from '../lib/Zhipin';
 
 export default class EventController {
   public async dataType({ params, request, response, session }: HttpContextContract) {
@@ -63,62 +64,99 @@ export default class EventController {
           break;
       }
 
-      let descovery = []
-      for (let index = 0; index < 10; index++) {
-        // moment
-        if (data.moments.length && data.moments[index]) {
-          const like = await Database.from('likes').where({ relation_type_id: data.moments[index].id, type: 'moment', status: 1, user_id: session.get('user_id') || '' }).first()
-          descovery.push({
-            id: data.moments[index].id,
-            recommend: data.moments[index].recommend,
-            user_id: data.moments[index].user_id,
-            nickname: data.moments[index].nickname,
-            avatar_url: data.moments[index].avatar_url,
-            sex: data.moments[index].sex,
-            title: '',
-            content: data.moments[index].content,
-            photos: data.moments[index].photos ? JSON.parse(data.moments[index].photos) : [],
-            age: Moment().diff(data.moments[index].birthday, 'years'),
-            data_type: 'moment',
-            like: like && like.id ? true : false,
-            likeNum: (await Database.from('likes').where({ relation_type_id: data.moments[index].id, type: 'moment', status: 1 }).count('* as total'))[0].total || 0,
-            commentNum: (await Database.from('comments').where({ relation_type_id: data.moments[index].id, type: 'moment', status: 1 }).count('* as total'))[0].total || 0,
-            ip: GeoIP.lookup(data.moments[index].ip),
-            created_at: Moment(data.moments[index].created_at).format('YYYY-MM-DD')
-          })
+      const descovery = (await Database.rawQuery(`
+        SELECT am.type, am.id, am.recommend, am.user_id, users.nickname, users.avatar_url, users.sex, users.birthday, users.work, users.location, am.title, am.content, am.photos, am.relation_id, am.ip, am.created_at, COUNT(likes.id) AS likeNum, COUNT(comments.id) AS commentNum
+        FROM (
+            SELECT 'answer' AS type, id, recommend, user_id, '' AS title, content, photos, relation_question_id AS relation_id, ip, created_at
+            FROM answer
+            WHERE status = 1 AND type = 0
+            UNION
+            SELECT 'moment' AS type, id, recommend, user_id, '' AS title, content, photos, '' AS relation_id, ip, created_at
+            FROM moments
+            WHERE status = 1
+        ) AS am
+        JOIN users ON am.user_id = users.user_id
+        LEFT JOIN likes ON am.id = likes.relation_type_id AND likes.type = am.type AND likes.status = 1
+        LEFT JOIN comments ON am.id = comments.relation_type_id AND comments.type = am.type AND comments.status = 1
+        GROUP BY am.type, am.id, am.recommend, am.user_id, users.nickname, users.avatar_url, users.sex, users.birthday, users.work, users.location, am.title, am.content, am.photos, am.relation_id, am.ip, am.created_at
+        ORDER BY am.created_at DESC
+        LIMIT 20 OFFSET ${ request.input('page', 0) }
+      `))[0]
+
+      for (let index = 0; index < descovery.length; index++) {
+        descovery[index].photos = JSON.parse(descovery[index].photos)
+        descovery[index].location = descovery[index].location ? JSON.parse(descovery[index].location) : {}
+        descovery[index].age = Moment().diff(descovery[index].birthday, 'years')
+        descovery[index].created_at = Moment(descovery[index].created_at).fromNow()
+        descovery[index].ip = GeoIP.lookup(descovery[index].ip)
+        descovery[index]['work'] = JSON.parse(descovery[index]['work'])
+        if (descovery[index]['work'] && descovery[index]['work']['value']) {
+          descovery[index]['work']['text'] = await zpData.data(descovery[index]['work']['value'][0], descovery[index]['work']['value'][1])
         }
 
-        // answer
-        if (data.answer.length && data.answer[index]) {
-          const like = await Database.from('likes').where({ relation_type_id: data.answer[index].id, type: 'answer', status: 1, user_id: session.get('user_id') || '' }).first()
-          const question = await Database.from('questions').select('title').where('id', data.answer[index].relation_question_id).first() || {}
-          descovery.push({
-            id: data.answer[index].id,
-            recommend: data.answer[index].recommend,
-            user_id: data.answer[index].user_id,
-            nickname: data.answer[index].nickname,
-            avatar_url: data.answer[index].avatar_url,
-            sex: data.answer[index].sex,,
-            title: question.title || '',
-            content: data.answer[index].content,
-            photos: data.answer[index].photos ? JSON.parse(data.answer[index].photos) : [],
-            age: Moment().diff(data.answer[index].birthday, 'years'),
-            data_type: 'answer',
-            like: like && like.id ? true : false,
-            likeNum: (await Database.from('likes').where({ relation_type_id: data.answer[index].id, type: 'answer', status: 1 }).count('* as total'))[0].total || 0,
-            commentNum: (await Database.from('comments').where({ relation_type_id: data.answer[index].id, type: 'answer', status: 1 }).count('* as total'))[0].total || 0,
-            ip: GeoIP.lookup(data.answer[index].ip),
-            created_at: Moment(data.answer[index].created_at).format('YYYY-MM-DD')
-          })
+        if (descovery[index].type == 'answer') {
+          const questions = await Database.from('questions').select('title').where('id', descovery[index].relation_id).first() || {}
+          descovery[index].title = questions.title
         }
       }
+
+      // let descovery = []
+      // for (let index = 0; index < 10; index++) {
+      //   // moment
+      //   if (data.moments.length && data.moments[index]) {
+      //     const like = await Database.from('likes').where({ relation_type_id: data.moments[index].id, type: 'moment', status: 1, user_id: session.get('user_id') || '' }).first()
+      //     descovery.push({
+      //       id: data.moments[index].id,
+      //       recommend: data.moments[index].recommend,
+      //       user_id: data.moments[index].user_id,
+      //       nickname: data.moments[index].nickname,
+      //       avatar_url: data.moments[index].avatar_url,
+      //       sex: data.moments[index].sex,
+      //       title: '',
+      //       content: data.moments[index].content,
+      //       photos: data.moments[index].photos ? JSON.parse(data.moments[index].photos) : [],
+      //       age: Moment().diff(data.moments[index].birthday, 'years'),
+      //       data_type: 'moment',
+      //       like: like && like.id ? true : false,
+      //       likeNum: (await Database.from('likes').where({ relation_type_id: data.moments[index].id, type: 'moment', status: 1 }).count('* as total'))[0].total || 0,
+      //       commentNum: (await Database.from('comments').where({ relation_type_id: data.moments[index].id, type: 'moment', status: 1 }).count('* as total'))[0].total || 0,
+      //       ip: GeoIP.lookup(data.moments[index].ip),
+      //       created_at: Moment(data.moments[index].created_at).format('YYYY-MM-DD')
+      //     })
+      //   }
+      //
+      //   // answer
+      //   if (data.answer.length && data.answer[index]) {
+      //     const like = await Database.from('likes').where({ relation_type_id: data.answer[index].id, type: 'answer', status: 1, user_id: session.get('user_id') || '' }).first()
+      //     const question = await Database.from('questions').select('title').where('id', data.answer[index].relation_question_id).first() || {}
+      //     descovery.push({
+      //       id: data.answer[index].id,
+      //       recommend: data.answer[index].recommend,
+      //       user_id: data.answer[index].user_id,
+      //       nickname: data.answer[index].nickname,
+      //       avatar_url: data.answer[index].avatar_url,
+      //       sex: data.answer[index].sex,,
+      //       title: question.title || '',
+      //       content: data.answer[index].content,
+      //       photos: data.answer[index].photos ? JSON.parse(data.answer[index].photos) : [],
+      //       age: Moment().diff(data.answer[index].birthday, 'years'),
+      //       data_type: 'answer',
+      //       like: like && like.id ? true : false,
+      //       likeNum: (await Database.from('likes').where({ relation_type_id: data.answer[index].id, type: 'answer', status: 1 }).count('* as total'))[0].total || 0,
+      //       commentNum: (await Database.from('comments').where({ relation_type_id: data.answer[index].id, type: 'answer', status: 1 }).count('* as total'))[0].total || 0,
+      //       ip: GeoIP.lookup(data.answer[index].ip),
+      //       created_at: Moment(data.answer[index].created_at).format('YYYY-MM-DD')
+      //     })
+      //   }
+      // }
 
       return view.render('admin/event/descovery', {
         data: {
           title: '论坛',
           subtitle,
           active: 'descovery',
-          descovery
+          descovery,
+          all
         }
       })
     } catch (error) {

@@ -483,7 +483,21 @@ class UserController {
         try {
             const all = request.all();
             if (all.type == 'customer') {
-                const customer = await Database_1.default.from('customer').where('id', all.customer_id).first() || await Database_1.default.from('users').where('user_id', all.customer_id).first();
+                let customer = await Database_1.default.from('customer').select('id', 'user_id', 'introduction', 'relation_log_id', 'relation_user_id').whereIn('status', [1, 2]).where({ id: all.customer_id }).first() || {};
+                if (customer.id) {
+                    if (customer.relation_log_id) {
+                        customer = {
+                            ...customer,
+                            ...await Database_1.default.from('customer_log').select('avatar_url', 'nickname', 'detail').where('id', customer.relation_log_id).first()
+                        };
+                    }
+                    if (customer.relation_user_id) {
+                        customer = {
+                            ...customer,
+                            ...await Database_1.default.from('users').select('avatar_url', 'nickname', 'detail').where('user_id', customer.relation_user_id).first()
+                        };
+                    }
+                }
                 const chatroom_left = await Database_1.default.from('chatroom').where('chat_users_id', `${customer.user_id},${session.get('user_id')}`).first();
                 const chatroom_right = await Database_1.default.from('chatroom').where('chat_users_id', `${session.get('user_id')},${customer.user_id}`).first();
                 const chatroom = chatroom_left || chatroom_right;
@@ -499,6 +513,7 @@ class UserController {
                         status: 200,
                         message: "ok",
                         data: {
+                            customer,
                             chat_id: chatroom.chat_id
                         }
                     });

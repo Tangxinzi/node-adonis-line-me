@@ -4,19 +4,29 @@ import Moment from'moment'
 Moment.locale('zh-cn')
 import axios from "axios";
 import iconv from 'iconv-lite';
-const zpData = require('../lib/Zhipin');
-const Data = require('../lib/Data');
+import zpData from '../lib/Zhipin';
+import Data from '../lib/Data';
 
 export default class EventController {
   public async descovery({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all(), descovery = (await Database.rawQuery(`
-        SELECT am.content, am.type, am.id, am.user_id, users.nickname, users.avatar_url, users.sex, users.birthday, users.work, users.location, am.title, am.photos, am.relation_id, am.created_at FROM (
-        	SELECT 'answer' AS type, id, user_id, '' as title, content, photos, relation_question_id as relation_id, created_at FROM answer WHERE status = 1 AND type = 0
-        	UNION
-        	SELECT 'moment' AS type, id, user_id, '' as title, content, photos, '' as relation_id, created_at FROM moments WHERE status = 1
+        SELECT am.type, am.id, am.user_id, users.nickname, users.avatar_url, users.sex, users.birthday, users.work, users.location, am.title, am.content, am.photos, am.relation_id, am.created_at, COUNT(likes.id) AS likeNum, COUNT(comments.id) AS commentNum
+        FROM (
+            SELECT 'answer' AS type, id, user_id, '' AS title, content, photos, relation_question_id AS relation_id, created_at
+            FROM answer
+            WHERE status = 1 AND type = 0
+            UNION
+            SELECT 'moment' AS type, id, user_id, '' AS title, content, photos, '' AS relation_id, created_at
+            FROM moments
+            WHERE status = 1
         ) AS am
-        JOIN users ON am.user_id = users.user_id ORDER BY am.created_at DESC LIMIT 10 OFFSET ${ request.input('page', 0) }
+        JOIN users ON am.user_id = users.user_id
+        LEFT JOIN likes ON am.id = likes.relation_type_id AND likes.type = am.type AND likes.status = 1
+        LEFT JOIN comments ON am.id = comments.relation_type_id AND comments.type = am.type AND comments.status = 1
+        GROUP BY am.type, am.id, am.user_id, users.nickname, users.avatar_url, users.sex, users.birthday, users.work, users.location, am.title, am.content, am.photos, am.relation_id, am.created_at
+        ORDER BY am.created_at DESC
+        LIMIT 10 OFFSET ${ request.input('page', 0) }
       `))[0]
 
       for (let index = 0; index < descovery.length; index++) {
@@ -34,10 +44,8 @@ export default class EventController {
           descovery[index].title = questions.title
         }
 
-        const like = await Database.from('likes').where({ relation_type_id: descovery[index].id, type: descovery[index].type, status: 1, user_id: session.get('user_id') || '' }).first()
+        const like = await Database.from('likes').where({ relation_type_id: descovery[index].id, type: descovery[index].type, status: 1, user_id: session.get('user_id') || '' }).first() || {}
         descovery[index].like = like && like.id ? true : false
-        descovery[index].likeNum = (await Database.from('likes').where({ relation_type_id: descovery[index].id, type: 'moment', status: 1 }).count('* as total'))[0].total || 0
-        descovery[index].commentNum = (await Database.from('comments').where({ relation_type_id: descovery[index].id, type: 'moment', status: 1 }).count('* as total'))[0].total || 0
 
         // IP
         // if (descovery[index].ip) {
@@ -128,10 +136,10 @@ export default class EventController {
           moment.userinfo = await Database.from('users').where({user_id: moment.user_id}).first()
           moment.photos = moment.photos ? JSON.parse(moment.photos) : []
           moment.comments = await this.getComments('moment', moment.id)
-          // moment.created_at = Moment(moment.created_at).format('YYYY-MM-DD HH:mm:ss')
-          // moment.modified_at = Moment(moment.modified_at).format('YYYY-MM-DD HH:mm:ss')
-          moment.created_at = Moment(moment.created_at).fromNow()
-          moment.modified_at = Moment(moment.modified_at).fromNow()
+          moment.created_at = Moment(moment.created_at).format('YYYY-MM-DD HH:mm:ss')
+          moment.modified_at = Moment(moment.modified_at).format('YYYY-MM-DD HH:mm:ss')
+          // moment.created_at = Moment(moment.created_at).fromNow()
+          // moment.modified_at = Moment(moment.modified_at).fromNow()
 
           moment.title = '发布了动态'
 
@@ -150,10 +158,10 @@ export default class EventController {
           answer.userinfo = await Database.from('users').where({user_id: answer.user_id}).first()
           answer.photos = answer.photos ? JSON.parse(answer.photos) : []
           answer.comments = await this.getComments('answer', answer.id)
-          answer.created_at = Moment(answer.created_at).fromNow()
-          answer.modified_at = Moment(answer.modified_at).fromNow()
-          // answer.created_at = Moment(answer.created_at).format('YYYY-MM-DD HH:mm:ss')
-          // answer.modified_at = Moment(answer.modified_at).format('YYYY-MM-DD HH:mm:ss')
+          answer.created_at = Moment(answer.created_at).format('YYYY-MM-DD HH:mm:ss')
+          answer.modified_at = Moment(answer.modified_at).format('YYYY-MM-DD HH:mm:ss')
+          // answer.created_at = Moment(answer.created_at).fromNow()
+          // answer.modified_at = Moment(answer.modified_at).fromNow()
 
           const question = await Database.from('questions').select('title').where('id', answer.relation_question_id).first()
           answer.title = question.title

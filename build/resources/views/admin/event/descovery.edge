@@ -33,7 +33,7 @@
           <tr>
             <th>ID</th>
             <th>发布</th>
-            <!-- <th>性别</th> -->
+            <th>类型</th>
             <th class="five wide">内容</th>
             <th>类别</th>
             <th>照片</th>
@@ -55,7 +55,7 @@
                   {{ row.nickname || ('Unnamed ' + row.user_id) }}
                 </a>
               </td>
-              <!-- <td class="td">{{ row.sex == 1 ? '男' : '' }}{{ row.sex == 0 ? '女' : '' }}</td> -->
+              <td class="td">{{ row.type }}</td>
               <td class="td" style="position: relative;">
                 <span class="activating click one-line" data-content="{{ row.content }}" data-position="bottom center" data-inverted="">{{ row.content }}</span>
               </td>
@@ -84,6 +84,7 @@
           @endeach
         </tbody>
       </table>
+      @!component('components/pagination', all=data.all)
     </div>
   </div>
   <form class="ui modal form" action="" method="post">

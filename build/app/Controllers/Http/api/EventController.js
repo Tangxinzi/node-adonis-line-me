@@ -9,18 +9,28 @@ const moment_1 = __importDefault(require("moment"));
 moment_1.default.locale('zh-cn');
 const axios_1 = __importDefault(require("axios"));
 const iconv_lite_1 = __importDefault(require("iconv-lite"));
-const zpData = require('../lib/Zhipin');
-const Data = require('../lib/Data');
+const Zhipin_1 = __importDefault(require("../lib/Zhipin"));
+const Data_1 = __importDefault(require("../lib/Data"));
 class EventController {
     async descovery({ request, response, session }) {
         try {
             const all = request.all(), descovery = (await Database_1.default.rawQuery(`
-        SELECT am.content, am.type, am.id, am.user_id, users.nickname, users.avatar_url, users.sex, users.birthday, users.work, users.location, am.title, am.photos, am.relation_id, am.created_at FROM (
-        	SELECT 'answer' AS type, id, user_id, '' as title, content, photos, relation_question_id as relation_id, created_at FROM answer WHERE status = 1 AND type = 0
-        	UNION
-        	SELECT 'moment' AS type, id, user_id, '' as title, content, photos, '' as relation_id, created_at FROM moments WHERE status = 1
+        SELECT am.type, am.id, am.user_id, users.nickname, users.avatar_url, users.sex, users.birthday, users.work, users.location, am.title, am.content, am.photos, am.relation_id, am.created_at, COUNT(likes.id) AS likeNum, COUNT(comments.id) AS commentNum
+        FROM (
+            SELECT 'answer' AS type, id, user_id, '' AS title, content, photos, relation_question_id AS relation_id, created_at
+            FROM answer
+            WHERE status = 1 AND type = 0
+            UNION
+            SELECT 'moment' AS type, id, user_id, '' AS title, content, photos, '' AS relation_id, created_at
+            FROM moments
+            WHERE status = 1
         ) AS am
-        JOIN users ON am.user_id = users.user_id ORDER BY am.created_at DESC LIMIT 10 OFFSET ${request.input('page', 0)}
+        JOIN users ON am.user_id = users.user_id
+        LEFT JOIN likes ON am.id = likes.relation_type_id AND likes.type = am.type AND likes.status = 1
+        LEFT JOIN comments ON am.id = comments.relation_type_id AND comments.type = am.type AND comments.status = 1
+        GROUP BY am.type, am.id, am.user_id, users.nickname, users.avatar_url, users.sex, users.birthday, users.work, users.location, am.title, am.content, am.photos, am.relation_id, am.created_at
+        ORDER BY am.created_at DESC
+        LIMIT 10 OFFSET ${request.input('page', 0)}
       `))[0];
             for (let index = 0; index < descovery.length; index++) {
                 descovery[index].photos = JSON.parse(descovery[index].photos);
@@ -29,16 +39,14 @@ class EventController {
                 descovery[index].created_at = (0, moment_1.default)(descovery[index].created_at).fromNow();
                 descovery[index]['work'] = JSON.parse(descovery[index]['work']);
                 if (descovery[index]['work'] && descovery[index]['work']['value']) {
-                    descovery[index]['work']['text'] = await zpData.data(descovery[index]['work']['value'][0], descovery[index]['work']['value'][1]);
+                    descovery[index]['work']['text'] = await Zhipin_1.default.data(descovery[index]['work']['value'][0], descovery[index]['work']['value'][1]);
                 }
                 if (descovery[index].type == 'answer') {
                     const questions = await Database_1.default.from('questions').select('title').where('id', descovery[index].relation_id).first() || {};
                     descovery[index].title = questions.title;
                 }
-                const like = await Database_1.default.from('likes').where({ relation_type_id: descovery[index].id, type: descovery[index].type, status: 1, user_id: session.get('user_id') || '' }).first();
+                const like = await Database_1.default.from('likes').where({ relation_type_id: descovery[index].id, type: descovery[index].type, status: 1, user_id: session.get('user_id') || '' }).first() || {};
                 descovery[index].like = like && like.id ? true : false;
-                descovery[index].likeNum = (await Database_1.default.from('likes').where({ relation_type_id: descovery[index].id, type: 'moment', status: 1 }).count('* as total'))[0].total || 0;
-                descovery[index].commentNum = (await Database_1.default.from('comments').where({ relation_type_id: descovery[index].id, type: 'moment', status: 1 }).count('* as total'))[0].total || 0;
             }
             response.json({
                 status: 200,
@@ -108,8 +116,8 @@ class EventController {
                     moment.userinfo = await Database_1.default.from('users').where({ user_id: moment.user_id }).first();
                     moment.photos = moment.photos ? JSON.parse(moment.photos) : [];
                     moment.comments = await this.getComments('moment', moment.id);
-                    moment.created_at = (0, moment_1.default)(moment.created_at).fromNow();
-                    moment.modified_at = (0, moment_1.default)(moment.modified_at).fromNow();
+                    moment.created_at = (0, moment_1.default)(moment.created_at).format('YYYY-MM-DD HH:mm:ss');
+                    moment.modified_at = (0, moment_1.default)(moment.modified_at).format('YYYY-MM-DD HH:mm:ss');
                     moment.title = '发布了动态';
                     return response.json({ status: 200, message: "ok", data: moment });
                     break;
@@ -122,8 +130,8 @@ class EventController {
                     answer.userinfo = await Database_1.default.from('users').where({ user_id: answer.user_id }).first();
                     answer.photos = answer.photos ? JSON.parse(answer.photos) : [];
                     answer.comments = await this.getComments('answer', answer.id);
-                    answer.created_at = (0, moment_1.default)(answer.created_at).fromNow();
-                    answer.modified_at = (0, moment_1.default)(answer.modified_at).fromNow();
+                    answer.created_at = (0, moment_1.default)(answer.created_at).format('YYYY-MM-DD HH:mm:ss');
+                    answer.modified_at = (0, moment_1.default)(answer.modified_at).format('YYYY-MM-DD HH:mm:ss');
                     const question = await Database_1.default.from('questions').select('title').where('id', answer.relation_question_id).first();
                     answer.title = question.title;
                     return response.json({ status: 200, message: "ok", data: answer });
@@ -140,7 +148,7 @@ class EventController {
             const all = request.all();
             const customer = await Database_1.default.from('customer').where({ id: all.field_value, status: 1 }).first() || {};
             if (customer.id) {
-                return await Data.record({ table: 'customer', field: 'id', field_value: all.field_value, user_id: session.get('user_id'), wechat_open_id: all.wechat_open_id, category: all.category, count: all.count || 1 });
+                return await Data_1.default.record({ table: 'customer', field: 'id', field_value: all.field_value, user_id: session.get('user_id'), wechat_open_id: all.wechat_open_id, category: all.category, count: all.count || 1 });
             }
             else {
                 return;
@@ -165,7 +173,7 @@ class EventController {
                                 user.age = (0, moment_1.default)().diff(user.birthday, 'years');
                                 user.work = user.work ? JSON.parse(user.work) : [];
                                 if (user.work.value) {
-                                    user.work.text = await zpData.data(user.work.value[0], user.work.value[1]);
+                                    user.work.text = await Zhipin_1.default.data(user.work.value[0], user.work.value[1]);
                                 }
                                 customer[index] = {
                                     ...customer[index],
@@ -177,7 +185,7 @@ class EventController {
                                 customer_log.age = (0, moment_1.default)().diff(customer_log.birthday, 'years');
                                 customer_log.work = customer_log.work ? JSON.parse(customer_log.work) : [];
                                 if (customer_log.work.value) {
-                                    customer_log.work.text = await zpData.data(customer_log.work.value[0], customer_log.work.value[1]);
+                                    customer_log.work.text = await Zhipin_1.default.data(customer_log.work.value[0], customer_log.work.value[1]);
                                 }
                                 customer[index] = {
                                     ...customer[index],
