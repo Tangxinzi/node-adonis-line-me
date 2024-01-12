@@ -55,8 +55,9 @@ Route_1.default.group(() => {
     Route_1.default.post('/file/upload', 'api/FilesController.upload');
     Route_1.default.get('/comments/my', 'api/CommentsController.my');
     Route_1.default.post('/comments/create', 'api/CommentsController.create');
-    Route_1.default.get('/event/descovery', 'api/EventController.descovery');
-    Route_1.default.get('/event/descovery/:type/:id', 'api/EventController.type');
+    Route_1.default.get('/descovery', 'api/DescoveriesController.index');
+    Route_1.default.get('/descovery/type/:type/:id', 'api/DescoveriesController.type');
+    Route_1.default.get('/descovery/personal/:type', 'api/DescoveriesController.personal');
     Route_1.default.get('/event/like/:type/:id', 'api/EventController.like');
     Route_1.default.post('/event/like/:type/:id', 'api/EventController.like');
     Route_1.default.post('/event/datas/:type', 'api/EventController.datas');

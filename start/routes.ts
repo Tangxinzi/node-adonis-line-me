@@ -80,8 +80,9 @@ Route.group(() => {
   Route.get('/comments/my', 'api/CommentsController.my')
   Route.post('/comments/create', 'api/CommentsController.create')
 
-  Route.get('/event/descovery', 'api/EventController.descovery')
-  Route.get('/event/descovery/:type/:id', 'api/EventController.type')
+  Route.get('/descovery', 'api/DescoveriesController.index')
+  Route.get('/descovery/type/:type/:id', 'api/DescoveriesController.type')
+  Route.get('/descovery/personal/:type', 'api/DescoveriesController.personal')
   Route.get('/event/like/:type/:id', 'api/EventController.like')
   Route.post('/event/like/:type/:id', 'api/EventController.like')
   Route.post('/event/datas/:type', 'api/EventController.datas')
