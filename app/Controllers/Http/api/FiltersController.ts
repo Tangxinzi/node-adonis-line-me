@@ -98,6 +98,7 @@ export default class FiltersController {
 
         // 格式数据
         customer[index].like = await Database.from('likes').select('id').where({ status: 1, type: 'customer', relation_type_id: customer[index].cid, user_id: session.get('user_id') }).first() || {}
+        customer[index].location = customer[index].location ? JSON.parse(customer[index].location) : []
         customer[index].photos = customer[index].photos ? JSON.parse(customer[index].photos) : []
         customer[index].videos = customer[index].videos ? JSON.parse(customer[index].videos) : []
         customer[index].zodiac_sign = this.getZodiacSign(Moment(customer[index].birthday).format('DD'), Moment(customer[index].birthday).format('MM'))
