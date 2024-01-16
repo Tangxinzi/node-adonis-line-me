@@ -42,10 +42,6 @@ Route.group(() => {
   Route.get('/user/chat/send', 'api/UserController.chatSend')
   Route.get('/user/chat/messages', 'api/UserController.messages')
   Route.get('/user/location', 'api/UserController.location')
-  Route.get('/user/verification', 'api/UserController.verification')
-  Route.get('/user/verification/review/:table/:field', 'api/UserController.review')
-  Route.get('/user/authentication/verification', 'api/UserController.authenticationVerification')
-  Route.post('/user/authentication/verification', 'api/UserController.authenticationVerification')
 
   Route.get('/user/question', 'api/QuestionsController.index')
   Route.get('/user/question/lists', 'api/QuestionsController.questionLists')
@@ -80,6 +76,12 @@ Route.group(() => {
   Route.get('/comments/my', 'api/CommentsController.my')
   Route.post('/comments/create', 'api/CommentsController.create')
 
+  Route.get('/verification', 'api/OperatesController.verification')
+  Route.get('/verification/review/:id', 'api/OperatesController.review')
+  Route.post('/verification/review/:id', 'api/OperatesController.review')
+  Route.get('/authentication/verification', 'api/OperatesController.authenticationVerification')
+  Route.post('/authentication/verification', 'api/OperatesController.authenticationVerification')
+
   Route.get('/descovery', 'api/DescoveriesController.index')
   Route.get('/descovery/type/:type/:id', 'api/DescoveriesController.type')
   Route.get('/descovery/personal/:type', 'api/DescoveriesController.personal')
@@ -91,11 +93,11 @@ Route.group(() => {
   Route.get('/query/company', 'api/QueryController.company')
 }).middleware('apiCheck').prefix('/api')
 
-Route.group(() => {
-  Route.get('/customer/invite-friends-fill', 'web/CustomersController.inviteFriendsFill')
-  Route.get('/operates/verification/review/:id', 'admin/OperatesController.review')
-  Route.post('/operates/verification/review/:id', 'admin/OperatesController.review')
-}).prefix('/web')
+// Route.group(() => {
+//   Route.get('/customer/invite-friends-fill', 'web/CustomersController.inviteFriendsFill')
+//   Route.get('/operates/verification/review/:id', 'admin/OperatesController.review')
+//   Route.post('/operates/verification/review/:id', 'admin/OperatesController.review')
+// }).prefix('/web')
 
 Route.group(() => {
   Route.get('/datas', 'admin/DataController.index')

@@ -345,6 +345,7 @@ export default class UserController {
         const authentication = await Database.from('authentication').where({ user_id: all.user_id || session.get('user_id') }).first() || {}
         const authentication_log = await Database.from('authentication_log').where({ user_id: session.get('user_id') }).first() || {}
         data = {
+          idcard: authentication.idcard == 1 ? 'approved' : (authentication_log.idcard ? 'pending' : ''),
           school: authentication.school == 1 ? 'approved' : (authentication_log.school ? 'pending' : ''),
           company: authentication.company == 1 ? 'approved' : (authentication_log.company ? 'pending' : ''),
           work: authentication.work == 1 ? 'approved' : (authentication_log.work ? 'pending' : ''),
