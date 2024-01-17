@@ -24,10 +24,6 @@ Route_1.default.group(() => {
     Route_1.default.get('/user/chat/send', 'api/UserController.chatSend');
     Route_1.default.get('/user/chat/messages', 'api/UserController.messages');
     Route_1.default.get('/user/location', 'api/UserController.location');
-    Route_1.default.get('/user/verification', 'api/UserController.verification');
-    Route_1.default.get('/user/verification/review/:table/:field', 'api/UserController.review');
-    Route_1.default.get('/user/authentication/verification', 'api/UserController.authenticationVerification');
-    Route_1.default.post('/user/authentication/verification', 'api/UserController.authenticationVerification');
     Route_1.default.get('/user/question', 'api/QuestionsController.index');
     Route_1.default.get('/user/question/lists', 'api/QuestionsController.questionLists');
     Route_1.default.get('/user/answer/lists', 'api/QuestionsController.answerLists');
@@ -55,6 +51,11 @@ Route_1.default.group(() => {
     Route_1.default.post('/file/upload', 'api/FilesController.upload');
     Route_1.default.get('/comments/my', 'api/CommentsController.my');
     Route_1.default.post('/comments/create', 'api/CommentsController.create');
+    Route_1.default.get('/verification', 'api/OperatesController.verification');
+    Route_1.default.get('/verification/review/:id', 'api/OperatesController.review');
+    Route_1.default.post('/verification/review/:id', 'api/OperatesController.review');
+    Route_1.default.get('/authentication/verification', 'api/OperatesController.authenticationVerification');
+    Route_1.default.post('/authentication/verification', 'api/OperatesController.authenticationVerification');
     Route_1.default.get('/descovery', 'api/DescoveriesController.index');
     Route_1.default.get('/descovery/type/:type/:id', 'api/DescoveriesController.type');
     Route_1.default.get('/descovery/personal/:type', 'api/DescoveriesController.personal');
@@ -64,11 +65,6 @@ Route_1.default.group(() => {
     Route_1.default.get('/query/school', 'api/QueryController.school');
     Route_1.default.get('/query/company', 'api/QueryController.company');
 }).middleware('apiCheck').prefix('/api');
-Route_1.default.group(() => {
-    Route_1.default.get('/customer/invite-friends-fill', 'web/CustomersController.inviteFriendsFill');
-    Route_1.default.get('/operates/verification/review/:id', 'admin/OperatesController.review');
-    Route_1.default.post('/operates/verification/review/:id', 'admin/OperatesController.review');
-}).prefix('/web');
 Route_1.default.group(() => {
     Route_1.default.get('/datas', 'admin/DataController.index');
     Route_1.default.get('/operates', 'admin/OperatesController.index');

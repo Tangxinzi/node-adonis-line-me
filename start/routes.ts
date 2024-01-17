@@ -76,9 +76,12 @@ Route.group(() => {
   Route.get('/comments/my', 'api/CommentsController.my')
   Route.post('/comments/create', 'api/CommentsController.create')
 
+  // 审核
   Route.get('/verification', 'api/OperatesController.verification')
   Route.get('/verification/review/:id', 'api/OperatesController.review')
   Route.post('/verification/review/:id', 'api/OperatesController.review')
+
+  // 认证
   Route.get('/authentication/verification', 'api/OperatesController.authenticationVerification')
   Route.post('/authentication/verification', 'api/OperatesController.authenticationVerification')
 
@@ -92,12 +95,6 @@ Route.group(() => {
   Route.get('/query/school', 'api/QueryController.school')
   Route.get('/query/company', 'api/QueryController.company')
 }).middleware('apiCheck').prefix('/api')
-
-// Route.group(() => {
-//   Route.get('/customer/invite-friends-fill', 'web/CustomersController.inviteFriendsFill')
-//   Route.get('/operates/verification/review/:id', 'admin/OperatesController.review')
-//   Route.post('/operates/verification/review/:id', 'admin/OperatesController.review')
-// }).prefix('/web')
 
 Route.group(() => {
   Route.get('/datas', 'admin/DataController.index')

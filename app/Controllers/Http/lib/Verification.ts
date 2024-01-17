@@ -54,21 +54,27 @@ function action(data, value) {
             await Database.from('customer').where('id', data.value.customer_id).update({ status: 2 })
             break;
           case 'authentication_log.idcard':
+            await Database.from('authentication').where({ user_id: data.user_id }).update({ idcard: '' })
             await Database.from('authentication_log').where({ user_id: data.user_id }).update({ idcard: '' })
             break;
           case 'authentication_log.school':
+            await Database.from('authentication').where({ user_id: data.user_id }).update({ school: '' })
             await Database.from('authentication_log').where({ user_id: data.user_id }).update({ school: '' })
             break;
           case 'authentication_log.company':
+            await Database.from('authentication').where({ user_id: data.user_id }).update({ company: '' })
             await Database.from('authentication_log').where({ user_id: data.user_id }).update({ company: '' })
             break;
           case 'authentication_log.work':
+            await Database.from('authentication').where({ user_id: data.user_id }).update({ work: '' })
             await Database.from('authentication_log').where({ user_id: data.user_id }).update({ work: '' })
             break;
           case 'authentication_log.job_title':
+            await Database.from('authentication').where({ user_id: data.user_id }).update({ job_title: '' })
             await Database.from('authentication_log').where({ user_id: data.user_id }).update({ job_title: '' })
             break;
           case 'authentication_log.salary':
+            await Database.from('authentication').where({ user_id: data.user_id }).update({ salary: '' })
             await Database.from('authentication_log').where({ user_id: data.user_id }).update({ salary: '' })
             break;
         }
@@ -90,20 +96,26 @@ function action(data, value) {
             break;
           case 'authentication_log.idcard':
             await Database.from('authentication').where({ user_id: data.user_id }).update({ idcard: 1 })
+            await Database.from('authentication').where({ user_id: data.user_id }).update({ idcard: 1 })
             break;
           case 'authentication_log.school':
+            await Database.from('authentication').where({ user_id: data.user_id }).update({ school: 1 })
             await Database.from('authentication').where({ user_id: data.user_id }).update({ school: 1 })
             break;
           case 'authentication_log.company':
             await Database.from('authentication').where({ user_id: data.user_id }).update({ company: 1 })
+            await Database.from('authentication').where({ user_id: data.user_id }).update({ company: 1 })
             break;
           case 'authentication_log.work':
+            await Database.from('authentication').where({ user_id: data.user_id }).update({ work: 1 })
             await Database.from('authentication').where({ user_id: data.user_id }).update({ work: 1 })
             break;
           case 'authentication_log.job_title':
             await Database.from('authentication').where({ user_id: data.user_id }).update({ job_title: 1 })
+            await Database.from('authentication').where({ user_id: data.user_id }).update({ job_title: 1 })
             break;
           case 'authentication_log.salary':
+            await Database.from('authentication').where({ user_id: data.user_id }).update({ salary: 1 })
             await Database.from('authentication').where({ user_id: data.user_id }).update({ salary: 1 })
             break;
         }

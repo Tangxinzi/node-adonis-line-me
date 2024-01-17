@@ -46,7 +46,7 @@ class UserController {
             const result = await jscode2session(all.code);
             result.user = await Database_1.default.from('users').where('wechat_open_id', result.openid).first() || {};
             if (!result.user.id) {
-                const user_id = 'hl_a' + randomstring_1.default.generate({ length: 8, charset: ['numeric'] });
+                const user_id = 'pie_a' + randomstring_1.default.generate({ length: 8, charset: ['numeric'] });
                 const id = await Database_1.default.table('users').returning('id').insert({ user_id, wechat_open_id: result.openid });
                 result.user.id = id[0];
                 await Messages.push({ user_id, content: '相亲交友找对象，熟人介绍更靠谱。欢迎使用体验，如您在体验中遇任何问题请与管理员联系。' });
@@ -75,6 +75,9 @@ class UserController {
                 user.zodiac_sign = this.getZodiacSign((0, moment_1.default)(user.birthday).format('DD'), (0, moment_1.default)(user.birthday).format('MM'));
                 user.age = (0, moment_1.default)().diff(user.birthday, 'years');
                 user.operates = await Database_1.default.from('users_operates').where({ user_id, type: 'examine' }).first() ? true : false;
+                if (user.operates) {
+                    user.verification_count = (await Database_1.default.from('verification').where({ is_verified: 0 }).count('* as total'))[0].total;
+                }
                 user.introduces = await Database_1.default.from('answer').select('introduce_name', 'content').where({ type: 1, status: 1, recommend: 1, user_id }).orderBy('created_at', 'desc');
                 user['work'] = JSON.parse(user['work']);
                 if (user['work'] && user['work']['value']) {
@@ -291,6 +294,7 @@ class UserController {
                 const authentication = await Database_1.default.from('authentication').where({ user_id: all.user_id || session.get('user_id') }).first() || {};
                 const authentication_log = await Database_1.default.from('authentication_log').where({ user_id: session.get('user_id') }).first() || {};
                 data = {
+                    idcard: authentication.idcard == 1 ? 'approved' : (authentication_log.idcard ? 'pending' : ''),
                     school: authentication.school == 1 ? 'approved' : (authentication_log.school ? 'pending' : ''),
                     company: authentication.company == 1 ? 'approved' : (authentication_log.company ? 'pending' : ''),
                     work: authentication.work == 1 ? 'approved' : (authentication_log.work ? 'pending' : ''),

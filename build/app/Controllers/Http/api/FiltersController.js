@@ -90,6 +90,7 @@ class FiltersController {
             for (let index = 0; index < customer.length; index++) {
                 customer[index].parent = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].user_id).first();
                 customer[index].like = await Database_1.default.from('likes').select('id').where({ status: 1, type: 'customer', relation_type_id: customer[index].cid, user_id: session.get('user_id') }).first() || {};
+                customer[index].location = customer[index].location ? JSON.parse(customer[index].location) : [];
                 customer[index].photos = customer[index].photos ? JSON.parse(customer[index].photos) : [];
                 customer[index].videos = customer[index].videos ? JSON.parse(customer[index].videos) : [];
                 customer[index].zodiac_sign = this.getZodiacSign((0, moment_1.default)(customer[index].birthday).format('DD'), (0, moment_1.default)(customer[index].birthday).format('MM'));

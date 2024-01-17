@@ -51,7 +51,7 @@ export default class OperatesController {
       const all = request.all(), verification = await Database.from('verification').where({ id: params.id }).first() || {}
       if (request.method() == 'GET') {
         const user = await Database.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', session.get('user_id')).first() || {}
-        const review = await Database.from('users').select('user_id', 'nickname', 'avatar_url').where({ user_id: verification.user_id }).first() || {}
+        const review = await Database.from('users').select('user_id', 'nickname', 'avatar_url', 'type').where({ user_id: verification.user_id }).first() || {}
         verification.verification_status = verification.verification_status.toUpperCase()
         verification.created_at = Moment(verification.created_at).format('YYYY-MM-DD HH:mm:ss')
         verification.modified_at = verification.modified_at ? Moment(verification.modified_at).format('YYYY-MM-DD HH:mm:ss') : ''
@@ -64,6 +64,7 @@ export default class OperatesController {
             verification.value = JSON.parse(verification.value)
             break;
           case 'customer.':
+            // verification.table = '介绍好友'
             verification.value = JSON.parse(verification.value)
             break;
           case 'authentication_log.idcard':
@@ -197,21 +198,27 @@ export default class OperatesController {
 
           switch (all.type) {
             case 'idcard':
+              await Database.from('authentication').where({ user_id: session.get('user_id') }).update({ idcard: 0 })
               await Database.table('authentication_log').insert({ user_id: session.get('user_id'), idcard: all.value })
               break;
             case 'school':
+              await Database.from('authentication').where({ user_id: session.get('user_id') }).update({ school: 0 })
               await Database.table('authentication_log').insert({ user_id: session.get('user_id'), school: all.value })
               break;
             case 'company':
+              await Database.from('authentication').where({ user_id: session.get('user_id') }).update({ company: 0 })
               await Database.table('authentication_log').insert({ user_id: session.get('user_id'), company: all.value })
               break;
             case 'work':
+              await Database.from('authentication').where({ user_id: session.get('user_id') }).update({ work: 0 })
               await Database.table('authentication_log').insert({ user_id: session.get('user_id'), work: all.value })
               break;
             case 'job_title':
+              await Database.from('authentication').where({ user_id: session.get('user_id') }).update({ job_title: 0 })
               await Database.table('authentication_log').insert({ user_id: session.get('user_id'), job_title: all.value })
               break;
             case 'salary':
+              await Database.from('authentication').where({ user_id: session.get('user_id') }).update({ salary: 0 })
               await Database.table('authentication_log').insert({ user_id: session.get('user_id'), salary: all.value })
               break;
           }
@@ -219,21 +226,27 @@ export default class OperatesController {
 
         switch (all.type) {
           case 'idcard':
+            await Database.from('authentication').where({ user_id: session.get('user_id') }).update({ idcard: 0 })
             await Database.from('authentication_log').where({ user_id: session.get('user_id') }).update({ idcard: all.value })
             break;
           case 'school':
+            await Database.from('authentication').where({ user_id: session.get('user_id') }).update({ school: 0 })
             await Database.from('authentication_log').where({ user_id: session.get('user_id') }).update({ school: all.value })
             break;
           case 'company':
+            await Database.from('authentication').where({ user_id: session.get('user_id') }).update({ company: 0 })
             await Database.from('authentication_log').where({ user_id: session.get('user_id') }).update({ company: all.value })
             break;
           case 'work':
+            await Database.from('authentication').where({ user_id: session.get('user_id') }).update({ work: 0 })
             await Database.from('authentication_log').where({ user_id: session.get('user_id') }).update({ work: all.value })
             break;
           case 'job_title':
+            await Database.from('authentication').where({ user_id: session.get('user_id') }).update({ job_title: 0 })
             await Database.from('authentication_log').where({ user_id: session.get('user_id') }).update({ job_title: all.value })
             break;
           case 'salary':
+            await Database.from('authentication').where({ user_id: session.get('user_id') }).update({ salary: 0 })
             await Database.from('authentication_log').where({ user_id: session.get('user_id') }).update({ salary: all.value })
             break;
         }
@@ -250,15 +263,16 @@ export default class OperatesController {
       }
 
       if (request.method() == 'GET') {
+        // 状态：0 - 审核中，1 - 已通过，默认未提交
         const authentication = await Database.from('authentication').where({ user_id: all.user_id || session.get('user_id') }).first() || {}
-        const authentication_log = await Database.from('authentication_log').where({ user_id: session.get('user_id') }).first() || {}
         data = {
-          idcard: authentication.idcard == 1 ? 'approved' : (authentication_log.idcard ? 'pending' : ''),
-          school: authentication.school == 1 ? 'approved' : (authentication_log.school ? 'pending' : ''),
-          company: authentication.company == 1 ? 'approved' : (authentication_log.company ? 'pending' : ''),
-          work: authentication.work == 1 ? 'approved' : (authentication_log.work ? 'pending' : ''),
-          job_title: authentication.job_title == 1 ? 'approved' : (authentication_log.job_title ? 'pending' : ''),
-          salary: authentication.salary == 1 ? 'approved' : (authentication_log.salary ? 'pending' : ''),
+          ...authentication
+          // idcard: authentication.idcard == 1 ? 'approved' : (authentication_log.idcard ? 'pending' : ''),
+          // school: authentication.school == 1 ? 'approved' : (authentication_log.school ? 'pending' : ''),
+          // company: authentication.company == 1 ? 'approved' : (authentication_log.company ? 'pending' : ''),
+          // work: authentication.work == 1 ? 'approved' : (authentication_log.work ? 'pending' : ''),
+          // job_title: authentication.job_title == 1 ? 'approved' : (authentication_log.job_title ? 'pending' : ''),
+          // salary: authentication.salary == 1 ? 'approved' : (authentication_log.salary ? 'pending' : ''),
         }
       }
 
