@@ -68,7 +68,7 @@ export default class OperatesController {
             verification.value = JSON.parse(verification.value)
             break;
           case 'authentication_log.idcard':
-            verification.table = '认证审核'
+            // verification.table = '认证审核'
             verification.value = JSON.parse(verification.value)
             break;
         }
