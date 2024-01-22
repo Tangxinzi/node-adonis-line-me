@@ -67,6 +67,7 @@ Route.group(() => {
   Route.post('/customer/create/relation', 'api/CustomerController.relationCustomerinfo')
   Route.post('/customer/:status/:id', 'api/CustomerController.statusCustomer')
   Route.get('/customer/verify/phone', 'api/CustomerController.verifyPhone')
+  Route.get('/customer/introduce/labels', 'api/CustomerController.introduceLabels')
 
   Route.get('/college', 'api/CollegeController.index')
   Route.get('/aliyun/SendSms', 'api/AliyunController.SendSms')
@@ -105,6 +106,8 @@ Route.group(() => {
   Route.get('/operates/verification', 'admin/OperatesController.verification')
   Route.get('/operates/verification/review/:id', 'admin/OperatesController.review')
   Route.post('/operates/verification/review/:id', 'admin/OperatesController.review')
+  Route.get('/operates/introduction', 'admin/OperatesController.introduction')
+  Route.post('/operates/introduction', 'admin/OperatesController.introduction')
 
   Route.get('/users', 'admin/UsersController.index')
   Route.get('/users/edit/:user_id', 'admin/UsersController.edit')

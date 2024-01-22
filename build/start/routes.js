@@ -46,6 +46,7 @@ Route_1.default.group(() => {
     Route_1.default.post('/customer/create/relation', 'api/CustomerController.relationCustomerinfo');
     Route_1.default.post('/customer/:status/:id', 'api/CustomerController.statusCustomer');
     Route_1.default.get('/customer/verify/phone', 'api/CustomerController.verifyPhone');
+    Route_1.default.get('/customer/introduce/labels', 'api/CustomerController.introduceLabels');
     Route_1.default.get('/college', 'api/CollegeController.index');
     Route_1.default.get('/aliyun/SendSms', 'api/AliyunController.SendSms');
     Route_1.default.post('/file/upload', 'api/FilesController.upload');
@@ -73,6 +74,8 @@ Route_1.default.group(() => {
     Route_1.default.get('/operates/verification', 'admin/OperatesController.verification');
     Route_1.default.get('/operates/verification/review/:id', 'admin/OperatesController.review');
     Route_1.default.post('/operates/verification/review/:id', 'admin/OperatesController.review');
+    Route_1.default.get('/operates/introduction', 'admin/OperatesController.introduction');
+    Route_1.default.post('/operates/introduction', 'admin/OperatesController.introduction');
     Route_1.default.get('/users', 'admin/UsersController.index');
     Route_1.default.get('/users/edit/:user_id', 'admin/UsersController.edit');
     Route_1.default.post('/users/update/:user_id', 'admin/UsersController.update');

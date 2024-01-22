@@ -85,7 +85,7 @@ class FiltersController {
         LEFT JOIN customer_log ON customer.relation_user_id IS NULL AND customer.relation_log_id = customer_log.id
         LEFT JOIN users ON customer.relation_user_id IS NOT NULL AND customer.relation_user_id = users.user_id
         WHERE ` + ageWhereSql + ` customer.status = 1 AND customer.recommend = 1 AND customer.deleted_at IS NULL AND (customer_log.sex IN (${filter.sex || '0, 1'}) OR users.sex IN (${filter.sex || '0, 1'}))
-        LIMIT 20
+        LIMIT ${request.input('page', 0) * 15}, 15
       `))[0];
             for (let index = 0; index < customer.length; index++) {
                 customer[index].parent = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].user_id).first();

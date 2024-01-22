@@ -160,6 +160,52 @@ class OperatesController {
             console.log(error);
         }
     }
+    async introduction({ params, request, response, view, session }) {
+        try {
+            const all = request.all();
+            if (request.method() == 'GET') {
+                const labels = {
+                    step_1: await Database_1.default.from('labels').whereIn('type', [1]).orderBy('sort', 'asc'),
+                    step_2: await Database_1.default.from('labels').whereIn('type', [2]).orderBy('sort', 'asc'),
+                };
+                return view.render('admin/operates/introduction', {
+                    data: {
+                        title: '标签 - 运营',
+                        active: 'operates',
+                        subActive: 'introduction',
+                        labels
+                    }
+                });
+            }
+            if (request.method() == 'POST') {
+                if (all.button == 'insert') {
+                    const id = await Database_1.default.table('labels').returning('id').insert({
+                        type: all.type,
+                        name: all.name
+                    });
+                    if (id.length) {
+                        session.flash('message', { type: 'success', header: '提交成功', message: `已创建标签 ${all.name}` });
+                    }
+                    else {
+                        session.flash('message', { type: 'error', header: '提交失败', message: `${JSON.stringify(all)}` });
+                    }
+                }
+                if (all.button == 'save') {
+                    await Database_1.default.from('labels').where({ id: all.id }).update({ name: all.name, sort: all.sort });
+                    session.flash('message', { type: 'success', header: '更新成功', message: `已删除标签 ${all.name}` });
+                }
+                if (all.button == 'delete') {
+                    await Database_1.default.from('labels').where({ id: all.id }).update({ status: 0 });
+                    session.flash('message', { type: 'success', header: '更新成功', message: `已删除标签 ${all.name}` });
+                }
+                return response.redirect('back');
+            }
+        }
+        catch (error) {
+            console.log(error);
+            session.flash('message', { type: 'error', header: '提交失败', message: `${JSON.stringify(error)}` });
+        }
+    }
 }
 exports.default = OperatesController;
 //# sourceMappingURL=OperatesController.js.map

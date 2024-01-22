@@ -1,0 +1,149 @@
+@layout('components/layouts/main')
+
+@section('title')
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<title>{{ data.title }} - Hunlian</title>
+@endsection
+
+@section('style')
+<style media="screen">
+
+</style>
+@endsection
+
+@section('content')
+  <div class="ui stackable four column grid">
+    <div class="three wide column">
+      <div class="ui vertical pointing menu">
+        <a class="{{ data.subActive == 'users' ? 'active' : '' }} item" href="{{ route('admin/OperatesController.index') }}">权限用户</a>
+        <a class="{{ data.subActive == 'verification' ? 'active' : '' }} item" href="{{ route('admin/OperatesController.verification') }}">内容审核</a>
+        <a class="{{ data.subActive == 'incentive' ? 'active' : '' }} item" href="{{ route('admin/OperatesController.incentive') }}">激励下发</a>
+        <a class="item" href="">内容分发</a>
+      </div>
+      <div class="ui vertical pointing menu">
+        <a class="{{ data.subActive == 'introduction' ? 'active' : '' }} item" href="{{ route('admin/OperatesController.introduction') }}">介绍标签</a>
+      </div>
+    </div>
+    <div class="thirteen wide column">
+      <div class="ui header-title flex-between">
+        <span>{{ data.title }}</span>
+        <a class="ui tiny button" onclick="add()">添加标签</a>
+      </div>
+      <div class="ui segments">
+        <div class="ui secondary segment">
+          <div class="flex-between">
+            <b>Step 1. 在你眼中的 ta「是 ... 什么样的人」</b>
+            <a href="#">排序</a>
+          </div>
+        </div>
+        <div class="ui segment">
+          <div class="ui labels">
+            @each(label in data.labels.step_1)
+              <a class="ui label" onclick="update({{ label.id }}, {{ label.type }}, '{{ label.name }}', {{ label.sort }})">{{ label.name }}</a>
+            @endeach
+          </div>
+        </div>
+      </div>
+      <div class="ui segments">
+        <div class="ui secondary segment">
+          <div class="flex-between">
+            <b>Step 2. 在你眼中的 ta「喜欢 ...」</b>
+            <a href="#">排序</a>
+          </div>
+        </div>
+        <div class="ui segment">
+          <div class="ui labels">
+            @each(label in data.labels.step_2)
+              <a class="ui label" onclick="update({{ label.id }}, {{ label.type }}, '{{ label.name }}', {{ label.sort }})">{{ label.name }}</a>
+            @endeach
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <form class="ui modal form add" action="{{ route('admin/OperatesController.introduction') }}" method="post">
+    <i class="close icon"></i>
+    <h3 class="header">添加标签</h3>
+    <div class="content">
+      <div class="field">
+        <label for="">标签</label>
+        <input type="text" name="name" value="" />
+      </div>
+      <div class="field">
+        <label>类型</label>
+        <div class="ui selection dropdown">
+          <input type="hidden" name="type" value="" />
+          <i class="dropdown icon"></i>
+          <div class="default text">点击选择</div>
+          <div class="menu">
+            <div class="item" data-value="1">Step 1. 在你眼中的 ta「是 ... 什么样的人」</div>
+            <div class="item" data-value="2">Step 2. 在你眼中的 ta「喜欢 ...」</div>
+          </div>
+        </div>
+      </div>
+      {{ csrfField() }}
+    </div>
+    <div class="actions">
+      <div class="ui black deny button">
+        取消
+      </div>
+      <button class="ui right green labeled icon button" name="button" value="insert">
+        添加
+        <i class="checkmark icon"></i>
+      </button>
+    </div>
+  </form>
+  <form class="ui modal form update" action="{{ route('admin/OperatesController.introduction') }}" method="post">
+    <i class="close icon"></i>
+    <h3 class="header">更新标签</h3>
+    <div class="content">
+      <div class="field" hidden>
+        <label for="">ID</label>
+        <input type="number" id="id" name="id" value="" />
+      </div>
+      <div class="field">
+        <label for="">标签</label>
+        <input type="text" id="name" name="name" value="" />
+      </div>
+      <div class="field">
+        <label for="">排序</label>
+        <input type="number" id="sort" name="sort" value="" />
+      </div>
+      <div class="field">
+        <label>类型</label>
+        <div class="ui selection dropdown">
+          <input type="hidden" id="type" name="type" value="" />
+          <i class="dropdown icon"></i>
+          <div class="default text">点击选择</div>
+          <div class="menu">
+            <div class="item" data-value="1">Step 1. 在你眼中的 ta「是 ... 什么样的人」</div>
+            <div class="item" data-value="2">Step 2. 在你眼中的 ta「喜欢 ...」</div>
+          </div>
+        </div>
+      </div>
+      {{ csrfField() }}
+    </div>
+    <div class="actions">
+      <div class="ui black deny button">取消</div>
+      <button class="ui right red labeled icon button" name="button" value="delete">删除 <i class="delete icon"></i></button>
+      <button class="ui right green labeled icon button" name="button" value="save">更新 <i class="checkmark icon"></i></button>
+    </div>
+  </form>
+@endsection
+
+@section('script')
+<script type="text/javascript">
+  function add() {
+    $('.ui.modal.form.add').modal('show')
+  }
+
+  function update(id, type, name, sort) {
+    $('#id').val(id)
+    $('#type').val(type)
+    $('#name').val(name)
+    $('#sort').val(sort)
+    $('.ui.modal.form.update').modal('show')
+  }
+</script>
+@endsection

@@ -567,6 +567,27 @@ class CustomerController {
             });
         }
     }
+    async introduceLabels({ request, response, session }) {
+        try {
+            return response.json({
+                status: 200,
+                sms: "ok",
+                data: {
+                    step_1: await Database_1.default.from('labels').select('id', 'name').whereIn('type', [1]).where('status', 1).orderBy('sort', 'asc'),
+                    step_2: await Database_1.default.from('labels').select('id', 'name').whereIn('type', [2]).where('status', 1).orderBy('sort', 'asc'),
+                }
+            });
+        }
+        catch (error) {
+            console.log(error);
+            Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
+            response.json({
+                status: 500,
+                sms: "internalServerError",
+                data: error
+            });
+        }
+    }
 }
 exports.default = CustomerController;
 //# sourceMappingURL=CustomerController.js.map
