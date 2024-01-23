@@ -47,6 +47,7 @@ Route_1.default.group(() => {
     Route_1.default.post('/customer/:status/:id', 'api/CustomerController.statusCustomer');
     Route_1.default.get('/customer/verify/phone', 'api/CustomerController.verifyPhone');
     Route_1.default.get('/customer/introduce/labels', 'api/CustomerController.introduceLabels');
+    Route_1.default.post('/customer/introduce', 'api/CustomerController.introduceGenerate');
     Route_1.default.get('/college', 'api/CollegeController.index');
     Route_1.default.get('/aliyun/SendSms', 'api/AliyunController.SendSms');
     Route_1.default.post('/file/upload', 'api/FilesController.upload');

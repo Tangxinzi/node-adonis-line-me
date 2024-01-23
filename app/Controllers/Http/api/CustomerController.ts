@@ -14,7 +14,7 @@ const zpData = require('../lib/Zhipin');
 const { percentUserinfo, percentCustomerinfo } = require('../lib/Percent');
 const Weixin = require('../lib/Weixin');
 const Verification = require('../lib/Verification');
-const RELATION = ["朋友", "亲戚", "伙伴", "同事", "其他"]
+const RELATION = ["朋友", "闺蜜", "亲戚", "同学", "同事", "其他"]
 const SALARY_RANGE = [
   { index: 0, value: '5w 以内' },
   { index: 1, value: '5 - 10w' },
@@ -677,6 +677,36 @@ export default class CustomerController {
           step_1: await Database.from('labels').select('id', 'name').whereIn('type', [1]).where('status', 1).orderBy('sort', 'asc'),
           step_2: await Database.from('labels').select('id', 'name').whereIn('type', [2]).where('status', 1).orderBy('sort', 'asc'),
         }
+      })
+    } catch (error) {
+      console.log(error);
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
+      response.json({
+        status: 500,
+        sms: "internalServerError",
+        data: error
+      })
+    }
+  }
+
+  public async introduceGenerate({ request, response, session }: HttpContextContract) {
+    try {
+      const tags = request.all()
+
+      const activities = [
+        tags[0].map(tag => `${ tag }`).join("，"),
+        tags[1].map(tag => `${ tag }`).join("，")
+      ]
+
+      const description = [
+        `在我眼中是一个${activities[0]}的人。`,
+        `并且日常喜欢${activities[1]}。`,
+      ];
+
+      return response.json({
+        status: 200,
+        sms: "ok",
+        data: description
       })
     } catch (error) {
       console.log(error);

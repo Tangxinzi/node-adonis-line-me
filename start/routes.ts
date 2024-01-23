@@ -68,6 +68,7 @@ Route.group(() => {
   Route.post('/customer/:status/:id', 'api/CustomerController.statusCustomer')
   Route.get('/customer/verify/phone', 'api/CustomerController.verifyPhone')
   Route.get('/customer/introduce/labels', 'api/CustomerController.introduceLabels')
+  Route.post('/customer/introduce', 'api/CustomerController.introduceGenerate')
 
   Route.get('/college', 'api/CollegeController.index')
   Route.get('/aliyun/SendSms', 'api/AliyunController.SendSms')
