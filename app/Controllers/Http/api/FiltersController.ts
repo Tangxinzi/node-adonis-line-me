@@ -94,7 +94,11 @@ export default class FiltersController {
 
       for (let index = 0; index < customer.length; index++) {
         // 介绍人
-        customer[index].parent = await Database.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].user_id).first()
+        customer[index].parent = await Database.from('users').select('user_id', 'nickname', 'avatar_url', 'company', 'work', 'job_title').where('user_id', customer[index].user_id).first()
+        customer[index].parent.work = customer[index].parent.work ? JSON.parse(customer[index].parent.work) : []
+        if (customer[index].parent.work.value) {
+          customer[index].parent.work.text = await zpData.data(customer[index].parent.work.value[0], customer[index].parent.work.value[1])
+        }
 
         // 格式数据
         customer[index].like = await Database.from('likes').select('id').where({ status: 1, type: 'customer', relation_type_id: customer[index].cid, user_id: session.get('user_id') }).first() || {}

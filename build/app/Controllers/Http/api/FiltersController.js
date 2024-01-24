@@ -88,7 +88,11 @@ class FiltersController {
         LIMIT ${request.input('page', 0) * 15}, 15
       `))[0];
             for (let index = 0; index < customer.length; index++) {
-                customer[index].parent = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].user_id).first();
+                customer[index].parent = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url', 'company', 'work', 'job_title').where('user_id', customer[index].user_id).first();
+                customer[index].parent.work = customer[index].parent.work ? JSON.parse(customer[index].parent.work) : [];
+                if (customer[index].parent.work.value) {
+                    customer[index].parent.work.text = await Zhipin_1.default.data(customer[index].parent.work.value[0], customer[index].parent.work.value[1]);
+                }
                 customer[index].like = await Database_1.default.from('likes').select('id').where({ status: 1, type: 'customer', relation_type_id: customer[index].cid, user_id: session.get('user_id') }).first() || {};
                 customer[index].location = customer[index].location ? JSON.parse(customer[index].location) : [];
                 customer[index].photos = customer[index].photos ? JSON.parse(customer[index].photos) : [];
