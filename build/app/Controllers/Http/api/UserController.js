@@ -91,6 +91,7 @@ class UserController {
                     moment: (await Database_1.default.from('moments').where({ user_id }).count('* as total'))[0].total,
                     answer: (await Database_1.default.from('answer').where({ type: 0, status: 1, user_id }).count('* as total'))[0].total,
                     customer: (await Database_1.default.from('customer').where({ status: 1, relation_user_id: user_id }).count('* as total'))[0].total,
+                    introducer: (await Database_1.default.from('customer').whereIn('status', [1, 2]).where({ user_id: user_id }).count('* as total'))[0].total,
                 };
                 if (user.ip) {
                     await (0, axios_1.default)({
