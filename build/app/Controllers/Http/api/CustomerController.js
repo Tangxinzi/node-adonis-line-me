@@ -441,7 +441,7 @@ class CustomerController {
                     var result = await Database_1.default.from('customer_log').where({ id: customer.relation_log_id }).update({ avatar_url: all.value });
                     break;
                 case 'userinfo.contact_wechat':
-                    var result = await Database_1.default.from('customer_log').where({ id: customer.relation_log_id }).update({ contact_wechat: all.value });
+                    var result = await Database_1.default.from('customer_log').where({ id: customer.relation_log_id }).update({ contact_wechat: all.value.contact_wechat, contact_wechat_show: all.value.contact_wechat_show });
                     break;
                 case 'userinfo.photos':
                     var result = await Database_1.default.from('customer_log').where({ id: customer.relation_log_id }).update({ photos: JSON.stringify(all.value) });

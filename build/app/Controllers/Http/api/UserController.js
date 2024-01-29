@@ -69,9 +69,9 @@ class UserController {
                 user.percent = await percentUserinfo(user_id);
                 const _geoip = geoip_lite_1.default.lookup(request.ip()) || {};
                 await Database_1.default.from('users').where({ user_id }).update({ online_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss'), ip: request.ip(), ip_city: _geoip.city });
-                user.photos = JSON.parse(user.photos);
+                user.photos = user.photos ? JSON.parse(user.photos) : [];
                 user.location = user.location ? JSON.parse(user.location) : '';
-                user.videos = JSON.parse(user.videos);
+                user.videos = user.videos ? JSON.parse(user.videos) : [];
                 user.zodiac_sign = this.getZodiacSign((0, moment_1.default)(user.birthday).format('DD'), (0, moment_1.default)(user.birthday).format('MM'));
                 user.age = (0, moment_1.default)().diff(user.birthday, 'years');
                 user.operates = await Database_1.default.from('users_operates').where({ user_id, type: 'examine' }).first() ? true : false;
@@ -107,6 +107,7 @@ class UserController {
             return user;
         }
         catch (error) {
+            console.log(error);
             Logger_1.default.error("error 获取失败 %s", error);
             return {};
         }

@@ -8,11 +8,12 @@ class AdminCheck {
     async handle({ request, response, session }, next) {
         try {
             const sign = session.get('adonis-cookie-sign');
-            if (sign) {
+            const cookie = request.cookie('adonis-cookie-sign', sign);
+            if (cookie) {
                 const verify = Jwt_1.default.verifyPublicKey(sign || '');
                 await next();
             }
-            else if (!sign && request.url() != '/admin/login') {
+            else if (!cookie && request.url() != '/admin/login') {
                 await next();
                 return response.redirect().status(301).toRoute('admin/UsersController.login');
             }

@@ -14,14 +14,7 @@
 @section('content')
   <div class="ui stackable four column grid">
     @if(!data.all.sign)
-    <div class="three wide column">
-      <div class="ui vertical pointing menu">
-        <a class="{{ data.subActive == 'users' ? 'active' : '' }} item" href="{{ route('admin/OperatesController.index') }}">权限用户</a>
-        <a class="{{ data.subActive == 'verification' ? 'active' : '' }} item" href="{{ route('admin/OperatesController.verification') }}">内容审核</a>
-        <a class="{{ data.subActive == 'incentive' ? 'active' : '' }} item" href="{{ route('admin/OperatesController.incentive') }}">激励下发</a>
-        <a class="item" href="">内容分发</a>
-      </div>
-    </div>
+    @!component('components/operates-menus', data=data, csrf=csrfField())
     @endif
     <div class="thirteen wide column">
       <div class="ui header-title flex-between">

@@ -76,9 +76,9 @@ export default class UserController {
         // 格式数据
         const _geoip = GeoIP.lookup(request.ip()) || {}
         await Database.from('users').where({ user_id }).update({ online_at: Moment().format('YYYY-MM-DD HH:mm:ss'), ip: request.ip(), ip_city: _geoip.city })
-        user.photos = JSON.parse(user.photos)
+        user.photos = user.photos ? JSON.parse(user.photos) : []
         user.location = user.location ? JSON.parse(user.location) : ''
-        user.videos = JSON.parse(user.videos)
+        user.videos = user.videos ? JSON.parse(user.videos) : []
         user.zodiac_sign = this.getZodiacSign(Moment(user.birthday).format('DD'), Moment(user.birthday).format('MM'))
         user.age = Moment().diff(user.birthday, 'years')
         user.operates = await Database.from('users_operates').where({ user_id, type: 'examine' }).first() ? true : false
@@ -130,6 +130,7 @@ export default class UserController {
 
       return user
     } catch (error) {
+      console.log(error);
       Logger.error("error 获取失败 %s", error);
       return {}
     }
