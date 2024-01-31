@@ -49,11 +49,11 @@ const getChatsMessage = async (data, chat_id) => {
                 const customer = await Database_1.default.from('customer').select('relation_user_id', 'relation_log_id').where({ id: chats[index].chat_content }).first() || {};
                 if (customer.relation_log_id) {
                     const customer_log = await Database_1.default.from('customer_log').select('avatar_url', 'nickname').where('id', customer.relation_log_id).first();
-                    chats[index].chat_content = `Hi，我想认识下您介绍的好友「${customer_log.nickname}」😄`;
+                    chats[index].chat_content = `Hi，我想认识您介绍的好友「${customer_log.nickname}」😄`;
                 }
                 else if (customer.relation_user_id) {
                     const user = await Database_1.default.from('users').select('*').where('user_id', customer.relation_user_id).first();
-                    chats[index].chat_content = `Hi，我想认识下您介绍的好友「${user.nickname}」😄`;
+                    chats[index].chat_content = `Hi，我想认识您介绍的好友「${user.nickname}」😄`;
                 }
             }
             if (chats[index].chat_content_type == 'share-customer') {

@@ -417,6 +417,9 @@ class UserController {
                 case 'company':
                     await Database_1.default.from('users').where('user_id', session.get('user_id')).update({ company: all.value });
                     break;
+                case 'mbti':
+                    await Database_1.default.from('users').where('user_id', session.get('user_id')).update({ mbti: all.value });
+                    break;
                 case 'location':
                     await Database_1.default.from('users').where('user_id', session.get('user_id')).update({ location: JSON.stringify(all.value || []) });
                     break;
@@ -504,9 +507,7 @@ class UserController {
                         };
                     }
                 }
-                const chatroom_left = await Database_1.default.from('chatroom').where('chat_users_id', `${customer.user_id},${session.get('user_id')}`).first();
-                const chatroom_right = await Database_1.default.from('chatroom').where('chat_users_id', `${session.get('user_id')},${customer.user_id}`).first();
-                const chatroom = chatroom_left || chatroom_right;
+                const chatroom = await Database_1.default.from('chatroom').where('chat_users_id', `${customer.user_id},${session.get('user_id')}`).orWhere('chat_users_id', `${session.get('user_id')},${customer.user_id}`).where('status', 1).first() || {};
                 if (session.get('user_id') == customer.user_id) {
                     return response.json({
                         status: 500,
@@ -514,8 +515,8 @@ class UserController {
                         data: 'Unable to chat with oneself'
                     });
                 }
-                if (chatroom) {
-                    response.json({
+                if (chatroom.id) {
+                    return response.json({
                         status: 200,
                         message: "ok",
                         data: {
@@ -534,7 +535,37 @@ class UserController {
                         chat_content_type: 'customer',
                         chat_ip: request.ip()
                     });
-                    response.json({
+                    return response.json({
+                        status: 200,
+                        message: "ok",
+                        data: {
+                            chat_id
+                        }
+                    });
+                }
+            }
+            if (all.type == 'user') {
+                if (session.get('user_id') == all.user_id) {
+                    return response.json({
+                        status: 500,
+                        message: "internalServerError",
+                        data: 'Unable to chat with oneself'
+                    });
+                }
+                const chatroom = await Database_1.default.from('chatroom').where('chat_users_id', `${all.user_id},${session.get('user_id')}`).orWhere('chat_users_id', `${session.get('user_id')},${all.user_id}`).where('status', 1).first() || {};
+                if (chatroom.id) {
+                    return response.json({
+                        status: 200,
+                        message: "ok",
+                        data: {
+                            chat_id: chatroom.chat_id
+                        }
+                    });
+                }
+                else {
+                    const chat_id = (0, uuid_1.v4)();
+                    const id = await Database_1.default.table('chatroom').insert({ chat_id, chat_users_id: `${session.get('user_id')},${all.user_id}` }).returning('chat_id');
+                    return response.json({
                         status: 200,
                         message: "ok",
                         data: {

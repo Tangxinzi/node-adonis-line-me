@@ -49,10 +49,10 @@ const getChatsMessage = async (data, chat_id) => {
         // 红娘自行发布 / 关联已存在用户
         if (customer.relation_log_id) {
           const customer_log = await Database.from('customer_log').select('avatar_url', 'nickname').where('id', customer.relation_log_id).first()
-          chats[index].chat_content = `Hi，我想认识下您介绍的好友「${ customer_log.nickname }」😄`
+          chats[index].chat_content = `Hi，我想认识您介绍的好友「${ customer_log.nickname }」😄`
         } else if (customer.relation_user_id) {
           const user = await Database.from('users').select('*').where('user_id', customer.relation_user_id).first()
-          chats[index].chat_content = `Hi，我想认识下您介绍的好友「${ user.nickname }」😄`
+          chats[index].chat_content = `Hi，我想认识您介绍的好友「${ user.nickname }」😄`
         }
       }
 

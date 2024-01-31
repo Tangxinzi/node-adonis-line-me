@@ -568,6 +568,9 @@ export default class CustomerController {
         case 'userinfo.sex':
           var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ sex: all.value })
           break;
+        case 'userinfo.mbti':
+          var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ mbti: all.value })
+          break;
         case 'userinfo.expectation':
           var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ expectation: all.value })
           break;

@@ -479,6 +479,9 @@ export default class UserController {
         case 'company':
           await Database.from('users').where('user_id', session.get('user_id')).update({ company: all.value })
           break;
+        case 'mbti':
+          await Database.from('users').where('user_id', session.get('user_id')).update({ mbti: all.value })
+          break;
         case 'location':
           await Database.from('users').where('user_id', session.get('user_id')).update({ location: JSON.stringify(all.value || []) })
           break;
@@ -552,9 +555,7 @@ export default class UserController {
   public async chat({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-
       if (all.type == 'customer') {
-        // const customer = await Database.from('customer').where('id', all.customer_id).first() || await Database.from('users').where('user_id', all.customer_id).first() || {}
         let customer = await Database.from('customer').select('id', 'user_id', 'introduction', 'relation_log_id', 'relation_user_id').whereIn('status', [1, 2]).where({ id: all.customer_id }).first() || {}
         if (customer.id) {
           // 红娘自行发布用户
@@ -573,9 +574,11 @@ export default class UserController {
             }
           }
         }
-        const chatroom_left = await Database.from('chatroom').where('chat_users_id', `${ customer.user_id },${ session.get('user_id') }`).first()
-        const chatroom_right = await Database.from('chatroom').where('chat_users_id', `${ session.get('user_id') },${ customer.user_id }`).first()
-        const chatroom = chatroom_left || chatroom_right
+        // const chatroom_left = await Database.from('chatroom').where('chat_users_id', `${ customer.user_id },${ session.get('user_id') }`).first() || {}
+        // const chatroom_right = await Database.from('chatroom').where('chat_users_id', `${ session.get('user_id') },${ customer.user_id }`).first() || {}
+        // const chatroom = chatroom_left || chatroom_right
+
+        const chatroom = await Database.from('chatroom').where('chat_users_id', `${ customer.user_id },${ session.get('user_id') }`).orWhere('chat_users_id', `${ session.get('user_id') },${ customer.user_id }`).where('status', 1).first() || {}
 
         if (session.get('user_id') == customer.user_id) {
           return response.json({
@@ -584,9 +587,8 @@ export default class UserController {
             data: 'Unable to chat with oneself'
           })
         }
-
-        if (chatroom) {
-          response.json({
+        if (chatroom.id) {
+          return response.json({
             status: 200,
             message: "ok",
             data: {
@@ -605,7 +607,40 @@ export default class UserController {
             chat_ip: request.ip()
           })
 
-          response.json({
+          return response.json({
+            status: 200,
+            message: "ok",
+            data: {
+              chat_id
+            }
+          })
+        }
+      }
+
+      if (all.type == 'user') {
+        if (session.get('user_id') == all.user_id) {
+          return response.json({
+            status: 500,
+            message: "internalServerError",
+            data: 'Unable to chat with oneself'
+          })
+        }
+
+        const chatroom = await Database.from('chatroom').where('chat_users_id', `${ all.user_id },${ session.get('user_id') }`).orWhere('chat_users_id', `${ session.get('user_id') },${ all.user_id }`).where('status', 1).first() || {}
+
+        if (chatroom.id) {
+          return response.json({
+            status: 200,
+            message: "ok",
+            data: {
+              chat_id: chatroom.chat_id
+            }
+          })
+        } else {
+          const chat_id = uuidv4()
+          const id = await Database.table('chatroom').insert({ chat_id, chat_users_id: `${ session.get('user_id') },${ all.user_id }` }).returning('chat_id')
+
+          return response.json({
             status: 200,
             message: "ok",
             data: {
