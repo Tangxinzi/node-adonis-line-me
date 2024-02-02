@@ -124,7 +124,7 @@ export default class FiltersController {
 
   public async index({ request, response, session }: HttpContextContract) {
     try {
-      const all = request.all(), filter = await Database.from('users_filter').where('user_id', session.get('user_id')).first() || {}
+      let all = request.all(), filter = await Database.from('users_filter').where('user_id', session.get('user_id')).first() || {}
 
       if (request.method() == 'GET') {
         if (filter.id) {
@@ -158,6 +158,7 @@ export default class FiltersController {
         }
       }
     } catch (error) {
+      console.log(error);
       Logger.error("error 获取失败 %s", JSON.stringify(error));
       response.json({
         status: 500,

@@ -56,6 +56,7 @@ export default class UserController {
         await Messages.push({ user_id, content: '相亲交友找对象，熟人介绍更靠谱。欢迎使用体验，如您在体验中遇任何问题请与管理员联系。' }) // 推送注册成功消息
       }
       delete result.session_key // 删除 jscode2session session key
+      result.user.percent = await percentUserinfo(result.user.user_id)
       result.user.sign = await Jwt.signPrivateKey(result.user.id)
       return result
     } catch (error) {
@@ -85,11 +86,12 @@ export default class UserController {
         if (user.operates) {
           user.verification_count = (await Database.from('verification').where({ is_verified: 0 }).count('* as total'))[0].total
         }
+
         user.introduces = await Database.from('answer').select('introduce_name', 'content').where({ type: 1, status: 1, recommend: 1, user_id }).orderBy('created_at', 'desc')
 
-        user['work'] = JSON.parse(user['work'])
-        if (user['work'] && user['work']['value']) {
-          user['work']['text'] = await zpData.data(user['work']['value'][0], user['work']['value'][1])
+        user.work = user.work ? JSON.parse(user.work) : {}
+        if (user.work && user.work.value) {
+          user.work.text = await zpData.data(user.work.value[0], user.work.value[1])
         }
 
         user['number'] = {

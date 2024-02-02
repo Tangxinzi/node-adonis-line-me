@@ -133,6 +133,14 @@ Route.group(() => {
 
   Route.get('/files', 'admin/FilesController.index')
 
+  Route.get('/article', 'admin/ArticleController.index')
+  Route.get('/article/catalog/:catalog', 'admin/ArticleController.catalog')
+  Route.get('/article/create', 'admin/ArticleController.create')
+  Route.get('/article/show/:id', 'admin/ArticleController.show')
+  Route.get('/article/edit/:id', 'admin/ArticleController.edit')
+  Route.post('/article/save', 'admin/ArticleController.save')
+  Route.post('/article/delete', 'admin/ArticleController.delete')
+
   Route.get('/chatroom', 'admin/ChatroomController.index')
   Route.get('/chatroom/edit/:id', 'admin/ChatroomController.edit').as('admin.chatroom.edit')
   Route.post('/chatroom/store', 'admin/ChatroomController.store')

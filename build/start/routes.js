@@ -91,6 +91,13 @@ Route_1.default.group(() => {
     Route_1.default.get('/event/descovery', 'admin/EventController.descovery');
     Route_1.default.post('/event/descovery/:type', 'admin/EventController.dataType');
     Route_1.default.get('/files', 'admin/FilesController.index');
+    Route_1.default.get('/article', 'admin/ArticleController.index');
+    Route_1.default.get('/article/catalog/:catalog', 'admin/ArticleController.catalog');
+    Route_1.default.get('/article/create', 'admin/ArticleController.create');
+    Route_1.default.get('/article/show/:id', 'admin/ArticleController.show');
+    Route_1.default.get('/article/edit/:id', 'admin/ArticleController.edit');
+    Route_1.default.post('/article/save', 'admin/ArticleController.save');
+    Route_1.default.post('/article/delete', 'admin/ArticleController.delete');
     Route_1.default.get('/chatroom', 'admin/ChatroomController.index');
     Route_1.default.get('/chatroom/edit/:id', 'admin/ChatroomController.edit').as('admin.chatroom.edit');
     Route_1.default.post('/chatroom/store', 'admin/ChatroomController.store');

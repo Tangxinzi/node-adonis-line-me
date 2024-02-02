@@ -16,6 +16,7 @@ export default class AdminCheck {
       } else {
         await next()
       }
+      // await next()
     } catch (e) {
       console.log(e);
       response.abort('Not authenticated', 401)

@@ -115,7 +115,7 @@ class FiltersController {
     }
     async index({ request, response, session }) {
         try {
-            const all = request.all(), filter = await Database_1.default.from('users_filter').where('user_id', session.get('user_id')).first() || {};
+            let all = request.all(), filter = await Database_1.default.from('users_filter').where('user_id', session.get('user_id')).first() || {};
             if (request.method() == 'GET') {
                 if (filter.id) {
                     filter.age = filter.age.split(',');
@@ -149,6 +149,7 @@ class FiltersController {
             }
         }
         catch (error) {
+            console.log(error);
             Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
             response.json({
                 status: 500,
