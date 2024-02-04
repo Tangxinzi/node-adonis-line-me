@@ -67,7 +67,7 @@ export default class ArticleController {
   public async show({ params, request, view, response }: HttpContextContract) {
     try {
       const all = request.all()
-      const article = await Database.from('articles').where('id', params.id).first()
+      const article = await Database.from('articles').where({ id: params.id, status: 1 }).first()
       article.created_at = Moment(article.created_at).format('YYYY-MM-DD H:mm:ss')
       const data = {
         status: 200,

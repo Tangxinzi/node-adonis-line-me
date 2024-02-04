@@ -78,6 +78,8 @@ Route.group(() => {
   Route.get('/comments/my', 'api/CommentsController.my')
   Route.post('/comments/create', 'api/CommentsController.create')
 
+  Route.get('/article/show/:id', 'admin/ArticleController.show')
+
   // 认证
   Route.get('/authentication/verification', 'api/OperatesController.authenticationVerification')
   Route.post('/authentication/verification', 'api/OperatesController.authenticationVerification')

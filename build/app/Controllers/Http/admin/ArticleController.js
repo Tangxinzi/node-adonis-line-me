@@ -68,7 +68,7 @@ class ArticleController {
     async show({ params, request, view, response }) {
         try {
             const all = request.all();
-            const article = await Database_1.default.from('articles').where('id', params.id).first();
+            const article = await Database_1.default.from('articles').where({ id: params.id, status: 1 }).first();
             article.created_at = (0, moment_1.default)(article.created_at).format('YYYY-MM-DD H:mm:ss');
             const data = {
                 status: 200,

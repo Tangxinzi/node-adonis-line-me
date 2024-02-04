@@ -26,10 +26,8 @@
         <thead>
           <tr>
             <th class="one wide">ID</th>
-            <th>类型</th>
-            <th class="five wide">标题</th>
-            <th>打开</th>
-            <th class="one wide">状态</th>
+            <th class="wide">标题</th>
+            <th class="three wide">标签</th>
             <th class="two wide">时间</th>
             <th class="two wide">操作</th>
           </tr>
@@ -38,7 +36,6 @@
           @each(row in data.articles)
             <tr>
               <td class="td">{{ row.id }}</td>
-              <td class="td">{{ row.catalog }}</td>
               <td class="td">
                 <span>{{ row.article_title }}</span>
                 @if(row.article_author)
@@ -46,11 +43,14 @@
                 @endif
               </td>
               <td class="td">
-                {{ row.target == 0 ? '[URL 跳转]' : '' }}
-                {{ row.target == 1 ? '[小程序页面]' : '' }}
-                {{ row.target == 1000 ? '[无操作]' : '' }}
+                <span class="ui small label">{{ row.catalog }}</span>
+                <span class="ui small label">
+                  {{ row.target == 0 ? '[URL 跳转]' : '' }}
+                  {{ row.target == 1 ? '[小程序页面]' : '' }}
+                  {{ row.target == 1000 ? '[无操作]' : '' }}
+                </span>
+                <span class="ui small label">{{ row.status == 0 ? '草稿' : '' }}{{ row.status == 1 ? '发布' : '' }}</span>
               </td>
-              <td class="td">{{ row.status == 0 ? '草稿' : '' }}{{ row.status == 1 ? '发布' : '' }}</td>
               <td class="td">{{ row.created_at }}</td>
               <td class="td">
                 <a href="{{ route('admin/ArticleController.edit', { id: row.id }) }}">编辑</a>
