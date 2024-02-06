@@ -476,7 +476,7 @@ export default class UserController {
           await Database.from('users').where('user_id', session.get('user_id')).update({ videos: JSON.stringify(all.value || []) })
           break;
         case 'school':
-          await Database.from('users').where('user_id', session.get('user_id')).update({ school: all.value })
+          await Database.from('users').where('user_id', session.get('user_id')).update({ school: all.value.school, education: all.value.education })
           break;
         case 'company':
           await Database.from('users').where('user_id', session.get('user_id')).update({ company: all.value })

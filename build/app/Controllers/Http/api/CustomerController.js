@@ -462,7 +462,7 @@ class CustomerController {
                     var result = await Database_1.default.from('customer_log').where({ id: customer.relation_log_id }).update({ location: JSON.stringify(all.value) });
                     break;
                 case 'userinfo.school':
-                    var result = await Database_1.default.from('customer_log').where({ id: customer.relation_log_id }).update({ school: all.value });
+                    var result = await Database_1.default.from('customer_log').where({ id: customer.relation_log_id }).update({ school: all.value.school, education: all.value.education });
                     break;
                 case 'userinfo.company':
                     var result = await Database_1.default.from('customer_log').where({ id: customer.relation_log_id }).update({ company: all.value });
