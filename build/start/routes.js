@@ -12,6 +12,7 @@ Route_1.default.group(() => {
     Route_1.default.post('/filter', 'api/FiltersController.index');
     Route_1.default.get('/filter/customer', 'api/FiltersController.customer');
     Route_1.default.get('/user/wxa-login', 'api/UserController.wxaLogin');
+    Route_1.default.get('/user/login/phone', 'api/UserController.phoneLogin');
     Route_1.default.get('/user/info', 'api/UserController.getUserinfo');
     Route_1.default.post('/user/info', 'api/UserController.updateUserinfo');
     Route_1.default.post('/user/find/:type', 'api/UserController.findUser');

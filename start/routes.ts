@@ -30,6 +30,7 @@ Route.group(() => {
   Route.get('/filter/customer', 'api/FiltersController.customer')
 
   Route.get('/user/wxa-login', 'api/UserController.wxaLogin')
+  Route.get('/user/login/phone', 'api/UserController.phoneLogin')
   Route.get('/user/info', 'api/UserController.getUserinfo')
   Route.post('/user/info', 'api/UserController.updateUserinfo')
   Route.post('/user/find/:type', 'api/UserController.findUser')

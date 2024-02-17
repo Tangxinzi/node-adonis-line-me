@@ -65,6 +65,26 @@ export default class UserController {
     }
   }
 
+  public async phoneLogin({ request }: HttpContextContract) {
+    try {
+      const all = request.all()
+      const result = {}
+      result.user = await Database.from('users').where('phone', all.phone).first() || {}
+      if (!result.user.id) {
+        const user_id = 'pie_a' + RandomString.generate({ length: 8, charset: ['numeric'] })
+        const id = await Database.table('users').returning('id').insert({ user_id wechat_open_id: result.openid })
+        result.user.id = id[0]
+        await Messages.push({ user_id, content: '相亲交友找对象，熟人介绍更靠谱。欢迎使用体验，如您在体验中遇任何问题请与管理员联系。' }) // 推送注册成功消息
+      }
+      result.user.percent = await percentUserinfo(result.user.user_id)
+      result.user.sign = await Jwt.signPrivateKey(result.user.id)
+      return result
+    } catch (error) {
+      console.log(error);
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
+    }
+  }
+
   public async getUserinfo({ request, session }: HttpContextContract) {
     try {
       const all = request.all()
