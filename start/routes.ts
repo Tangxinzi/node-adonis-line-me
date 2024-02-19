@@ -156,6 +156,9 @@ Route.group(() => {
   Route.post('/questions/save', 'admin/QuestionsController.save')
   Route.post('/questions/update', 'admin/QuestionsController.update')
 
+  Route.get('/business', 'admin/BusinessesController.index')
+  Route.get('/business/show/:id', 'admin/BusinessesController.show')
+
   Route.get('/login', 'admin/UsersController.login')
   Route.post('/login', 'admin/UsersController.login')
 }).middleware('adminCheck').prefix('/admin')

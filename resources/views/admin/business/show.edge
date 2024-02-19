@@ -1,0 +1,32 @@
+@layout('components/layouts/main')
+
+@section('title')
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<title>{{ data.title }} - Hunlian</title>
+@endsection
+
+@section('style')
+<style media="screen">
+
+</style>
+@endsection
+
+@section('content')
+  <div class="ui stackable four column grid">
+    <div class="sixteen wide column">
+      <div class="ui header-title flex-between">
+        <span>{{ data.title }}</span>
+        <div>
+          {{--  <a href="?status=0" style="margin-right: 2em; display: inline-block;">待发布</a>
+          <a href="{{ route('admin/ArticleController.create') }}">添加</a>  --}}
+        </div>
+      </div>
+      
+    </div>
+  </div>
+@endsection
+
+@section('script')
+
+@endsection

@@ -1,0 +1,55 @@
+@layout('components/layouts/main')
+
+@section('title')
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<title>{{ data.title }} - Hunlian</title>
+@endsection
+
+@section('style')
+<style media="screen">
+
+</style>
+@endsection
+
+@section('content')
+  <div class="ui stackable four column grid">
+    <div class="sixteen wide column">
+      <div class="ui header-title flex-between">
+        <span>{{ data.title }}</span>
+        <div>
+          {{--  <a href="?status=0" style="margin-right: 2em; display: inline-block;">待发布</a>
+          <a href="{{ route('admin/ArticleController.create') }}">添加</a>  --}}
+        </div>
+      </div>
+      <table class="ui celled center aligned table">
+        <thead>
+          <tr>
+            <th class="one wide">ID</th>
+            <th class="wide">企业</th>
+            <th class="one wide">人数</th>
+            <th class="one wide">认证</th>
+            <th class="two wide">时间</th>
+            <th class="two wide">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>#</td>
+            <td>
+              <a href="{{ route('admin/BusinessesController.show', { id: 1 }) }}">TEST 企业</a>
+            </td>
+            <td>#</td>
+            <td>#</td>
+            <td>#</td>
+            <td>#</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+@endsection
+
+@section('script')
+
+@endsection
