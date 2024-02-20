@@ -52,6 +52,8 @@ class QueryController {
             });
         }
     }
+    async job_title({ request, response, session }) {
+    }
 }
 exports.default = QueryController;
 //# sourceMappingURL=QueryController.js.map

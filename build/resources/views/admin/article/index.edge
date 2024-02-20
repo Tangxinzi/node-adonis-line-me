@@ -3,7 +3,7 @@
 @section('title')
 <meta name="keywords" content="" />
 <meta name="description" content="" />
-<title>{{ data.title }} - LandTower</title>
+<title>{{ data.title }} - Pie</title>
 @endsection
 
 @section('style')
@@ -15,8 +15,8 @@
 @section('content')
   <div class="ui stackable four column grid">
     <div class="sixteen wide column">
-      <div class="flex-between">
-        <b>{{ data.title }}</b>
+      <div class="ui header-title flex-between">
+        <span>{{ data.title }}</span>
         <div>
           <a href="?status=0" style="margin-right: 2em; display: inline-block;">待发布</a>
           <a href="{{ route('admin/ArticleController.create') }}">添加</a>

@@ -47,4 +47,8 @@ export default class QueryController {
       })
     }
   }
+
+  public async job_title({ request, response, session }: HttpContextContract) {
+    
+  }
 }

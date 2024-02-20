@@ -22,8 +22,8 @@
 @section('content')
   <div class="ui stackable four column grid">
     <div class="sixteen wide column">
-      <div class="flex-between">
-        <b>{{ data.title }}</b>
+      <div class="ui header-title flex-between">
+        <span>{{ data.title }}</span>
       </div>
       <form class="ui segment form" method="post" action="{{ route('admin/ArticleController.save') }}" enctype="multipart/form-data">
         <div class="three fields">
