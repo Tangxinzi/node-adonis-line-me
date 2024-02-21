@@ -53,6 +53,26 @@ class QueryController {
         }
     }
     async job_title({ request, response, session }) {
+        try {
+            const all = request.all();
+            return new Promise((resolve, reject) => {
+                return axios.get(`https://www.zhipin.com/wapi/zpgeek/suggest/position/query.json?type=0&query=${all.query}`)
+                    .then((response) => {
+                    resolve(response.data);
+                })
+                    .catch((error) => {
+                    reject(error);
+                });
+            });
+        }
+        catch (error) {
+            Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
+            response.json({
+                status: 500,
+                message: "internalServerError",
+                data: error
+            });
+        }
     }
 }
 exports.default = QueryController;

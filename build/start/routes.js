@@ -65,6 +65,7 @@ Route_1.default.group(() => {
     Route_1.default.post('/event/datas/:type', 'api/EventController.datas');
     Route_1.default.get('/query/school', 'api/QueryController.school');
     Route_1.default.get('/query/company', 'api/QueryController.company');
+    Route_1.default.get('/query/job_title', 'api/QueryController.job_title');
 }).middleware('apiCheck').prefix('/api');
 Route_1.default.group(() => {
     Route_1.default.get('/verification', 'api/AdminController.verification');
@@ -111,7 +112,7 @@ Route_1.default.group(() => {
     Route_1.default.post('/questions/save', 'admin/QuestionsController.save');
     Route_1.default.post('/questions/update', 'admin/QuestionsController.update');
     Route_1.default.get('/business', 'admin/BusinessesController.index');
-    Route_1.default.post('/business/create', 'admin/BusinessesController.create');
+    Route_1.default.post('/business/save', 'admin/BusinessesController.save');
     Route_1.default.post('/business/update', 'admin/BusinessesController.update');
     Route_1.default.get('/business/show/:id', 'admin/BusinessesController.show');
     Route_1.default.get('/login', 'admin/UsersController.login');

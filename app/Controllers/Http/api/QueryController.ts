@@ -49,6 +49,24 @@ export default class QueryController {
   }
 
   public async job_title({ request, response, session }: HttpContextContract) {
-    
+    try {
+      const all = request.all()
+      return new Promise((resolve, reject) => {
+        return axios.get(`https://www.zhipin.com/wapi/zpgeek/suggest/position/query.json?type=0&query=${ all.query }`)
+          .then((response) => {
+            resolve(response.data)
+          })
+          .catch((error) => {
+            reject(error)
+          })
+      });
+    } catch (error) {
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
+      response.json({
+        status: 500,
+        message: "internalServerError",
+        data: error
+      })
+    }
   }
 }

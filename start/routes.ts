@@ -94,6 +94,7 @@ Route.group(() => {
 
   Route.get('/query/school', 'api/QueryController.school')
   Route.get('/query/company', 'api/QueryController.company')
+  Route.get('/query/job_title', 'api/QueryController.job_title')
 
 }).middleware('apiCheck').prefix('/api')
 
@@ -157,7 +158,7 @@ Route.group(() => {
   Route.post('/questions/update', 'admin/QuestionsController.update')
 
   Route.get('/business', 'admin/BusinessesController.index')
-  Route.post('/business/create', 'admin/BusinessesController.create')
+  Route.post('/business/save', 'admin/BusinessesController.save')
   Route.post('/business/update', 'admin/BusinessesController.update')
   Route.get('/business/show/:id', 'admin/BusinessesController.show')
 
