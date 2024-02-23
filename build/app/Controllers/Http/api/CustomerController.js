@@ -449,6 +449,9 @@ class CustomerController {
                 case 'userinfo.work':
                     var result = await Database_1.default.from('customer_log').where({ id: customer.relation_log_id }).update({ work: JSON.stringify(all.value) });
                     break;
+                case 'userinfo.job_title':
+                    var result = await Database_1.default.from('customer_log').where({ id: customer.relation_log_id }).update({ job_title: all.value });
+                    break;
                 case 'userinfo.height':
                     var result = await Database_1.default.from('customer_log').where({ id: customer.relation_log_id }).update({ height: all.value });
                     break;

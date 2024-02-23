@@ -22,49 +22,72 @@
           <a onclick="addBusiness()">添加</a>
         </div>
       </div>
-      <table class="ui celled center aligned table">
-        <thead>
-          <tr>
-            <th class="one wide">Logo</th>
-            <th class="wide">机构</th>
-            <th class="five wide">介绍</th>
-            <th class="one wide">人数</th>
-            <th class="one wide">认证</th>
-            <th class="two wide">类型</th>
-            <th class="two wide">时间</th>
-          </tr>
-        </thead>
-        <tbody>
-          @each(business in data.business)
+      <div class="scroll-container" style="margin-top: 1em;">
+        <table class="ui celled center aligned table" style="width: 115%;">
+          <thead>
             <tr>
-              <td><img class="ui avatar image" src="{{ business.logo }}" /></td>
-              <td>
-                <a href="{{ route('admin/BusinessesController.show', { id: business.business_id }) }}">{{ business.name }}</a>
-              </td>
-              <td>
-                <span class="activating click one-line" data-content="{{ business.description || '' }}" data-position="bottom center" data-inverted="">{{ business.description || '' }}</span>
-              </td>
-              <td>#</td>
-              <td>#</td>
-              <td>
-                <span class="ui label">事业单位</span>
-              </td>
-              <td>{{ business.created_at }}</td>
+              <th class="one wide">LOGO</th>
+              <th class="wide">主体</th>
+              <th class="four wide">介绍</th>
+              <th class="one wide">人数</th>
+              <th class="one wide">认证</th>
+              <th class="two wide">管理员</th>
+              <th class="three wide">标签</th>
+              <th class="two wide">时间</th>
             </tr>
-          @endeach
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @each(business in data.business)
+              <tr>
+                <td><img class="ui mini rounded bordered centered image" src="{{ business.logo }}" /></td>
+                <td>
+                  <a href="{{ route('admin/BusinessesController.show', { id: business.business_id }) }}">{{ business.name }}</a>
+                </td>
+                <td>
+                  <span class="activating click one-line" data-content="{{ business.description || '' }}" data-position="bottom center" data-inverted="">{{ business.description || '' }}</span>
+                </td>
+                <td>{{ business.count }}</td>
+                <td>#</td>
+                <td>
+                  @if(business.user_id)
+                  <a class="ui image label" title="{{ business.user_id }}" href="{{ route('admin/UsersController.edit', { user_id: business.user_id }) }}">
+                    @if(business.user.avatar_url)
+                    <img src="{{ business.user.avatar_url }}" />
+                    @endif
+                    {{ business.user.nickname || ('Unnamed ' + business.user_id) }}
+                  </a>
+                  @endif
+                </td>
+                <td>
+                  <span class="ui label">
+                    {{ business.type == 0 ? '企业' : '' }}
+                    {{ business.type == 1 ? '国企' : '' }}
+                    {{ business.type == 2 ? '事业单位' : '' }}
+                    {{ business.type == 3 ? '政务机构' : '' }}
+                    {{ business.type == 4 ? '社区' : '' }}
+                    {{ business.type == 5 ? '个人' : '' }}
+                  </span>
+                  @each(label in business.labels)
+                    <span class="ui label">{{ label }}</span>
+                  @endeach
+                </td>
+                <td>{{ business.created_at }}</td>
+              </tr>
+            @endeach
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
-  <form class="ui full modal form business" action="{{ route('admin/BusinessesController.create') }}" method="post" enctype="multipart/form-data">
+  <form class="ui full modal form business" action="{{ route('admin/BusinessesController.save') }}" method="post" enctype="multipart/form-data">
     <i class="close icon"></i>
-    <h3 class="header">添加机构</h3>
+    <h3 class="header">添加主体</h3>
     <div class="content">
       <div class="field">
         <label>LOGO</label>
         <input type="file" name="logo" placeholder="" />
       </div>
-      <div class="two fields">
+      <div class="three fields">
         <div class="field">
           <label>名称</label>
           <input type="text" name="name" placeholder="" />
@@ -73,6 +96,26 @@
           <label>管理员</label>
           <input type="text" name="user_id" placeholder="" />
         </div>
+        <div class="field">
+          <label>类型</label>
+          <div class="ui selection dropdown">
+            <input type="hidden" name="type" value="{{ data.business.type }}" />
+            <i class="dropdown icon"></i>
+            <div class="default text">点击选择</div>
+            <div class="menu">
+              <div class="item" data-value="0">企业</div>
+              <div class="item" data-value="1">国企</div>
+              <div class="item" data-value="2">事业单位</div>
+              <div class="item" data-value="3">政务机构</div>
+              <div class="item" data-value="4">社区</div>
+              <div class="item" data-value="4">个人</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>标签</label>
+        <input type="text" name="labels" placeholder="请使用英文「,」分割标签" />
       </div>
       <div class="field">
         <label>介绍</label>
@@ -84,7 +127,7 @@
       <div class="ui deny button">
         取消
       </div>
-      <button class="ui blue right labeled icon button">
+      <button class="ui blue right labeled icon button" name="button" value="create">
         确认添加
         <i class="checkmark icon"></i>
       </button>

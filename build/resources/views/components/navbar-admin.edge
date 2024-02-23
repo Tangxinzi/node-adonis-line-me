@@ -14,7 +14,7 @@
         <a class="{{ data.active == 'users' ? 'item active' : 'item' }}" href="{{ route('admin/UsersController.index') }}">用户</a>
         <a class="{{ (data.active == 'questions' || data.active == 'answer') ? 'item active' : 'item' }}" href="{{ route('admin/QuestionsController.index' )}}">问答</a>
         <a class="{{ (data.active == 'article' || data.active == 'article') ? 'item active' : 'item' }}" href="{{ route('admin/ArticleController.index' )}}">文章</a>
-        <a class="{{ data.active == 'business' ? 'item active' : 'item' }}" href="{{ route('admin/BusinessesController.index' )}}">机构</a>
+        <a class="{{ data.active == 'business' ? 'item active' : 'item' }}" href="{{ route('admin/BusinessesController.index' )}}">主体</a>
       </div>
       <div class="q-lists content items">
         <div class="item logo">

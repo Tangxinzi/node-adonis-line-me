@@ -89,7 +89,7 @@ export default class DescoveriesController {
           moment.data_type = 'moment'
 
           moment.like = like && like.id ? true : false
-          moment.likeNum =(await Database.from('likes').where({ relation_type_id: params.id, type: 'moment', status: 1 }).count('* as total'))[0].total || 0
+          moment.likeNum = (await Database.from('likes').where({ relation_type_id: params.id, type: 'moment', status: 1 }).count('* as total'))[0].total || 0
           moment.commentNum = (await Database.from('comments').where({ relation_type_id: params.id, type: 'moment', status: 1 }).count('* as total'))[0].total || 0
 
           moment.userinfo = await Database.from('users').where({user_id: moment.user_id}).first()

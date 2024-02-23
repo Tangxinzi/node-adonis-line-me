@@ -17,28 +17,67 @@
     <div class="sixteen wide column">
       <div class="ui header-title flex-between">
         <span>
-          <span>{{ data.title }}</span>
+          <img class="ui avatar image" src="{{ data.business.logo }}" />
+          <span style="position: relative; top: 4px;">{{ data.title }}</span>
         </span>
         <div class="">
+          <a class="ui tiny button" onclick="addUser()">添加用户</a>
           <a class="ui tiny button" onclick="updateBusiness()">编辑主体</a>
+        </div>
+      </div>
+      <div class="ui segments">
+        <div class="ui segment flex-between">
+          <b>成员列表</b>
+          <div class="ui labels">
+            <!-- <a class="ui small green label" onclick="nodeNotifications()">节点推送</a> -->
+          </div>
+        </div>
+        <div class="ui segment">
+          <table class="ui celled center aligned table">
+            <thead>
+              <tr>
+                <th>USER ID</th>
+                <th>用户</th>
+                <th>加入时间</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              @each(user in data.business.users)
+                <tr>
+                  <td>{{ user.user_id }}</td>
+                  <td>
+                    <img class="ui avatar image" src="{{ user.avatar_url }}" />
+                    <span>{{ user.nickname }}</span>
+                  </td>
+                  <td>{{ user.created_at }}</td>
+                  <td></td>
+                </tr>
+              @endeach
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
   </div>
 
-  <form class="ui full modal form business" action="{{ route('admin/BusinessesController.update') }}" method="post" enctype="multipart/form-data">
+  <form class="ui full modal form business" action="{{ route('admin/BusinessesController.save') }}" method="post" enctype="multipart/form-data">
     <i class="close icon"></i>
     <h3 class="header">更新主体</h3>
     <div class="content">
       <div class="field disabled">
         <label>Business ID</label>
-        <input type="text" name="logo" value="{{ data.business.business_id || '' }}" placeholder="" disabled />
+        <input type="text" name="business_id" value="{{ data.business.business_id || '' }}" placeholder="" />
+      </div>
+      <div class="field disabled">
+        <label>Logo</label>
+        <input type="text" name="logo" value="{{ data.business.logo || '' }}" placeholder="" />
       </div>
       <div class="field">
         <label>LOGO</label>
         <input type="file" name="logo" value="{{ data.business.logo || '' }}" placeholder="" />
       </div>
-      <div class="two fields">
+      <div class="three fields">
         <div class="field">
           <label>名称</label>
           <input type="text" name="name" value="{{ data.business.name || '' }}" placeholder="" />
@@ -47,6 +86,26 @@
           <label>管理员</label>
           <input type="text" name="user_id" value="{{ data.business.user_id || '' }}" placeholder="" />
         </div>
+        <div class="field">
+          <label>类型</label>
+          <div class="ui selection dropdown">
+            <input type="hidden" name="type" value="{{ data.business.type }}" />
+            <i class="dropdown icon"></i>
+            <div class="default text">点击选择</div>
+            <div class="menu">
+              <div class="item" data-value="0">企业</div>
+              <div class="item" data-value="1">国企</div>
+              <div class="item" data-value="2">事业单位</div>
+              <div class="item" data-value="3">政务机构</div>
+              <div class="item" data-value="4">社区</div>
+              <div class="item" data-value="4">个人</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>标签</label>
+        <input type="text" name="labels" value="{{ data.business.labels || '' }}" placeholder="请使用英文「,」分割标签" />
       </div>
       <div class="field">
         <label>介绍</label>
@@ -58,7 +117,7 @@
       <div class="ui deny button">
         取消
       </div>
-      <button class="ui blue right labeled icon button">
+      <button class="ui blue right labeled icon button" name="button" value="update">
         确认更新
         <i class="checkmark icon"></i>
       </button>

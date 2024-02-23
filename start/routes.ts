@@ -80,6 +80,7 @@ Route.group(() => {
   Route.post('/comments/create', 'api/CommentsController.create')
 
   Route.get('/article/show/:id', 'admin/ArticleController.show')
+  Route.get('/business/lists', 'api/BusinessesController.lists')
 
   // 认证
   Route.get('/authentication/verification', 'api/OperatesController.authenticationVerification')
