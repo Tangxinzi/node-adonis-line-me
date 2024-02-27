@@ -5,9 +5,8 @@ import randomstring from 'randomstring';
 import { v4 as uuidv4 } from 'uuid';
 
 export default class BusinessesController {
-  public async index({ request, view, response }: HttpContextContract) {
+  public async index({ request, view }: HttpContextContract) {
     try {
-      const all = request.all()
       const business = await Database.from('business').andWhereNull('deleted_at').orderBy('created_at', 'desc').forPage(request.input('page', 1), 20)
       for (let index = 0; index < business.length; index++) {
         business[index].labels = business[index].labels ? business[index].labels.split(',') : []
@@ -29,7 +28,7 @@ export default class BusinessesController {
   }
 
   public async show({ params, request, view, response }: HttpContextContract) {
-    try {
+    try {      
       const business = await Database.from('business').where('business_id', params.id).andWhereNull('deleted_at').first()
       business.users = (await Database.rawQuery(`
         SELECT business_users.user_id, users.nickname, users.avatar_url, business_users.created_at

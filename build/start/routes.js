@@ -56,6 +56,7 @@ Route_1.default.group(() => {
     Route_1.default.post('/comments/create', 'api/CommentsController.create');
     Route_1.default.get('/article/show/:id', 'admin/ArticleController.show');
     Route_1.default.get('/business/lists', 'api/BusinessesController.lists');
+    Route_1.default.get('/business/show/:id', 'api/BusinessesController.show');
     Route_1.default.get('/authentication/verification', 'api/OperatesController.authenticationVerification');
     Route_1.default.post('/authentication/verification', 'api/OperatesController.authenticationVerification');
     Route_1.default.get('/descovery', 'api/DescoveriesController.index');

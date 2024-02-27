@@ -89,6 +89,7 @@ class MomentsController {
                 user_id: session.get('user_id'),
                 content: all.content,
                 photos: JSON.stringify(all.photos || []),
+                business_id: all.business_id || '',
                 ip: request.ip()
             });
             if (id[0]) {

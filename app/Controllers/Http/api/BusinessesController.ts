@@ -9,9 +9,11 @@ export default class BusinessesController {
 
   }
 
-  public async show({ params, request, view, response }: HttpContextContract) {
+  public async show({ params, response }: HttpContextContract) {
     try {
-      const business = await Database.from('business').where('business_id', params.id).andWhereNull('deleted_at').first()
+      const business = await Database.from('business').where('business_id', params.id).andWhereNull('deleted_at').first() || {}
+      business.labels = business.labels ? business.labels.split(',') : []
+
       business.users = (await Database.rawQuery(`
         SELECT business_users.user_id, users.nickname, users.avatar_url, business_users.created_at
         FROM business_users
@@ -25,13 +27,7 @@ export default class BusinessesController {
         business.users[index].created_at = Moment(business.users[index].created_at).format('YYYY-MM-DD HH:mm:ss')
       }
 
-      return view.render('admin/business/show', {
-        data: {
-          title: business.name,
-          active: 'business',
-          business
-        }
-      })
+      return response.json({ status: 200, message: "ok", data: business })
     } catch (error) {
       console.log(error)
     }

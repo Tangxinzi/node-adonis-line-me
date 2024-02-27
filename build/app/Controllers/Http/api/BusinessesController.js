@@ -8,9 +8,10 @@ const moment_1 = __importDefault(require("moment"));
 class BusinessesController {
     async index({ request, view, response }) {
     }
-    async show({ params, request, view, response }) {
+    async show({ params, response }) {
         try {
-            const business = await Database_1.default.from('business').where('business_id', params.id).andWhereNull('deleted_at').first();
+            const business = await Database_1.default.from('business').where('business_id', params.id).andWhereNull('deleted_at').first() || {};
+            business.labels = business.labels ? business.labels.split(',') : [];
             business.users = (await Database_1.default.rawQuery(`
         SELECT business_users.user_id, users.nickname, users.avatar_url, business_users.created_at
         FROM business_users
@@ -22,13 +23,7 @@ class BusinessesController {
             for (let index = 0; index < business.users.length; index++) {
                 business.users[index].created_at = (0, moment_1.default)(business.users[index].created_at).format('YYYY-MM-DD HH:mm:ss');
             }
-            return view.render('admin/business/show', {
-                data: {
-                    title: business.name,
-                    active: 'business',
-                    business
-                }
-            });
+            return response.json({ status: 200, message: "ok", data: business });
         }
         catch (error) {
             console.log(error);
