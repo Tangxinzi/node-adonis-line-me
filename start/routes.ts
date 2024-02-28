@@ -82,6 +82,7 @@ Route.group(() => {
   Route.get('/article/show/:id', 'admin/ArticleController.show')
   Route.get('/business/lists', 'api/BusinessesController.lists')
   Route.get('/business/show/:id', 'api/BusinessesController.show')
+  Route.get('/business/show/:id/moments', 'api/BusinessesController.moments')
 
   // 认证
   Route.get('/authentication/verification', 'api/OperatesController.authenticationVerification')

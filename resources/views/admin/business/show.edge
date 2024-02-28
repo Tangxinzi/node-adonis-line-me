@@ -65,24 +65,26 @@
         </div>
         <div class="ui segment">
           <div class="ui cards">
-            <div class="card">
-              <div class="content">
-                <img class="right floated mini ui image" src="https://semantic-ui.com/images/avatar2/large/matthew.png" />
-                <div class="header">动态标题</div>
-                <div class="meta">发布人</div>
-                <div class="description">内容</div>
+            @each(moment in data.business.moments)
+              <div class="card">
+                <div class="content">
+                  <img class="right floated mini ui image" src="{{ moment.avatar_url }}" />
+                  <div class="header">{{ moment.nickname }}</div>
+                  <div class="meta">{{ moment.created_at }}</div>
+                  <div class="description">{{ moment.content || '' }}</div>
+                </div>
+                <div class="extra content">
+                  <span class="left floated">
+                    <i class="like icon"></i>
+                    {{ moment.likeNum || 0 }}
+                  </span>
+                  <span class="right floated">
+                    <i class="comment icon"></i>
+                    {{ moment.commentNum || 0 }}
+                  </span>
+                </div>
               </div>
-              <div class="extra content">
-                <span class="left floated">
-                  <i class="user icon"></i>
-                  75 Friends
-                </span>
-                <span class="right floated">
-                  <i class="time icon"></i>
-                  时间
-                </span>
-              </div>
-            </div>
+            @endeach
           </div>
         </div>
       </div>
