@@ -21,7 +21,7 @@ class DescoveriesController {
             UNION
             SELECT 'moment' AS type, id, user_id, '' AS title, content, photos, '' AS relation_id, created_at
             FROM moments
-            WHERE status = 1
+            WHERE status = 1 AND moments.business_id IS NULL
         ) AS am
         JOIN users ON am.user_id = users.user_id
         LEFT JOIN likes ON am.id = likes.relation_type_id AND likes.type = am.type AND likes.status = 1
