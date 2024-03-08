@@ -36,9 +36,9 @@ const getChatroom = async (user_id) => {
 const getChatsMessage = async (data, chat_id) => {
     try {
         const chatroom = await Database_1.default.from('chatroom').where({ chat_id, status: 1 }).first();
-        chatroom.chat_users_id = chatroom.chat_users_id.split(',').map(str => `'${str}'`);
+        chatroom.chat_users_id = chatroom.chat_users_id.split(',');
         const users = (await Database_1.default.rawQuery(`
-      SELECT type, nickname, avatar_url from users WHERE user_id in (${chatroom.chat_users_id.join(',')}) order by FIELD(user_id, ${chatroom.chat_users_id.join(',')})
+      SELECT type, nickname, avatar_url from users WHERE user_id in (${chatroom.chat_users_id.map(str => `'${str}'`).join(',')}) order by FIELD(user_id, ${chatroom.chat_users_id.map(str => `'${str}'`).join(',')})
     `))[0];
         const chats = await Database_1.default.from('chats').select('id', 'chat_id', 'user_id', 'chat_content', 'chat_content_type', 'created_at').where({ chat_id, status: 1 }).orderBy('created_at', 'asc');
         for (let index = 0; index < chats.length; index++) {
