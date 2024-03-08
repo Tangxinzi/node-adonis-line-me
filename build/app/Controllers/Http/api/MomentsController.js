@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Database_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Lucid/Database"));
 const Logger_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Core/Logger"));
 const moment_1 = __importDefault(require("moment"));
+const Zhipin_1 = __importDefault(require("../lib/Zhipin"));
 class MomentsController {
     async index({ request, response }) {
         try {
@@ -31,11 +32,29 @@ class MomentsController {
             });
         }
     }
+    async getUserinfo(user_id) {
+        try {
+            const user = await Database_1.default.from('users').select('nickname', 'avatar_url', 'location', 'birthday', 'work', 'sex').where({ user_id }).first() || {};
+            user.photos = user.photos ? JSON.parse(user.photos) : {};
+            user.location = user.location ? JSON.parse(user.location) : {};
+            user.age = (0, moment_1.default)().diff(user.birthday, 'years');
+            user.work = JSON.parse(user.work);
+            if (user.work && user.work.value) {
+                user.work.text = await Zhipin_1.default.data(user.work.value[0], user.work.value[1]);
+            }
+            return user;
+        }
+        catch (error) {
+            Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
+        }
+    }
     async lists({ request, response, session }) {
         try {
             const all = request.all();
             const moments = await Database_1.default.from('moments').where('user_id', all.user_id || session.get('user_id')).orderBy('created_at', 'desc');
+            const userinfo = await this.getUserinfo(all.user_id || session.get('user_id'));
             for (let index = 0; index < moments.length; index++) {
+                moments[index].userinfo = userinfo;
                 moments[index].data_type = 'image';
                 moments[index].photos = moments[index].photos ? JSON.parse(moments[index].photos) : [];
                 moments[index].created_at = (0, moment_1.default)(moments[index].created_at).format('YYYY-MM-DD HH:mm:ss');

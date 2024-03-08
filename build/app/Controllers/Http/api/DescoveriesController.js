@@ -31,14 +31,26 @@ class DescoveriesController {
         LIMIT ${request.input('page', 0) * 10}, 10
       `))[0];
             for (let index = 0; index < descovery.length; index++) {
-                descovery[index].photos = JSON.parse(descovery[index].photos);
-                descovery[index].location = descovery[index].location ? JSON.parse(descovery[index].location) : {};
-                descovery[index].age = (0, moment_1.default)().diff(descovery[index].birthday, 'years');
                 descovery[index].created_at = (0, moment_1.default)(descovery[index].created_at).fromNow();
-                descovery[index]['work'] = JSON.parse(descovery[index]['work']);
-                if (descovery[index]['work'] && descovery[index]['work']['value']) {
-                    descovery[index]['work']['text'] = await Zhipin_1.default.data(descovery[index]['work']['value'][0], descovery[index]['work']['value'][1]);
+                descovery[index].photos = descovery[index].photos ? JSON.parse(descovery[index].photos) : [];
+                descovery[index].work = JSON.parse(descovery[index].work);
+                if (descovery[index].work && descovery[index].work.value) {
+                    descovery[index].work.text = await Zhipin_1.default.data(descovery[index].work.value[0], descovery[index].work.value[1]);
                 }
+                descovery[index].userinfo = {
+                    avatar_url: descovery[index].avatar_url,
+                    nickname: descovery[index].nickname,
+                    location: descovery[index].location ? JSON.parse(descovery[index].location) : {},
+                    age: (0, moment_1.default)().diff(descovery[index].birthday, 'years'),
+                    work: descovery[index].work,
+                    sex: descovery[index].sex
+                };
+                delete descovery[index].avatar_url,
+                    delete descovery[index].nickname,
+                    delete descovery[index].location,
+                    delete descovery[index].birthday,
+                    delete descovery[index].work,
+                    delete descovery[index].sex;
                 if (descovery[index].type == 'answer') {
                     const questions = await Database_1.default.from('questions').select('title').where('id', descovery[index].relation_id).first() || {};
                     descovery[index].title = questions.title;
@@ -74,7 +86,7 @@ class DescoveriesController {
                     moment.like = like && like.id ? true : false;
                     moment.likeNum = (await Database_1.default.from('likes').where({ relation_type_id: params.id, type: 'moment', status: 1 }).count('* as total'))[0].total || 0;
                     moment.commentNum = (await Database_1.default.from('comments').where({ relation_type_id: params.id, type: 'moment', status: 1 }).count('* as total'))[0].total || 0;
-                    moment.userinfo = await Database_1.default.from('users').where({ user_id: moment.user_id }).first();
+                    moment.userinfo = await this.getUserinfo(moment.user_id);
                     moment.photos = moment.photos ? JSON.parse(moment.photos) : [];
                     moment.comments = await this.getComments('moment', moment.id);
                     moment.created_at = (0, moment_1.default)(moment.created_at).format('YYYY-MM-DD HH:mm:ss');
@@ -88,7 +100,7 @@ class DescoveriesController {
                     answer.like = like && like.id ? true : false;
                     answer.likeNum = (await Database_1.default.from('likes').where({ relation_type_id: params.id, type: 'answer', status: 1 }).count('* as total'))[0].total || 0;
                     answer.commentNum = (await Database_1.default.from('comments').where({ relation_type_id: params.id, type: 'answer', status: 1 }).count('* as total'))[0].total || 0;
-                    answer.userinfo = await Database_1.default.from('users').where({ user_id: answer.user_id }).first();
+                    answer.userinfo = await this.getUserinfo(answer.user_id);
                     answer.photos = answer.photos ? JSON.parse(answer.photos) : [];
                     answer.comments = await this.getComments('answer', answer.id);
                     answer.created_at = (0, moment_1.default)(answer.created_at).format('YYYY-MM-DD HH:mm:ss');
@@ -106,7 +118,15 @@ class DescoveriesController {
     }
     async getUserinfo(user_id) {
         try {
-            return await Database_1.default.from('users').select('nickname', 'avatar_url').where({ user_id }).first();
+            const user = await Database_1.default.from('users').select('nickname', 'avatar_url', 'location', 'birthday', 'work', 'sex').where({ user_id }).first() || {};
+            user.photos = user.photos ? JSON.parse(user.photos) : {};
+            user.location = user.location ? JSON.parse(user.location) : {};
+            user.age = (0, moment_1.default)().diff(user.birthday, 'years');
+            user.work = JSON.parse(user.work);
+            if (user.work && user.work.value) {
+                user.work.text = await Zhipin_1.default.data(user.work.value[0], user.work.value[1]);
+            }
+            return user;
         }
         catch (error) {
             Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
@@ -116,11 +136,9 @@ class DescoveriesController {
         try {
             const comments = await Database_1.default.from('comments').where({ type, relation_type_id, status: 1 }), dataset = [];
             for (let index = 0; index < comments.length; index++) {
-                const userinfo = await this.getUserinfo(comments[index].user_id);
                 dataset[index] = {
                     user_id: comments[index].user_id,
-                    nickname: userinfo.nickname,
-                    avatar_url: userinfo.avatar_url,
+                    userinfo: await this.getUserinfo(comments[index].user_id),
                     comment_content: comments[index].comment_content,
                     created_at: (0, moment_1.default)(comments[index].created_at).format('YYYY-MM-DD HH:mm:ss'),
                 };

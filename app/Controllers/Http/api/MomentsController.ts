@@ -1,6 +1,7 @@
 import Database from '@ioc:Adonis/Lucid/Database'
 import Logger from '@ioc:Adonis/Core/Logger'
 import Moment from 'moment';
+import zpData from '../lib/Zhipin';
 
 export default class MomentsController {
   public async index({ request, response }: HttpContextContract) {
@@ -28,11 +29,31 @@ export default class MomentsController {
     }
   }
 
+  async getUserinfo(user_id) {
+    try {
+      const user = await Database.from('users').select('nickname', 'avatar_url', 'location', 'birthday', 'work', 'sex').where({ user_id }).first() || {}
+      user.photos = user.photos ? JSON.parse(user.photos) : {}
+      user.location = user.location ? JSON.parse(user.location) : {}
+      user.age = Moment().diff(user.birthday, 'years')
+      user.work = JSON.parse(user.work)
+      if (user.work && user.work.value) {
+        user.work.text = await zpData.data(user.work.value[0], user.work.value[1])
+      }
+
+      return user
+    } catch (error) {
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
+    }
+  }
+
   public async lists({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
       const moments = await Database.from('moments').where('user_id', all.user_id || session.get('user_id')).orderBy('created_at', 'desc')
+      const userinfo = await this.getUserinfo(all.user_id || session.get('user_id'))
+
       for (let index = 0; index < moments.length; index++) {
+        moments[index].userinfo = userinfo
         moments[index].data_type = 'image'
         moments[index].photos = moments[index].photos ? JSON.parse(moments[index].photos) : []
         moments[index].created_at = Moment(moments[index].created_at).format('YYYY-MM-DD HH:mm:ss')
