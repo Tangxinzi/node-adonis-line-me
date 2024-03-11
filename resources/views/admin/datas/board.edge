@@ -1,0 +1,87 @@
+@layout('components/layouts/main')
+
+@section('title')
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<title>{{ data.title }} - Pie</title>
+@endsection
+
+@section('style')
+<style media="screen">
+  .header-title, .ui.column.grid { margin-bottom: 1em; }
+  .padded .column { background-color: #FFF; border-left: 1px solid #f6f6f6; border-bottom: 1px solid #f6f6f6; }
+  .padded .column:nth-child(4n + 1) { border-left: 0; }
+  .statistic .value { margin: 15px 0; font-size: 28px; font-weight: 500; }
+  .statistic .value small { font-size: 14px; }
+</style>
+@endsection
+
+@section('content')
+  <div class="ui stackable four column grid">
+    @!component('components/datas-menus', data=data, csrf=csrfField())
+    <div class="thirteen wide column">
+      <div class="ui header-title flex-between">
+        <span>平台用户</span>
+      </div>
+      <div class="ui padded stackable four column grid">
+        @each(item in data.datas.user)
+        <div class="column">
+          <div class="statistic">
+            <b class="label">{{ item.text }}</b>
+            <div class="value">
+              <span>{{ item.value || 0 }}</span> <small>{{ item.unit }}</small>
+            </div>
+            <span>较昨日 -</span>
+            &nbsp;&nbsp;&nbsp;
+            <span>7 日前 -</span>
+          </div>
+        </div>
+        @endeach
+      </div>
+      <div class="ui header-title flex-between" style="margin-top: 2em;">
+        <span>介绍人</span>
+      </div>
+      <div class="ui padded stackable four column grid">
+        @each(item in data.datas.customer)
+        <div class="column">
+          <div class="statistic">
+            <b class="label">{{ item.text }}</b>
+            <div class="value">
+              <span>{{ item.value || 0 }}</span> <small>{{ item.unit }}</small>
+            </div>
+            <span>较昨日 -</span>
+            &nbsp;&nbsp;&nbsp;
+            <span>7 日前 -</span>
+          </div>
+        </div>
+        @endeach
+      </div>
+      <div class="ui header-title flex-between" style="margin-top: 2em;">
+        <span>动态</span>
+      </div>
+      <div class="ui padded stackable four column grid">
+        @each(item in data.datas.dynamics)
+        <div class="column">
+          <div class="statistic">
+            <b class="label">{{ item.text }}</b>
+            <div class="value">
+              <span>{{ item.value || 0 }}</span> <small>{{ item.unit }}</small>
+            </div>
+            <span>较昨日 -</span>
+            &nbsp;&nbsp;&nbsp;
+            <span>7 日前 -</span>
+          </div>
+        </div>
+        @endeach
+      </div>
+    </div>
+  </div>
+@endsection
+
+@section('script')
+<script type="text/javascript">
+  $('.activating').popup({
+    on: 'click'
+  })
+</script>
+@endsection

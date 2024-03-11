@@ -1,0 +1,7 @@
+<div class="three wide column">
+  <div class="ui vertical pointing menu">
+    <a class="{{ data.subActive == 'board' ? 'active' : '' }} item" href="{{ route('admin/DataController.board') }}">平台数据</a>
+    <a class="{{ data.subActive == 'portrait' ? 'active' : '' }} item" href="{{ route('admin/DataController.portrait') }}">画像洞察</a>
+    <a class="{{ data.subActive == 'incentive' ? 'active' : '' }} item" href="">经营分析</a>
+  </div>
+</div>
