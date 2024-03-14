@@ -80,7 +80,8 @@ Route_1.default.group(() => {
 Route_1.default.group(() => {
     Route_1.default.get('/datas', 'admin/DataController.index');
     Route_1.default.get('/datas/board', 'admin/DataController.board');
-    Route_1.default.get('/datas/portrait', 'admin/DataController.portrait');
+    Route_1.default.get('/datas/portrait-user', 'admin/DataController.portraitUser');
+    Route_1.default.get('/datas/portrait-customer', 'admin/DataController.portraitCustomer');
     Route_1.default.get('/operates', 'admin/OperatesController.index');
     Route_1.default.post('/operates', 'admin/OperatesController.save');
     Route_1.default.get('/incentive', 'admin/OperatesController.incentive');

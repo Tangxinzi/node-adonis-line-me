@@ -1,0 +1,321 @@
+@layout('components/layouts/main')
+
+@section('title')
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<title>{{ data.title }} - Pie</title>
+<script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+@endsection
+
+@section('style')
+<style media="screen">
+  .ui.padded.grid:not(.vertically):not(.horizontally) { margin-top: 1em !important; margin-bottom: 1em !important; }
+  .padded .column { background-color: #FFF; border-left: 1px solid #f6f6f6; border-bottom: 1px solid #f6f6f6; }
+  .padded .column:nth-child(4n + 1) { border-left: 0; }
+  .statistic .value { margin: 15px 0; font-size: 28px; font-weight: 500; }
+  .statistic .value small { font-size: 14px; }
+  .echarts { height: 400px; }
+</style>
+@endsection
+
+@section('content')
+  <div class="ui stackable four column grid">
+    @!component('components/datas-menus', data=data, csrf=csrfField())
+    <div class="thirteen wide column">
+      <div class="ui header-title flex-between">
+        <span>画像洞察</span>
+      </div>
+      <!-- 性别 -->
+      <div class="ui padded grid">
+        <div class="six wide column">
+          <div id="sex" class="echarts"></div>
+        </div>
+        <div class="ten wide column">
+          <div id="sex-trend" class="echarts"></div>
+        </div>
+      </div>
+      <!-- 年龄 -->
+      <div class="ui padded grid">
+        <div class="six wide column">
+          <div id="age" class="echarts"></div>
+        </div>
+        <div class="ten wide column">
+          <div id="age-trend" class="echarts"></div>
+        </div>
+      </div>
+      <!-- 城市地域分布 -->
+      <div class="ui padded grid">
+        <div class="sixteen wide column">
+          <div id="city" class="echarts"></div>
+        </div>
+      </div>
+      <!-- 设备 -->
+      <div class="ui padded grid">
+        <div class="eight wide column">
+          <div id="ios" class="echarts"></div>
+        </div>
+        <div class="eight wide column">
+          <div id="android" class="echarts"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+@endsection
+
+@section('script')
+<script type="text/javascript">
+  const echart = echarts.init(document.getElementById('sex'));
+  echart.setOption({
+    title: {
+      text: '用户性别分布',
+      textStyle: {
+        fontSize: 14,
+        fontWeight: '800'
+      }
+    },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true
+    },
+    xAxis: [
+      {
+        type: 'category',
+        data: ['{{ data.datas.sex[0].gender }}', '{{ data.datas.sex[1].gender }}', '{{ data.datas.sex[2].gender }}'],
+        axisTick: {
+          alignWithLabel: true
+        }
+      }
+    ],
+    yAxis: [
+      {
+        type: 'value'
+      }
+    ],
+    series: [
+      {
+        name: '性别',
+        type: 'bar',
+        barWidth: '50%',
+        data: [
+          {
+            value: '{{ data.datas.sex[0].count }}',
+            itemStyle: {
+              color: 'grey'
+            }
+          },
+          {
+            value: '{{ data.datas.sex[1].count }}',
+            itemStyle: {
+              color: 'skyblue'
+            }
+          },
+          {
+            value: '{{ data.datas.sex[2].count }}',
+            itemStyle: {
+              color: 'pink'
+            }
+          }
+        ],
+      }
+    ]
+  })
+
+  const echartAge = echarts.init(document.getElementById('age'));
+  echartAge.setOption({
+    title: {
+      text: '用户年龄分布',
+      textStyle: {
+        fontSize: 14,
+        fontWeight: '800'
+      }
+    },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true
+    },
+    xAxis: [
+      {
+        type: 'category',
+        data: '{{ data.datas.charts.age.range }}'.split(','),
+        axisTick: {
+          alignWithLabel: true
+        }
+      }
+    ],
+    yAxis: [
+      {
+        type: 'value'
+      }
+    ],
+    series: [
+      {
+        name: '年龄',
+        type: 'bar',
+        barWidth: '50%',
+        data: '{{ data.datas.charts.age.value }}'.split(','),
+      }
+    ]
+  })
+
+  const echartCity = echarts.init(document.getElementById('city'));
+  echartCity.setOption({
+    title: {
+      text: '城市地域分布',
+      textStyle: {
+        fontSize: 14,
+        fontWeight: '800'
+      }
+    },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true
+    },
+    xAxis: [
+      {
+        type: 'category',
+        data: '{{ data.datas.charts.city.range }}'.split(','),
+        axisTick: {
+          alignWithLabel: true
+        }
+      }
+    ],
+    yAxis: [
+      {
+        type: 'value'
+      }
+    ],
+    series: [
+      {
+        name: '城市',
+        type: 'bar',
+        barWidth: '50%',
+        data: '{{ data.datas.charts.city.value }}'.split(','),
+      }
+    ]
+  })
+
+  const echartiOS = echarts.init(document.getElementById('ios'));
+  echartiOS.setOption({
+    title: {
+      text: 'iOS TOP 7 机型',
+      textStyle: {
+        fontSize: 14,
+        fontWeight: '800'
+      }
+    },
+    legend: {
+      top: 'bottom'
+    },
+    toolbox: {
+      show: true,
+      feature: {
+        mark: { show: true },
+        dataView: { show: true, readOnly: false },
+        restore: { show: true },
+        saveAsImage: { show: true }
+      }
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true
+    },
+    series: [
+      {
+        name: 'Nightingale Chart',
+        type: 'pie',
+        radius: [40, 100],
+        center: ['50%', '50%'],
+        roseType: 'area',
+        itemStyle: {
+          borderRadius: 8
+        },
+        data: [
+          { value: 40, name: 'rose 1' },
+          { value: 38, name: 'rose 2' },
+          { value: 32, name: 'rose 3' },
+          { value: 30, name: 'rose 4' },
+          { value: 28, name: 'rose 5' },
+          { value: 26, name: 'rose 6' },
+          { value: 22, name: 'rose 7' }
+        ]
+      }
+    ]
+  })
+
+  const echartAndroid = echarts.init(document.getElementById('android'));
+  echartAndroid.setOption({
+    title: {
+      text: 'Android TOP 7 机型',
+      textStyle: {
+        fontSize: 14,
+        fontWeight: '800'
+      }
+    },
+    legend: {
+      top: 'bottom'
+    },
+    toolbox: {
+      show: true,
+      feature: {
+        mark: { show: true },
+        dataView: { show: true, readOnly: false },
+        restore: { show: true },
+        saveAsImage: { show: true }
+      }
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true
+    },
+    series: [
+      {
+        name: 'Nightingale Chart',
+        type: 'pie',
+        radius: [40, 100],
+        center: ['50%', '50%'],
+        roseType: 'area',
+        itemStyle: {
+          borderRadius: 8
+        },
+        data: [
+          { value: 40, name: 'rose 1' },
+          { value: 38, name: 'rose 2' },
+          { value: 32, name: 'rose 3' },
+          { value: 30, name: 'rose 4' },
+          { value: 28, name: 'rose 5' },
+          { value: 26, name: 'rose 6' },
+          { value: 22, name: 'rose 7' }
+        ]
+      }
+    ]
+  })
+</script>
+@endsection

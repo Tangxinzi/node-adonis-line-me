@@ -7,9 +7,11 @@ const Database_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Lucid/D
 const Logger_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Core/Logger"));
 const moment_1 = __importDefault(require("moment"));
 const geoip_lite_1 = __importDefault(require("geoip-lite"));
+const node_ipinfo_1 = __importDefault(require("node-ipinfo"));
 const Jwt_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/Jwt"));
 const zpData = require('../lib/Zhipin');
 const { percentUserinfo } = require('../lib/Percent');
+const ipinfoWrapper = new node_ipinfo_1.default("c175d8eff0ed76");
 class UsersController {
     async login({ request, response, view, session }) {
         try {
@@ -51,6 +53,7 @@ class UsersController {
     async index({ request, view, session }) {
         try {
             const all = request.all();
+            const ips = ['10.0.8.12', '10.0.8.14', '10.0.8.14'];
             const users = await Database_1.default.from('users').whereIn('type', all.type ? all.type.split(',') : [1, 2]).orderBy(all.orderBy || 'id', 'desc').forPage(request.input('page', 1), 20);
             for (let index = 0; index < users.length; index++) {
                 users[index].work = JSON.parse(users[index].work);
@@ -66,7 +69,16 @@ class UsersController {
                 }
                 users[index].percent = await percentUserinfo(users[index].user_id);
                 users[index].photos = JSON.parse(users[index].photos);
-                users[index].ip = geoip_lite_1.default.lookup(users[index].ip);
+                if (!users[index].ip_city && users[index].ip && ips.indexOf(users[index].ip) == '-1') {
+                    ipinfoWrapper.lookupIp(users[index].ip).then(async (response) => {
+                        if (response.city) {
+                            console.log(response.city);
+                            await Database_1.default.from('users').where({ user_id: users[index].user_id }).update({
+                                ip_city: response.city
+                            });
+                        }
+                    });
+                }
                 users[index].online_at_fromNow = (0, moment_1.default)(users[index].online_at_fromNow).fromNow();
                 users[index].online_at = (0, moment_1.default)(users[index].online_at).format('YYYY-MM-DD HH:mm:ss');
                 users[index].created_at = (0, moment_1.default)(users[index].created_at).format('YYYY-MM-DD HH:mm:ss');

@@ -29,6 +29,22 @@
           <div id="total" class="echarts" style="height: 400px"></div>
         </div>
       </div>
+      <div class="ui padded stackable column grid">
+        <div class="column">
+          <div class="flex-between" style="margin-bottom: 1em;">
+            <div class="buttons">
+              <button class="ui basic circular button">累计用户数</button>
+              <button class="ui basic circular button">日新增用户</button>
+              <button class="ui basic circular button">日新增介绍</button>
+              <button class="ui basic circular button">活跃日留存</button>
+              <button class="ui basic circular button">新增日留存</button>
+              <button class="ui basic circular button">流失用户数</button>
+              <button class="ui basic circular button">回流用户数</button>
+            </div>
+          </div>
+          <div id="core" class="echarts" style="height: 400px"></div>
+        </div>
+      </div>
       <div class="ui header-title flex-between" style="margin-top: 2em;">
         <span>平台用户</span>
       </div>
@@ -92,10 +108,11 @@
   $('.activating').popup({
     on: 'click'
   })
-  
-  const option = {
+
+  const echartTotal = echarts.init(document.getElementById('total'));
+  echartTotal.setOption({
     title: {
-      text: '近 30 日统计：' + '{{ data.datas.charts.count.day[0] }} ~ {{ data.datas.charts.count.day[data.datas.charts.count.day.length - 1] }}',
+      text: '近 30 日新增统计：' + '{{ data.datas.charts.count.day[0] }} ~ {{ data.datas.charts.count.day[data.datas.charts.count.day.length - 1] }}',
       textStyle: {
         fontSize: 14,
         fontWeight: '800'
@@ -105,7 +122,7 @@
       trigger: 'axis'
     },
     legend: {
-      data: ['用户', '介绍', '动态']
+      data: ['用户', '动态', '介绍']
     },
     grid: {
       left: '3%',
@@ -132,86 +149,70 @@
         type: 'line',
         stack: 'Total',
         smooth: true,
-        smooth: true,
-        lineStyle: {
-          width: 0
-        },
         showSymbol: false,
-        areaStyle: {
-          opacity: 0.8,
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            {
-              offset: 0,
-              color: 'rgb(0, 221, 255)'
-            },
-            {
-              offset: 1,
-              color: 'rgb(77, 119, 255)'
-            }
-          ])
-        },
-        emphasis: {
-          focus: 'series'
-        },
         data: '{{ data.datas.charts.count.users }}'.split(',')
-      },
-      {
-        name: '介绍',
-        type: 'line',
-        stack: 'Total',
-        smooth: true,
-        lineStyle: {
-          width: 0
-        },
-        showSymbol: false,
-        areaStyle: {
-          opacity: 0.8,
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            {
-              offset: 0,
-              color: 'rgb(55, 162, 255)'
-            },
-            {
-              offset: 1,
-              color: 'rgb(116, 21, 219)'
-            }
-          ])
-        },
-        emphasis: {
-          focus: 'series'
-        },
-        data: '{{ data.datas.charts.count.customer }}'.split(',')
       },
       {
         name: '动态',
         type: 'line',
         stack: 'Total',
         smooth: true,
-        lineStyle: {
-          width: 0
-        },
         showSymbol: false,
-        areaStyle: {
-          opacity: 0.8,
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            {
-              offset: 0,
-              color: 'rgb(255, 0, 135)'
-            },
-            {
-              offset: 1,
-              color: 'rgb(135, 0, 157)'
-            }
-          ])
-        },
-        emphasis: {
-          focus: 'series'
-        },
         data: '{{ data.datas.charts.count.moments }}'.split(',')
-      }
+      },
+      {
+        name: '介绍',
+        type: 'line',
+        stack: 'Total',
+        smooth: true,
+        showSymbol: false,
+        data: '{{ data.datas.charts.count.customer }}'.split(',')
+      },
     ]
-  };
-  const echart = echarts.init(document.getElementById('total'));
-  echart.setOption(option)
+  })
+
+  const echartCore = echarts.init(document.getElementById('core'));
+  echartCore.setOption({
+    title: {
+      text: '近 100 日用户增长',
+      textStyle: {
+        fontSize: 14,
+        fontWeight: '800'
+      }
+    },
+    tooltip: {
+      trigger: 'axis'
+    },
+    legend: {
+      data: '用户'
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true
+    },
+    toolbox: {
+      feature: {
+        saveAsImage: {}
+      }
+    },
+    xAxis: {
+      type: 'category',
+      boundaryGap: false,
+      data: '{{ data.datas.charts.core.day }}'.split(',')
+    },
+    yAxis: {
+      type: 'value'
+    },
+    series: {
+      name: '用户',
+      type: 'line',
+      stack: 'Total',
+      smooth: true,
+      showSymbol: false,
+      data: '{{ data.datas.charts.core.value }}'.split(',')
+    }
+  })
 </script>
 @endsection

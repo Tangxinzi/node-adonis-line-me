@@ -58,6 +58,11 @@ export default class UserController {
       delete result.session_key // 删除 jscode2session session key
       result.user.percent = await percentUserinfo(result.user.user_id)
       result.user.sign = await Jwt.signPrivateKey(result.user.id)
+
+      // 更新设备信息
+      const system = JSON.parse(all.system)
+      await Database.from('users').where({ user_id: result.user.user_id }).update({ brand: system.brand, platform: system.platform, system: JSON.stringify(system) })
+
       return result
     } catch (error) {
       console.log(error);

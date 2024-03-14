@@ -2,9 +2,11 @@ import Database from '@ioc:Adonis/Lucid/Database';
 import Logger from '@ioc:Adonis/Core/Logger';
 import Moment from 'moment';
 import GeoIP from 'geoip-lite';
+import IPinfoWrapper, { IPinfo, AsnResponse } from "node-ipinfo";
 import Jwt from 'App/Models/Jwt';
 const zpData = require('../lib/Zhipin');
 const { percentUserinfo } = require('../lib/Percent');
+const ipinfoWrapper = new IPinfoWrapper("c175d8eff0ed76");
 
 export default class UsersController {
   public async login({ request, response, view, session }: HttpContextContract) {
@@ -44,6 +46,7 @@ export default class UsersController {
   public async index({ request, view, session }: HttpContextContract) {
     try {
       const all = request.all()
+      const ips = ['10.0.8.12', '10.0.8.14', '10.0.8.14']
       const users = await Database.from('users').whereIn('type', all.type ? all.type.split(',') : [1, 2]).orderBy(all.orderBy || 'id', 'desc').forPage(request.input('page', 1), 20)
       for (let index = 0; index < users.length; index++) {
         users[index].work = JSON.parse(users[index].work)
@@ -60,7 +63,18 @@ export default class UsersController {
 
         users[index].percent = await percentUserinfo(users[index].user_id)
         users[index].photos = JSON.parse(users[index].photos)
-        users[index].ip = GeoIP.lookup(users[index].ip)
+        // users[index].ip = GeoIP.lookup(users[index].ip)
+        
+        if (!users[index].ip_city && users[index].ip && ips.indexOf(users[index].ip) == '-1') {
+          ipinfoWrapper.lookupIp(users[index].ip).then(async (response: IPinfo) => {
+            if (response.city) {
+              console.log(response.city);
+              await Database.from('users').where({ user_id: users[index].user_id }).update({
+                ip_city: response.city
+              })
+            }
+          })            
+        }
         users[index].online_at_fromNow = Moment(users[index].online_at_fromNow).fromNow()
         users[index].online_at = Moment(users[index].online_at).format('YYYY-MM-DD HH:mm:ss')
         users[index].created_at = Moment(users[index].created_at).format('YYYY-MM-DD HH:mm:ss')

@@ -63,42 +63,62 @@ export default class DataController {
             SELECT 'moment' AS type, count(*) AS value, '动态' AS text, '条' AS unit FROM moments WHERE status = 1
           ) AS data
         `))[0],
+        core: (await Database.rawQuery(`
+          SELECT date_sequence.sequence_date AS date, COUNT(u.id) AS cumulative_users
+          FROM (
+            SELECT DATE_ADD(CURDATE(), INTERVAL - (a.a + (10 * b.a) + (100 * c.a)) DAY) AS sequence_date
+            FROM 
+              (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS a
+              CROSS JOIN 
+              (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS b
+              CROSS JOIN 
+              (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS c
+          ) AS date_sequence
+          LEFT JOIN users u ON DATE(u.created_at) <= DATE(date_sequence.sequence_date)
+          WHERE date_sequence.sequence_date >= CURDATE() - INTERVAL 99 DAY
+          GROUP BY date_sequence.sequence_date
+          ORDER BY date_sequence.sequence_date;
+        `))[0],
         charts: {
           total: (await Database.rawQuery(`
             SELECT
-                date_range.day,
-                COALESCE(count_users, 0) AS count_users,
-                COALESCE(count_customer, 0) AS count_customer,
-                COALESCE(count_moments, 0) AS count_moments
+              date_range.day,
+              COALESCE(count_users, 0) AS count_users,
+              COALESCE(count_customer, 0) AS count_customer,
+              COALESCE(count_moments, 0) AS count_moments
             FROM (
-                SELECT DATE_SUB(CURDATE(), INTERVAL seq DAY) AS day,
-                      COUNT(users.created_at) AS count_users,
-                      COUNT(customer.created_at) AS count_customer,
-                      COUNT(moments.created_at) AS count_moments
-                FROM (
-                    SELECT 0 AS seq UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL 
-                    SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL 
-                    SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL 
-                    SELECT 10 UNION ALL SELECT 11 UNION ALL SELECT 12 UNION ALL 
-                    SELECT 13 UNION ALL SELECT 14 UNION ALL SELECT 15 UNION ALL 
-                    SELECT 16 UNION ALL SELECT 17 UNION ALL SELECT 18 UNION ALL 
-                    SELECT 19 UNION ALL SELECT 20 UNION ALL SELECT 21 UNION ALL 
-                    SELECT 22 UNION ALL SELECT 23 UNION ALL SELECT 24 UNION ALL 
-                    SELECT 25 UNION ALL SELECT 26 UNION ALL SELECT 27 UNION ALL SELECT 28 UNION ALL SELECT 29
-                ) AS dates 
-                LEFT JOIN users ON DATE(users.created_at) = DATE_SUB(CURDATE(), INTERVAL seq DAY) 
-                LEFT JOIN customer ON DATE(customer.created_at) = DATE_SUB(CURDATE(), INTERVAL seq DAY) 
-                LEFT JOIN moments ON DATE(moments.created_at) = DATE_SUB(CURDATE(), INTERVAL seq DAY)
-                GROUP BY day
-                ORDER BY day DESC
+              SELECT DATE_SUB(CURDATE(), INTERVAL seq DAY) AS day,
+                COUNT(users.created_at) AS count_users,
+                COUNT(customer.created_at) AS count_customer,
+                COUNT(moments.created_at) AS count_moments
+              FROM (
+                SELECT 0 AS seq UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL
+                SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL
+                SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL
+                SELECT 10 UNION ALL SELECT 11 UNION ALL SELECT 12 UNION ALL
+                SELECT 13 UNION ALL SELECT 14 UNION ALL SELECT 15 UNION ALL
+                SELECT 16 UNION ALL SELECT 17 UNION ALL SELECT 18 UNION ALL
+                SELECT 19 UNION ALL SELECT 20 UNION ALL SELECT 21 UNION ALL
+                SELECT 22 UNION ALL SELECT 23 UNION ALL SELECT 24 UNION ALL
+                SELECT 25 UNION ALL SELECT 26 UNION ALL SELECT 27 UNION ALL SELECT 28 UNION ALL SELECT 29
+              ) AS dates
+              LEFT JOIN users ON DATE(users.created_at) = DATE_SUB(CURDATE(), INTERVAL seq DAY)
+              LEFT JOIN customer ON DATE(customer.created_at) = DATE_SUB(CURDATE(), INTERVAL seq DAY)
+              LEFT JOIN moments ON DATE(moments.created_at) = DATE_SUB(CURDATE(), INTERVAL seq DAY)
+              GROUP BY day
+              ORDER BY day DESC
             ) date_range
             ORDER BY date_range.day;
           `))[0],
+          core: {
+            day: [],
+            value: []
+          },
           count: {
             day: [],
             users: [],
             customer: [],
-            moments: [],  
+            moments: [],
           }
         }
       }
@@ -108,6 +128,11 @@ export default class DataController {
         datas.charts.count.users.push(datas.charts.total[i].count_users)
         datas.charts.count.customer.push(datas.charts.total[i].count_customer)
         datas.charts.count.moments.push(datas.charts.total[i].count_moments)
+      }
+
+      for (let index = 0; index < datas.core.length; index++) {
+        datas.charts.core.day.push(Moment(datas.core[index].date).format("MM-DD"))
+        datas.charts.core.value.push(datas.core[index].cumulative_users)
       }
 
       return view.render('admin/datas/board', {
@@ -123,28 +148,85 @@ export default class DataController {
     }
   }
 
-  public async portrait({ request, response, view, session }: HttpContextContract) {
+  public async portraitUser({ request, response, view, session }: HttpContextContract) {
     try {
-      const all = request.all(), datas = {
-        user: (await Database.rawQuery(`
-        SELECT data.type, data.value, data.text, data.unit
-        FROM (
-          SELECT 'users_total' AS type, count(*) AS value, '累计用户' AS text, '人' AS unit FROM users
-          UNION ALL
-          SELECT 'users_type_1' AS type, count(*) AS value, '介绍人' AS text, '人' AS unit FROM users WHERE type = 1
-          UNION ALL
-          SELECT 'users_type_2' AS type, count(*) AS value, '普通用户' AS text, '人' AS unit FROM users WHERE type = 2
-          UNION ALL
-          SELECT 'users_current_today' AS type, count(*) AS value, '今日在线' AS text, '人' AS unit FROM users WHERE DATE(online_at) = CURDATE()
-        ) AS data
-      `))[0]
+      const datas = {
+        charts: {
+          sex: {
+            range: [],
+            value: []
+          },
+          age: {
+            range: [],
+            value: []
+          },
+          city: {
+            range: [],
+            value: []
+          }
+        },
+        sex: (await Database.rawQuery(`
+          SELECT
+              CASE WHEN sex = 1 THEN '男性'
+                   WHEN sex = 0 THEN '女性'
+                   ELSE '未知'
+              END AS gender,
+              COUNT(*) AS count
+          FROM users
+          GROUP BY sex;
+        `))[0],
+        age: (await Database.rawQuery(`
+          SELECT
+              CONCAT(FLOOR((age_range.min_age) / 5) * 5 + 1, '-', FLOOR((age_range.max_age) / 5) * 5 + 5) AS age_group,
+              COALESCE(COUNT(users.id), 0) AS count
+          FROM (
+              SELECT
+                  seq.seq * 5 AS min_age,
+                  (seq.seq + 1) * 5 - 1 AS max_age
+              FROM
+                  (SELECT 0 AS seq UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS seq
+          ) AS age_range
+          LEFT JOIN users ON TIMESTAMPDIFF(YEAR, STR_TO_DATE(users.birthday, '%Y-%m-%d'), CURDATE()) BETWEEN age_range.min_age AND age_range.max_age
+          GROUP BY age_range.min_age, age_range.max_age
+          ORDER BY age_range.min_age;
+        `))[0],
+        city: (await Database.rawQuery(`
+          SELECT COALESCE(ip_city, '未知') AS city, COUNT(*) AS count
+          FROM users
+          GROUP BY COALESCE(ip_city, '未知');
+        `))[0],
       }
 
-      return view.render('admin/datas/portrait', {
+      for (let index = 0; index < datas.age.length; index++) {
+        datas.charts.age.range.push(datas.age[index].age_group)
+        datas.charts.age.value.push(datas.age[index].count)
+      }
+
+      for (let index = 0; index < datas.city.length; index++) {
+        datas.charts.city.range.push(datas.city[index].city)
+        datas.charts.city.value.push(datas.city[index].count)
+      }
+
+      return view.render('admin/datas/portrait-user', {
         data: {
           title: '画像洞察',
           active: 'datas',
-          subActive: 'portrait',
+          subActive: 'portrait-user',
+          datas
+        }
+      })
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  public async portraitCustomer({ request, response, view, session }: HttpContextContract) {
+    try {
+      const all = request.all(), datas = await Database.table('datas')
+      return view.render('admin/datas/portrait-customer', {
+        data: {
+          title: '数据',
+          active: 'datas',
           datas,
           all
         }

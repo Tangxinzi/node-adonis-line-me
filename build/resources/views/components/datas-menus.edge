@@ -1,7 +1,15 @@
 <div class="three wide column">
   <div class="ui vertical pointing menu">
     <a class="{{ data.subActive == 'board' ? 'active' : '' }} item" href="{{ route('admin/DataController.board') }}">平台数据</a>
-    <a class="{{ data.subActive == 'portrait' ? 'active' : '' }} item" href="{{ route('admin/DataController.portrait') }}">画像洞察</a>
+    <a class="{{ data.subActive == 'portrait-user' ? 'active' : '' }} item" href="{{ route('admin/DataController.portraitUser') }}">用户画像</a>
+    <a class="{{ data.subActive == 'portrait-customer' ? 'active' : '' }} item" href="">介绍画像</a>
     <a class="{{ data.subActive == 'incentive' ? 'active' : '' }} item" href="">经营分析</a>
+  </div>
+  <div class="ui vertical pointing menu">
+    <a class="item" href="">站外监控</a>
+  </div>
+  <div class="ui vertical pointing menu">
+    <a class="item" href="">埋点分析</a>
+    <a class="item" href="">A/B Test</a>
   </div>
 </div>

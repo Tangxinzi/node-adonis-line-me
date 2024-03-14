@@ -54,6 +54,8 @@ class UserController {
             delete result.session_key;
             result.user.percent = await percentUserinfo(result.user.user_id);
             result.user.sign = await Jwt_1.default.signPrivateKey(result.user.id);
+            const system = JSON.parse(all.system);
+            await Database_1.default.from('users').where({ user_id: result.user.user_id }).update({ brand: system.brand, platform: system.platform, system: JSON.stringify(system) });
             return result;
         }
         catch (error) {
