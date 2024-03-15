@@ -23,7 +23,7 @@
     @!component('components/datas-menus', data=data, csrf=csrfField())
     <div class="thirteen wide column">
       <div class="ui header-title flex-between">
-        <span>画像洞察</span>
+        <span>用户画像</span>
       </div>
       <!-- 性别 -->
       <div class="ui padded grid">
@@ -125,6 +125,65 @@
           }
         ],
       }
+    ]
+  })
+
+  const echartSexTrend = echarts.init(document.getElementById('sex-trend'));
+  echartSexTrend.setOption({
+    title: {
+      text: '用户性别增加',
+      textStyle: {
+        fontSize: 14,
+        fontWeight: '800'
+      }
+    },
+    tooltip: {
+      trigger: 'axis'
+    },
+    toolbox: {
+      show: true,
+      feature: {
+        dataZoom: {
+          yAxisIndex: 'none'
+        },
+        dataView: { readOnly: false },
+        magicType: { type: ['line', 'bar'] },
+        restore: {},
+        saveAsImage: {}
+      }
+    },
+    legend: {
+      data: '用户'
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true
+    },
+    xAxis: {
+      type: 'category',
+      boundaryGap: false,
+      data: '{{ data.datas.charts.sexTrend.date }}'.split(',')
+    },
+    yAxis: {
+      type: 'value'
+    },
+    series: [
+      {
+        name: '男',
+        type: 'line',
+        smooth: true,
+        showSymbol: false,
+        data: '{{ data.datas.charts.sexTrend.female }}'.split(',')
+      },
+      {
+        name: '女',
+        type: 'line',
+        smooth: true,
+        showSymbol: false,
+        data: '{{ data.datas.charts.sexTrend.male }}'.split(',')
+      },
     ]
   })
 

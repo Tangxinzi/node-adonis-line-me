@@ -29,22 +29,6 @@
           <div id="total" class="echarts" style="height: 400px"></div>
         </div>
       </div>
-      <div class="ui padded stackable column grid">
-        <div class="column">
-          <div class="flex-between" style="margin-bottom: 1em;">
-            <div class="buttons">
-              <button class="ui basic circular button">累计用户数</button>
-              <button class="ui basic circular button">日新增用户</button>
-              <button class="ui basic circular button">日新增介绍</button>
-              <button class="ui basic circular button">活跃日留存</button>
-              <button class="ui basic circular button">新增日留存</button>
-              <button class="ui basic circular button">流失用户数</button>
-              <button class="ui basic circular button">回流用户数</button>
-            </div>
-          </div>
-          <div id="core" class="echarts" style="height: 400px"></div>
-        </div>
-      </div>
       <div class="ui header-title flex-between" style="margin-top: 2em;">
         <span>平台用户</span>
       </div>
@@ -63,6 +47,21 @@
         </div>
         @endeach
       </div>
+      <div class="ui padded stackable column grid">
+        <div class="column">
+          <div class="flex-between" style="margin-bottom: 1em;">
+            <div class="buttons">
+              <button class="ui basic circular button active">累计用户数</button>
+              <button class="ui basic circular button">日新增用户</button>
+              <button class="ui basic circular button">活跃日留存</button>
+              <button class="ui basic circular button">新增日留存</button>
+              <button class="ui basic circular button">流失用户数</button>
+              <button class="ui basic circular button">回流用户数</button>
+            </div>
+          </div>
+          <div id="core-user" class="echarts" style="height: 400px"></div>
+        </div>
+      </div>
       <div class="ui header-title flex-between" style="margin-top: 2em;">
         <span>介绍</span>
       </div>
@@ -80,6 +79,17 @@
           </div>
         </div>
         @endeach
+      </div>
+      <div class="ui padded stackable column grid">
+        <div class="column">
+          <div class="flex-between" style="margin-bottom: 1em;">
+            <div class="buttons">
+              <button class="ui basic circular button active">累计介绍数</button>
+              <button class="ui basic circular button">日新增介绍</button>
+            </div>
+          </div>
+          <div id="core-customer" class="echarts" style="height: 400px"></div>
+        </div>
       </div>
       <div class="ui header-title flex-between" style="margin-top: 2em;">
         <span>动态</span>
@@ -121,19 +131,26 @@
     tooltip: {
       trigger: 'axis'
     },
+    toolbox: {
+      show: true,
+      feature: {
+        dataZoom: {
+          yAxisIndex: 'none'
+        },
+        dataView: { readOnly: false },
+        magicType: { type: ['line', 'bar'] },
+        restore: {},
+        saveAsImage: {}
+      }
+    },
     legend: {
-      data: ['用户', '动态', '介绍']
+      data: ['用户', '介绍', '动态', '问答']
     },
     grid: {
       left: '3%',
       right: '4%',
       bottom: '3%',
       containLabel: true
-    },
-    toolbox: {
-      feature: {
-        saveAsImage: {}
-      }
     },
     xAxis: {
       type: 'category',
@@ -147,34 +164,38 @@
       {
         name: '用户',
         type: 'line',
-        stack: 'Total',
         smooth: true,
         showSymbol: false,
         data: '{{ data.datas.charts.count.users }}'.split(',')
       },
       {
+        name: '介绍',
+        type: 'line',
+        smooth: true,
+        showSymbol: false,
+        data: '{{ data.datas.charts.count.customer }}'.split(',')
+      },
+      {
         name: '动态',
         type: 'line',
-        stack: 'Total',
         smooth: true,
         showSymbol: false,
         data: '{{ data.datas.charts.count.moments }}'.split(',')
       },
       {
-        name: '介绍',
+        name: '问答',
         type: 'line',
-        stack: 'Total',
         smooth: true,
         showSymbol: false,
-        data: '{{ data.datas.charts.count.customer }}'.split(',')
+        data: '{{ data.datas.charts.count.answer }}'.split(',')
       },
     ]
   })
 
-  const echartCore = echarts.init(document.getElementById('core'));
-  echartCore.setOption({
+  const echartCoreUser = echarts.init(document.getElementById('core-user'));
+  echartCoreUser.setOption({
     title: {
-      text: '近 100 日用户增长',
+      text: '近 100 日用户增长趋势',
       textStyle: {
         fontSize: 14,
         fontWeight: '800'
@@ -182,6 +203,18 @@
     },
     tooltip: {
       trigger: 'axis'
+    },
+    toolbox: {
+      show: true,
+      feature: {
+        dataZoom: {
+          yAxisIndex: 'none'
+        },
+        dataView: { readOnly: false },
+        magicType: { type: ['line', 'bar'] },
+        restore: {},
+        saveAsImage: {}
+      }
     },
     legend: {
       data: '用户'
@@ -192,15 +225,10 @@
       bottom: '3%',
       containLabel: true
     },
-    toolbox: {
-      feature: {
-        saveAsImage: {}
-      }
-    },
     xAxis: {
       type: 'category',
       boundaryGap: false,
-      data: '{{ data.datas.charts.core.day }}'.split(',')
+      data: '{{ data.datas.charts.core.user.day }}'.split(',')
     },
     yAxis: {
       type: 'value'
@@ -208,10 +236,59 @@
     series: {
       name: '用户',
       type: 'line',
-      stack: 'Total',
       smooth: true,
       showSymbol: false,
-      data: '{{ data.datas.charts.core.value }}'.split(',')
+      data: '{{ data.datas.charts.core.user.value }}'.split(',')
+    }
+  })
+
+  const echartCoreCustomer = echarts.init(document.getElementById('core-customer'));
+  echartCoreCustomer.setOption({
+    title: {
+      text: '近 100 日介绍增长趋势',
+      textStyle: {
+        fontSize: 14,
+        fontWeight: '800'
+      }
+    },
+    tooltip: {
+      trigger: 'axis'
+    },
+    toolbox: {
+      show: true,
+      feature: {
+        dataZoom: {
+          yAxisIndex: 'none'
+        },
+        dataView: { readOnly: false },
+        magicType: { type: ['line', 'bar'] },
+        restore: {},
+        saveAsImage: {}
+      }
+    },
+    legend: {
+      data: '介绍'
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true
+    },
+    xAxis: {
+      type: 'category',
+      boundaryGap: false,
+      data: '{{ data.datas.charts.core.customer.day }}'.split(',')
+    },
+    yAxis: {
+      type: 'value'
+    },
+    series: {
+      name: '介绍',
+      type: 'line',
+      smooth: true,
+      showSymbol: false,
+      data: '{{ data.datas.charts.core.customer.value }}'.split(',')
     }
   })
 </script>
