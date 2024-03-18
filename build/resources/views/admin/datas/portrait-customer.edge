@@ -23,7 +23,7 @@
     @!component('components/datas-menus', data=data, csrf=csrfField())
     <div class="thirteen wide column">
       <div class="ui header-title flex-between">
-        <span>画像洞察</span>
+        <span>介绍画像</span>
       </div>
       <!-- 性别 -->
       <div class="ui padded grid">
@@ -43,12 +43,6 @@
           <div id="age-trend" class="echarts"></div>
         </div>
       </div>
-      <!-- 城市地域分布 -->
-      <div class="ui padded grid">
-        <div class="sixteen wide column">
-          <div id="city" class="echarts"></div>
-        </div>
-      </div>
       <!-- 设备 -->
       <div class="ui padded grid">
         <div class="eight wide column">
@@ -64,8 +58,8 @@
 
 @section('script')
 <script type="text/javascript">
-  const echart = echarts.init(document.getElementById('sex'));
-  echart.setOption({
+  const echartSex = echarts.init(document.getElementById('sex'));
+  echartSex.setOption({
     title: {
       text: '用户性别分布',
       textStyle: {
@@ -88,7 +82,7 @@
     xAxis: [
       {
         type: 'category',
-        data: ['{{ data.datas.sex[0].gender }}', '{{ data.datas.sex[1].gender }}', '{{ data.datas.sex[2].gender }}'],
+        data: ['{{ data.datas.sex[0].gender }}', '{{ data.datas.sex[1].gender }}'],
         axisTick: {
           alignWithLabel: true
         }
@@ -108,23 +102,76 @@
           {
             value: '{{ data.datas.sex[0].count }}',
             itemStyle: {
-              color: 'grey'
-            }
-          },
-          {
-            value: '{{ data.datas.sex[1].count }}',
-            itemStyle: {
               color: 'skyblue'
             }
           },
           {
-            value: '{{ data.datas.sex[2].count }}',
+            value: '{{ data.datas.sex[1].count }}',
             itemStyle: {
               color: 'pink'
             }
           }
         ],
       }
+    ]
+  })
+
+  const echartSexTrend = echarts.init(document.getElementById('sex-trend'));
+  echartSexTrend.setOption({
+    title: {
+      text: '用户性别增加',
+      textStyle: {
+        fontSize: 14,
+        fontWeight: '800'
+      }
+    },
+    tooltip: {
+      trigger: 'axis'
+    },
+    toolbox: {
+      show: true,
+      feature: {
+        dataZoom: {
+          yAxisIndex: 'none'
+        },
+        dataView: { readOnly: false },
+        magicType: { type: ['line', 'bar'] },
+        restore: {},
+        saveAsImage: {}
+      }
+    },
+    legend: {
+      data: '用户'
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true
+    },
+    xAxis: {
+      type: 'category',
+      boundaryGap: false,
+      data: '{{ data.datas.charts.sexTrend.date }}'.split(',')
+    },
+    yAxis: {
+      type: 'value'
+    },
+    series: [
+      {
+        name: '男',
+        type: 'line',
+        smooth: true,
+        showSymbol: false,
+        data: '{{ data.datas.charts.sexTrend.female }}'.split(',')
+      },
+      {
+        name: '女',
+        type: 'line',
+        smooth: true,
+        showSymbol: false,
+        data: '{{ data.datas.charts.sexTrend.male }}'.split(',')
+      },
     ]
   })
 
@@ -169,51 +216,6 @@
         type: 'bar',
         barWidth: '50%',
         data: '{{ data.datas.charts.age.value }}'.split(','),
-      }
-    ]
-  })
-
-  const echartCity = echarts.init(document.getElementById('city'));
-  echartCity.setOption({
-    title: {
-      text: '城市地域分布',
-      textStyle: {
-        fontSize: 14,
-        fontWeight: '800'
-      }
-    },
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'shadow'
-      }
-    },
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      containLabel: true
-    },
-    xAxis: [
-      {
-        type: 'category',
-        data: '{{ data.datas.charts.city.range }}'.split(','),
-        axisTick: {
-          alignWithLabel: true
-        }
-      }
-    ],
-    yAxis: [
-      {
-        type: 'value'
-      }
-    ],
-    series: [
-      {
-        name: '城市',
-        type: 'bar',
-        barWidth: '50%',
-        data: '{{ data.datas.charts.city.value }}'.split(','),
       }
     ]
   })

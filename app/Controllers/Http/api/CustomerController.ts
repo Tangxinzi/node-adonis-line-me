@@ -335,7 +335,7 @@ export default class CustomerController {
       response.json({
         status: 200,
         sms: "ok",
-        // data: customer
+        data: customer_id
       })
     } catch (error) {
       console.log(error);

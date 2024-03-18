@@ -119,6 +119,7 @@ Route.group(() => {
   Route.get('/datas/board', 'admin/DataController.board')
   Route.get('/datas/portrait-user', 'admin/DataController.portraitUser')
   Route.get('/datas/portrait-customer', 'admin/DataController.portraitCustomer')
+  Route.get('/datas/burying-point', 'admin/DataController.buryingPoint')
 
   Route.get('/operates', 'admin/OperatesController.index')
   Route.post('/operates', 'admin/OperatesController.save')

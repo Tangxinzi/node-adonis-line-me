@@ -54,6 +54,7 @@
               <th>照片</th>
               <th>出生</th>
               <th>资料</th>
+              <th>设备</th>
               <th>IP 属地</th>
               <th>最近上线</th>
               <th>注册时间</th>
@@ -96,7 +97,8 @@
                 <td class="td">{{ row.photos.length }}</td>
                 <td class="td">{{ row.birthday || '' }}</td>
                 <td class="td" title="{{ row.percent.text }}">{{ row.percent.value }}</td>
-                <td class="td">{{ row.ip ? row.ip.city : (row.ip || '') }}</td>
+                <td class="td" title="{{ row.system || '' }}">{{ row.platform || '' }}</td>
+                <td class="td">{{ row.ip_city ? row.ip_city : (row.ip || '') }}</td>
                 <td class="td">{{ row.online_at }}</td>
                 <td class="td">{{ row.created_at }}</td>
                 <!-- <td class="td">

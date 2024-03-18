@@ -6,7 +6,7 @@
     <a class="{{ data.subActive == 'incentive' ? 'active' : '' }} item" href="">经营分析</a>
   </div>
   <div class="ui vertical pointing menu">
-    <a class="item" href="">埋点分析</a>
+    <a class="{{ data.subActive == 'burying-point' ? 'active' : '' }} item" href="{{ route('admin/DataController.buryingPoint') }}">埋点分析</a>
     <a class="item" href="">A/B Test</a>
   </div>
   <div class="ui vertical pointing menu">

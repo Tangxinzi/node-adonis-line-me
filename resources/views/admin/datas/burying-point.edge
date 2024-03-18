@@ -1,0 +1,36 @@
+@layout('components/layouts/main')
+
+@section('title')
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<title>{{ data.title }} - Pie</title>
+<script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+@endsection
+
+@section('style')
+<style media="screen">
+  .ui.padded.grid:not(.vertically):not(.horizontally) { margin-top: 1em !important; margin-bottom: 1em !important; }
+  .padded .column { background-color: #FFF; border-left: 1px solid #f6f6f6; border-bottom: 1px solid #f6f6f6; }
+  .padded .column:nth-child(4n + 1) { border-left: 0; }
+  .statistic .value { margin: 15px 0; font-size: 28px; font-weight: 500; }
+  .statistic .value small { font-size: 14px; }
+  .echarts { height: 400px; }
+</style>
+@endsection
+
+@section('content')
+  <div class="ui stackable four column grid">
+    @!component('components/datas-menus', data=data, csrf=csrfField())
+    <div class="thirteen wide column">
+      <div class="ui header-title flex-between">
+        <span>{{ data.title }}</span>
+      </div>
+    </div>
+  </div>
+@endsection
+
+@section('script')
+<script type="text/javascript">
+
+</script>
+@endsection

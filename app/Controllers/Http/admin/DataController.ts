@@ -407,4 +407,18 @@ export default class DataController {
       console.log(error);
     }
   }
+
+  public async buryingPoint({ request, response, view, session }: HttpContextContract) {
+    try {
+      return view.render('admin/datas/burying-point', {
+        data: {
+          title: '埋点分析',
+          active: 'datas',
+          subActive: 'burying-point'
+        }
+      })
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
