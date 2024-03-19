@@ -332,7 +332,7 @@ export default class CustomerController {
       //   })
       // }
 
-      response.json({
+      return response.json({
         status: 200,
         sms: "ok",
         data: customer_id

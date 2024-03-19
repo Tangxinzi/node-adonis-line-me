@@ -99,6 +99,9 @@ Route.group(() => {
   Route.get('/query/company', 'api/QueryController.company')
   Route.get('/query/job_title', 'api/QueryController.job_title')
 
+  // datas event-tracking
+  Route.post('/datas/tracking/public-user-customer', 'api/TrackingController.publicUserCustomer')
+  
 }).middleware('apiCheck').prefix('/api')
 
 Route.group(() => {
@@ -119,7 +122,7 @@ Route.group(() => {
   Route.get('/datas/board', 'admin/DataController.board')
   Route.get('/datas/portrait-user', 'admin/DataController.portraitUser')
   Route.get('/datas/portrait-customer', 'admin/DataController.portraitCustomer')
-  Route.get('/datas/burying-point', 'admin/DataController.buryingPoint')
+  Route.get('/datas/event-tracking', 'admin/DataController.eventTracking')
 
   Route.get('/operates', 'admin/OperatesController.index')
   Route.post('/operates', 'admin/OperatesController.save')

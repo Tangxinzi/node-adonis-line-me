@@ -408,13 +408,13 @@ export default class DataController {
     }
   }
 
-  public async buryingPoint({ request, response, view, session }: HttpContextContract) {
+  public async eventTracking({ request, response, view, session }: HttpContextContract) {
     try {
-      return view.render('admin/datas/burying-point', {
+      return view.render('admin/datas/event-tracking', {
         data: {
           title: '埋点分析',
           active: 'datas',
-          subActive: 'burying-point'
+          subActive: 'event-tracking'
         }
       })
     } catch (error) {

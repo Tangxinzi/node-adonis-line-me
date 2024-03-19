@@ -394,10 +394,10 @@ export default class UserController {
     }
   }
 
-  public async updateUserinfo({ request, session }: HttpContextContract) {
+  public async updateUserinfo({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      return Database.from('users').where('user_id', session.get('user_id')).update({
+      const user = Database.from('users').where('user_id', session.get('user_id')).update({
         type: all.type,
         nickname: all.nickname,
         avatar_url: all.avatar_url || Avatar.data(all.sex),
@@ -409,7 +409,14 @@ export default class UserController {
         ip: request.ip(),
         modified_at: Moment().format('YYYY-MM-DD HH:mm:ss')
       }, ['id'])
+
+      return response.json({
+        status: 200,
+        sms: "ok",
+        data: user
+      })
     } catch (error) {
+      console.log(error);      
       Logger.error("error 获取失败 %s", JSON.stringify(error));
     }
   }
