@@ -72,9 +72,6 @@
                     <img src="{{ row.avatar_url }}" />
                     @endif
                     {{ row.nickname || ('Unnamed ' + row.user_id) }}
-                    @if(row.work.text)
-                    <div class="detail">{{ row.work.text }}</div>
-                    @endif
                   </a>
                 </td>
                 <td class="td">

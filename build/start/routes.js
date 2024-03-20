@@ -69,6 +69,7 @@ Route_1.default.group(() => {
     Route_1.default.get('/query/school', 'api/QueryController.school');
     Route_1.default.get('/query/company', 'api/QueryController.company');
     Route_1.default.get('/query/job_title', 'api/QueryController.job_title');
+    Route_1.default.post('/datas/tracking/public-user-customer', 'api/TrackingController.publicUserCustomer');
 }).middleware('apiCheck').prefix('/api');
 Route_1.default.group(() => {
     Route_1.default.get('/verification', 'api/AdminController.verification');
@@ -82,7 +83,7 @@ Route_1.default.group(() => {
     Route_1.default.get('/datas/board', 'admin/DataController.board');
     Route_1.default.get('/datas/portrait-user', 'admin/DataController.portraitUser');
     Route_1.default.get('/datas/portrait-customer', 'admin/DataController.portraitCustomer');
-    Route_1.default.get('/datas/burying-point', 'admin/DataController.buryingPoint');
+    Route_1.default.get('/datas/event-tracking', 'admin/DataController.eventTracking');
     Route_1.default.get('/operates', 'admin/OperatesController.index');
     Route_1.default.post('/operates', 'admin/OperatesController.save');
     Route_1.default.get('/incentive', 'admin/OperatesController.incentive');

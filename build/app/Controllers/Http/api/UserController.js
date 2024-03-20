@@ -338,10 +338,10 @@ class UserController {
             Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
         }
     }
-    async updateUserinfo({ request, session }) {
+    async updateUserinfo({ request, response, session }) {
         try {
             const all = request.all();
-            return Database_1.default.from('users').where('user_id', session.get('user_id')).update({
+            const user = Database_1.default.from('users').where('user_id', session.get('user_id')).update({
                 type: all.type,
                 nickname: all.nickname,
                 avatar_url: all.avatar_url || Avatar.data(all.sex),
@@ -353,8 +353,14 @@ class UserController {
                 ip: request.ip(),
                 modified_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss')
             }, ['id']);
+            return response.json({
+                status: 200,
+                sms: "ok",
+                data: user
+            });
         }
         catch (error) {
+            console.log(error);
             Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
         }
     }

@@ -390,13 +390,13 @@ class DataController {
             console.log(error);
         }
     }
-    async buryingPoint({ request, response, view, session }) {
+    async eventTracking({ request, response, view, session }) {
         try {
-            return view.render('admin/datas/burying-point', {
+            return view.render('admin/datas/event-tracking', {
                 data: {
                     title: '埋点分析',
                     active: 'datas',
-                    subActive: 'burying-point'
+                    subActive: 'event-tracking'
                 }
             });
         }
