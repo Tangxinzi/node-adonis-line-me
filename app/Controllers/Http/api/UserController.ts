@@ -413,7 +413,7 @@ export default class UserController {
       return response.json({
         status: 200,
         sms: "ok",
-        data: user
+        data: session.get('user_id')
       })
     } catch (error) {
       console.log(error);      
