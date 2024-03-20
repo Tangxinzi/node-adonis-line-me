@@ -268,7 +268,7 @@ class CustomerController {
             return response.json({
                 status: 200,
                 sms: "ok",
-                data: customer_id
+                data: customer_id[0]
             });
         }
         catch (error) {

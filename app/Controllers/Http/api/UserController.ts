@@ -397,10 +397,10 @@ export default class UserController {
   public async updateUserinfo({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const user = Database.from('users').where('user_id', session.get('user_id')).update({
+      await Database.from('users').where('user_id', session.get('user_id')).update({
         type: all.type,
         nickname: all.nickname,
-        avatar_url: all.avatar_url || Avatar.data(all.sex),
+        avatar_url: all.avatar_url || Avatar.data(all.sex || 0),
         work: JSON.stringify(all.work),
         height: all.height,
         sex: all.sex,
@@ -408,7 +408,7 @@ export default class UserController {
         photos: JSON.stringify(all.photos || []),
         ip: request.ip(),
         modified_at: Moment().format('YYYY-MM-DD HH:mm:ss')
-      }, ['id'])
+      }, ['id'])   
 
       return response.json({
         status: 200,
