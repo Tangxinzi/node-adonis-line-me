@@ -100,7 +100,7 @@ Route.group(() => {
   Route.get('/query/job_title', 'api/QueryController.job_title')
 
   // datas event-tracking
-  Route.post('/datas/tracking/public-user-customer', 'api/TrackingController.publicUserCustomer')
+  Route.post('/datas/tracking/information-improvement-process', 'api/TrackingController.informationImprovementProcess')
   
 }).middleware('apiCheck').prefix('/api')
 
@@ -123,6 +123,7 @@ Route.group(() => {
   Route.get('/datas/portrait-user', 'admin/DataController.portraitUser')
   Route.get('/datas/portrait-customer', 'admin/DataController.portraitCustomer')
   Route.get('/datas/event-tracking', 'admin/DataController.eventTracking')
+  Route.get('/datas/event-tracking/:id', 'admin/TrackingController.eventTrackingID')
 
   Route.get('/operates', 'admin/OperatesController.index')
   Route.post('/operates', 'admin/OperatesController.save')

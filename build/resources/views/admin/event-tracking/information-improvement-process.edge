@@ -20,8 +20,8 @@
 
 @section('content')
   <div class="ui stackable four column grid">
-    @!component('components/datas-menus', data=data, csrf=csrfField())
-    <div class="thirteen wide column">
+    {{--  @!component('components/datas-menus', data=data, csrf=csrfField())  --}}
+    <div class="sixteen wide column">
       <div class="ui header-title flex-between">
         <span>{{ data.title }}</span>
       </div>
@@ -29,16 +29,27 @@
         <thead>
           <tr>
             <th>埋点项</th>
-            <th>内容</th>
+            <th>角色</th>
+            <th>头像</th>
+            <th>性别</th>
+            <th>身高</th>
+            <th>生日</th>
+            <th>职业</th>
+            <th>照片</th>
           </tr>
         </thead>
         <tbody>
+          @each(item in data.tracking)
           <tr>
-            <td class="td">
-              <a href="{{ route('admin/TrackingController.eventTrackingID', { id: 'information-improvement-process' }) }}" target="">[IIP] 信息完善流程</a>
-            </td>
-            <td class="td">对完善个人信息流程、介绍发布好友过程进行埋点，获取核心数据关键指标。</td>
+            <td class="td">{{ item.content.type }}</td>
+            <td class="td">{{ item.content.itemStayValue[0].time }}s</td>
+            <td class="td">{{ item.content.itemStayValue[1].time }}s</td>
+            <td class="td">{{ item.content.itemStayValue[2].time }}s</td>
+            <td class="td">{{ item.content.itemStayValue[3].time }}s</td>
+            <td class="td">{{ item.content.itemStayValue[4].time }}s</td>
+            <td class="td">{{ item.content.itemStayValue[5].time }}s</td>
           </tr>
+          @endeach
         </tbody>
       </table>
     </div>

@@ -7,10 +7,10 @@ const Database_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Lucid/D
 const moment_1 = __importDefault(require("moment"));
 moment_1.default.locale('zh-cn');
 class TrackingController {
-    async publicUserCustomer({ request, response, session }) {
+    async informationImprovementProcess({ request, response, session }) {
         try {
             const all = request.all();
-            const id = await Database_1.default.table('tracking').insert({ type: 'public-user-customer', user_id: session.get('user_id'), content: JSON.stringify(all) });
+            const id = await Database_1.default.table('tracking').insert({ type: 'information-improvement-process', user_id: session.get('user_id'), content: JSON.stringify(all) });
             if (id.length) {
                 response.json({ status: 200, message: "ok" });
             }
