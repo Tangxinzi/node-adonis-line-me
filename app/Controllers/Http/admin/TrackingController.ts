@@ -10,45 +10,76 @@ export default class TrackingController {
       for (let index = 0; index < tracking.length; index++) {
         tracking[index].content = JSON.parse(tracking[index].content)
         tracking[index].content.type = tracking[index].content.type == 'users' ? '创建用户' : '介绍好友'
-        tracking[index].content.itemStayValue = []
+        tracking[index].created_at = Moment(tracking[index].created_at).format('YYYY-MM-DD HH:mm:ss')
+        tracking[index].content.itemStayValue = {
+          userType: {},
+          userAvatarNick: {},
+          userSex: {},
+          userHeight: {},
+          userBirthday: {},
+          userWork: {},
+          userPhotos: {},
+        }
 
         for (let typeIndex = 0; typeIndex < tracking[index].content.itemStayType.length; typeIndex++) {
-          let text = ''
           switch (tracking[index].content.itemStayType[typeIndex]) {
             case 'userType':
-              text = '角色'
+              tracking[index].content.itemStayValue.userType = {
+                text: '角色',
+                time: tracking[index].content.itemStayTime[typeIndex]
+              }
               break;
             case 'userAvatarNick':
-              text = '头像'
+              tracking[index].content.itemStayValue.userAvatarNick = {
+                text: '头像',
+                time: tracking[index].content.itemStayTime[typeIndex]
+              }
               break;
             case 'userSex':
-              text = '性别'
+              tracking[index].content.itemStayValue.userSex = {
+                text: '性别',
+                time: tracking[index].content.itemStayTime[typeIndex]
+              }
               break;
             case 'userHeight':
-              text = '身高'
+              tracking[index].content.itemStayValue.userHeight = {
+                text: '身高',
+                time: tracking[index].content.itemStayTime[typeIndex]
+              }
               break;
             case 'userBirthday':
-              text = '生日'
+              tracking[index].content.itemStayValue.userBirthday = {
+                text: '生日',
+                time: tracking[index].content.itemStayTime[typeIndex]
+              }
               break;
             case 'userWork':
-              text = '职业'
+              tracking[index].content.itemStayValue.userWork = {
+                text: '职业',
+                time: tracking[index].content.itemStayTime[typeIndex]
+              }
               break;
             case 'userPhotos':
-              text = '照片'
+              tracking[index].content.itemStayValue.userPhotos = {
+                text: '照片',
+                time: tracking[index].content.itemStayTime[typeIndex]
+              }
               break;
             default:
-              text = '其它'
+              
           }
 
-          tracking[index].content.itemStayValue[typeIndex] = {
-            text,
-            type: tracking[index].content.itemStayType[typeIndex],
-            time: tracking[index].content.itemStayTime[typeIndex],
-          }
+          // tracking[index].content.itemStayValue[typeIndex] = {
+          //   text,
+          //   type: tracking[index].content.itemStayType[typeIndex],
+          //   time: tracking[index].content.itemStayTime[typeIndex],
+          // }
         }
 
         delete tracking[index].content.itemStayType, delete tracking[index].content.itemStayTime
       }
+
+      // return tracking
 
       return view.render('admin/event-tracking/information-improvement-process', {
         data: {
