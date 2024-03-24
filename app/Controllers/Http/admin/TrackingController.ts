@@ -53,6 +53,24 @@ export default class TrackingController {
                 time: tracking[index].content.itemStayTime[typeIndex]
               }
               break;
+            case 'userSchool':
+              tracking[index].content.itemStayValue.userSchool = {
+                text: '学校',
+                time: tracking[index].content.itemStayTime[typeIndex]
+              }
+              break;
+            case 'userCompany':
+              tracking[index].content.itemStayValue.userCompany = {
+                text: '公司',
+                time: tracking[index].content.itemStayTime[typeIndex]
+              }
+              break;
+            case 'userJobTitle':
+              tracking[index].content.itemStayValue.userJobTitle = {
+                text: '职位',
+                time: tracking[index].content.itemStayTime[typeIndex]
+              }
+              break;
             case 'userWork':
               tracking[index].content.itemStayValue.userWork = {
                 text: '职业',
@@ -66,7 +84,7 @@ export default class TrackingController {
               }
               break;
             default:
-              
+
           }
 
           // tracking[index].content.itemStayValue[typeIndex] = {

@@ -401,6 +401,9 @@ export default class UserController {
         type: all.type,
         nickname: all.nickname,
         avatar_url: all.avatar_url || Avatar.data(all.sex || 0),
+        school: all.school,
+        company: all.company,
+        job_title: all.job_title,
         work: JSON.stringify(all.work),
         height: all.height,
         sex: all.sex,
@@ -408,7 +411,7 @@ export default class UserController {
         photos: JSON.stringify(all.photos || []),
         ip: request.ip(),
         modified_at: Moment().format('YYYY-MM-DD HH:mm:ss')
-      }, ['id'])   
+      }, ['id'])
 
       return response.json({
         status: 200,
@@ -416,7 +419,7 @@ export default class UserController {
         data: session.get('user_id')
       })
     } catch (error) {
-      console.log(error);      
+      console.log(error);
       Logger.error("error 获取失败 %s", JSON.stringify(error));
     }
   }
