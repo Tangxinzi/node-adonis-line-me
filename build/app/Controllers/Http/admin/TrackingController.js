@@ -22,6 +22,9 @@ class TrackingController {
                     userBirthday: {},
                     userWork: {},
                     userPhotos: {},
+                    userSchool: {},
+                    userCompany: {},
+                    userJobTitle: {}
                 };
                 for (let typeIndex = 0; typeIndex < tracking[index].content.itemStayType.length; typeIndex++) {
                     switch (tracking[index].content.itemStayType[typeIndex]) {
@@ -52,6 +55,24 @@ class TrackingController {
                         case 'userBirthday':
                             tracking[index].content.itemStayValue.userBirthday = {
                                 text: '生日',
+                                time: tracking[index].content.itemStayTime[typeIndex]
+                            };
+                            break;
+                        case 'userSchool':
+                            tracking[index].content.itemStayValue.userSchool = {
+                                text: '学校',
+                                time: tracking[index].content.itemStayTime[typeIndex]
+                            };
+                            break;
+                        case 'userCompany':
+                            tracking[index].content.itemStayValue.userCompany = {
+                                text: '公司',
+                                time: tracking[index].content.itemStayTime[typeIndex]
+                            };
+                            break;
+                        case 'userJobTitle':
+                            tracking[index].content.itemStayValue.userJobTitle = {
+                                text: '职位',
                                 time: tracking[index].content.itemStayTime[typeIndex]
                             };
                             break;

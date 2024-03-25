@@ -19,6 +19,9 @@ export default class TrackingController {
           userBirthday: {},
           userWork: {},
           userPhotos: {},
+          userSchool: {},
+          userCompany: {},
+          userJobTitle: {}
         }
 
         for (let typeIndex = 0; typeIndex < tracking[index].content.itemStayType.length; typeIndex++) {

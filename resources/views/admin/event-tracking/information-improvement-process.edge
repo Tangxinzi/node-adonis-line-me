@@ -25,10 +25,10 @@
       <div class="ui header-title flex-between">
         <span>{{ data.title }}</span>
       </div>
-      <table class="ui celled left aligned rounded table">
+      <table class="ui celled center aligned rounded table">
         <thead>
           <tr>
-            <th>埋点项</th>
+            <th class="left aligned">埋点项</th>
             <th>累计</th>
             <th>角色</th>
             <th>头像</th>
@@ -46,11 +46,13 @@
         <tbody>
           @each(item in data.tracking)
           <tr>
-            <td class="td">{{ item.content.type }}
-              @if(item.content.type == '创建用户')
-                <a href="{{ route('admin/UsersController.edit', { user_id: item.content.id }) }}">{{ item.content.id }}</a>
-              @else
-                <a href="{{ route('admin/CustomersController.edit', { id: item.content.id }) }}">{{ item.content.id }}</a>
+            <td class="td left aligned">
+              {{ item.content.type }} - {{ item.content.node }}
+              @if(item.content.type == '创建用户' && item.content.id)
+                <a href="{{ route('admin/UsersController.edit', { user_id: item.content.id }) }}"> - {{ item.content.id }}</a>
+              @endif
+              @if(item.content.type == '介绍好友' && item.content.id)
+                <a href="{{ route('admin/CustomersController.edit', { id: item.content.id }) }}"> - {{ item.content.id }}</a>
               @endif
             </td>
             <td class="td">{{ (
@@ -64,16 +66,16 @@
               (item.content.itemStayValue.userJobTitle.time || 0) +
               (item.content.itemStayValue.userWork.time || 0) +
               (item.content.itemStayValue.userPhotos.time || 0)) }}s</td>
-            <td class="td">{{ item.content.itemStayValue.userType.time || '-' }}s</td>
-            <td class="td">{{ item.content.itemStayValue.userAvatarNick.time || '-' }}s</td>
-            <td class="td">{{ item.content.itemStayValue.userSex.time || '-' }}s</td>
-            <td class="td">{{ item.content.itemStayValue.userHeight.time || '-' }}s</td>
-            <td class="td">{{ item.content.itemStayValue.userBirthday.time || '-' }}s</td>
-            <td class="td">{{ item.content.itemStayValue.userSchool.time || '-' }}s</td>
-            <td class="td">{{ item.content.itemStayValue.userCompany.time || '-' }}s</td>
-            <td class="td">{{ item.content.itemStayValue.userJobTitle.time || '-' }}s</td>
-            <td class="td">{{ item.content.itemStayValue.userWork.time || '-' }}s</td>
-            <td class="td">{{ item.content.itemStayValue.userPhotos.time || '-' }}s</td>
+            <td class="td">{{ item.content.itemStayValue.userType.time || '-' }}</td>
+            <td class="td">{{ item.content.itemStayValue.userAvatarNick.time || '-' }}</td>
+            <td class="td">{{ item.content.itemStayValue.userSex.time || '-' }}</td>
+            <td class="td">{{ item.content.itemStayValue.userHeight.time || '-' }}</td>
+            <td class="td">{{ item.content.itemStayValue.userBirthday.time || '-' }}</td>
+            <td class="td">{{ item.content.itemStayValue.userSchool.time || '-' }}</td>
+            <td class="td">{{ item.content.itemStayValue.userCompany.time || '-' }}</td>
+            <td class="td">{{ item.content.itemStayValue.userJobTitle.time || '-' }}</td>
+            <td class="td">{{ item.content.itemStayValue.userWork.time || '-' }}</td>
+            <td class="td">{{ item.content.itemStayValue.userPhotos.time || '-' }}</td>
             <td class="td">{{ item.created_at }}</td>
           </tr>
           @endeach
