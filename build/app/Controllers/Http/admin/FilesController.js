@@ -17,7 +17,7 @@ class FilesController {
             return view.render('admin/event/files', {
                 data: {
                     title: '文件',
-                    active: 'file',
+                    active: 'datas',
                     files,
                     all
                 }

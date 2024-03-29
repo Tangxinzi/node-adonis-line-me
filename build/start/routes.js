@@ -58,6 +58,7 @@ Route_1.default.group(() => {
     Route_1.default.get('/business/lists', 'api/BusinessesController.lists');
     Route_1.default.get('/business/show/:id', 'api/BusinessesController.show');
     Route_1.default.get('/business/show/:id/moments', 'api/BusinessesController.moments');
+    Route_1.default.get('/verification/pending/:table/:field', 'api/OperatesController.pendingType');
     Route_1.default.get('/authentication/verification', 'api/OperatesController.authenticationVerification');
     Route_1.default.post('/authentication/verification', 'api/OperatesController.authenticationVerification');
     Route_1.default.get('/descovery', 'api/DescoveriesController.index');
@@ -85,6 +86,7 @@ Route_1.default.group(() => {
     Route_1.default.get('/datas/portrait-customer', 'admin/DataController.portraitCustomer');
     Route_1.default.get('/datas/event-tracking', 'admin/DataController.eventTracking');
     Route_1.default.get('/datas/event-tracking/:id', 'admin/TrackingController.eventTrackingID');
+    Route_1.default.get('/datas/files', 'admin/DataController.files');
     Route_1.default.get('/operates', 'admin/OperatesController.index');
     Route_1.default.post('/operates', 'admin/OperatesController.save');
     Route_1.default.get('/incentive', 'admin/OperatesController.incentive');

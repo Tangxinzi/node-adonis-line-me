@@ -106,4 +106,50 @@ export default class OperatesController {
       Logger.error("error 获取失败 %s", JSON.stringify(error));
     }
   }
+
+  public async pendingType({ params, response, session }: HttpContextContract) {
+    try {
+      switch (`${ params.table }`) {
+        case `users.${ params.field }`:
+        var authentication = await Database.from('verification').select('id', 'value', 'created_at').where({ 
+          user_id: session.get('user_id'), 
+          verification_status: 'pending', 
+          is_verified: 0,
+          table: params.table || '',
+          field: params.field || ''
+        }).orderBy('created_at', 'desc').first()
+        case 'authentication_log':
+          var authentication = await Database.from('verification').select('id', 'value', 'created_at').where({ 
+            user_id: session.get('user_id'), 
+            verification_status: 'pending', 
+            is_verified: 0,
+            table: params.table || '',
+            // field: params.field || ''
+          }).orderBy('created_at', 'desc').first()
+          break;
+        case 'customer':
+          var authentication = await Database.from('verification').select('id', 'value', 'created_at').where({ 
+            user_id: session.get('user_id'), 
+            verification_status: 'pending', 
+            is_verified: 0,
+            table: params.table || ''
+          }).orderBy('created_at', 'desc')
+          break;
+        
+        default:
+          var authentication = null
+          break;
+      }
+      
+      
+      return response.json({
+        status: 200,
+        message: "ok",
+        data: authentication
+      })
+    } catch (error) {
+      console.log(error);
+      Logger.error("error 获取失败 %s", JSON.stringify(error));
+    }
+  }
 }

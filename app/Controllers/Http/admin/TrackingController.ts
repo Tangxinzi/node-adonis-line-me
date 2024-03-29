@@ -6,7 +6,8 @@ Moment.locale('zh-cn')
 export default class TrackingController {
   public async eventTrackingID({ request, response, view, session }: HttpContextContract) {
     try {
-      const tracking = await Database.from('tracking').where({ type: 'information-improvement-process' })
+      const all = request.all()
+      const tracking = await Database.from('tracking').where({ type: 'information-improvement-process' }).orderBy('created_at', 'desc').forPage(request.input('page', 1), 30)
       for (let index = 0; index < tracking.length; index++) {
         tracking[index].content = JSON.parse(tracking[index].content)
         tracking[index].content.type = tracking[index].content.type == 'users' ? '创建用户' : '介绍好友'
@@ -106,7 +107,8 @@ export default class TrackingController {
         data: {
           title: '[IIP] 信息完善流程',
           active: 'datas',
-          tracking
+          tracking,
+          all
         }
       })
     } catch (error) {

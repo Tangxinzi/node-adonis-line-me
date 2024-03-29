@@ -444,6 +444,8 @@ export default class DataController {
             SELECT 'chat' AS type, count(*) AS value, '聊天' AS text, '' AS unit FROM files WHERE source = 'chat'
             UNION ALL
             SELECT 'question' AS type, count(*) AS value, '问答' AS text, '' AS unit FROM files WHERE source = 'question'
+            UNION ALL
+            SELECT 'null' AS type, count(*) AS value, '其它' AS text, '' AS unit FROM files WHERE source IS NULL
           ) AS data
         `))[0],
         filesTrend: (await Database.rawQuery(`

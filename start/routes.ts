@@ -85,6 +85,7 @@ Route.group(() => {
   Route.get('/business/show/:id/moments', 'api/BusinessesController.moments')
 
   // 认证
+  Route.get('/verification/pending/:table/:field', 'api/OperatesController.pendingType')
   Route.get('/authentication/verification', 'api/OperatesController.authenticationVerification')
   Route.post('/authentication/verification', 'api/OperatesController.authenticationVerification')
 

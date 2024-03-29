@@ -404,6 +404,71 @@ class DataController {
             console.log(error);
         }
     }
+    async files({ request, response, view, session }) {
+        try {
+            const datas = {
+                charts: {
+                    filesTrend: {
+                        date: [],
+                        count: [],
+                    },
+                },
+                files: (await Database_1.default.rawQuery(`
+          SELECT data.type, data.value, data.text, data.unit FROM (
+            SELECT 'total' AS type, count(*) AS value, '总计' AS text, '' AS unit FROM files
+            UNION ALL
+            SELECT 'avatar' AS type, count(*) AS value, '头像' AS text, '' AS unit FROM files WHERE source = 'avatar'
+            UNION ALL
+            SELECT 'photos' AS type, count(*) AS value, '照片' AS text, '' AS unit FROM files WHERE source = 'photos'
+            UNION ALL
+            SELECT 'video' AS type, count(*) AS value, '视频' AS text, '' AS unit FROM files WHERE source = 'video'
+            UNION ALL
+            SELECT 'chat' AS type, count(*) AS value, '聊天' AS text, '' AS unit FROM files WHERE source = 'chat'
+            UNION ALL
+            SELECT 'question' AS type, count(*) AS value, '问答' AS text, '' AS unit FROM files WHERE source = 'question'
+            UNION ALL
+            SELECT 'null' AS type, count(*) AS value, '其它' AS text, '' AS unit FROM files WHERE source IS NULL
+          ) AS data
+        `))[0],
+                filesTrend: (await Database_1.default.rawQuery(`
+          SELECT date_sequence.sequence_date AS date, COUNT(u.id) AS count
+          FROM (
+            SELECT DATE_ADD(CURDATE(), INTERVAL - (a.a + (10 * b.a) + (100 * c.a)) DAY) AS sequence_date
+            FROM
+              (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS a
+              CROSS JOIN
+              (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS b
+              CROSS JOIN
+              (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS c
+          ) AS date_sequence
+          LEFT JOIN files u ON DATE(u.created_at) <= DATE(date_sequence.sequence_date)
+          WHERE date_sequence.sequence_date >= CURDATE() - INTERVAL 99 DAY
+          GROUP BY date_sequence.sequence_date
+          ORDER BY date_sequence.sequence_date;
+        `))[0],
+            };
+            for (let index = 0; index < datas.filesTrend.length; index++) {
+                datas.charts.filesTrend.date.push((0, moment_1.default)(datas.filesTrend[index].date).format("YYYY-MM-DD"));
+                datas.charts.filesTrend.count.push(datas.filesTrend[index].count);
+            }
+            const files = await Database_1.default.from('files').where({ status: 1 }).orderBy('id', 'desc').limit(20);
+            for (let index = 0; index < files.length; index++) {
+                files[index].created_at = (0, moment_1.default)(files[index].created_at).fromNow();
+            }
+            return view.render('admin/datas/files', {
+                data: {
+                    title: '存储文件',
+                    active: 'datas',
+                    subActive: 'files',
+                    datas,
+                    files
+                }
+            });
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
 }
 exports.default = DataController;
 //# sourceMappingURL=DataController.js.map

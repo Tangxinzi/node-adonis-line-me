@@ -13,6 +13,6 @@
     <a class="item" href="">站外监控</a>
   </div>
   <div class="ui vertical pointing menu">
-    <a class="item" href="">存储文件</a>
+    <a class="{{ data.subActive == 'files' ? 'active' : '' }} item" href="{{ route('admin/DataController.files') }}">存储文件</a>
   </div>
 </div>

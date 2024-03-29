@@ -11,7 +11,7 @@ class FilesController {
         try {
             if (request.file('files')) {
                 let file = {};
-                const profile = request.file('files', { type: ['image', 'video'], size: '100mb' });
+                const profile = request.file('files', { type: ['image', 'video'], size: '20mb' });
                 const profileName = `${randomstring_1.default.generate(32)}.${profile.extname}`;
                 const profilePath = `/uploads/files/`;
                 file.fileName = profile.clientName;
@@ -22,6 +22,7 @@ class FilesController {
                 });
                 if (profile.state == 'moved') {
                     await Database_1.default.table('files').insert({
+                        source: request.header('source') || '',
                         filePath: file.fileSrc,
                         clientName: profile.clientName,
                         fileName: profile.fileName,

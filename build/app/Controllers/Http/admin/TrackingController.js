@@ -9,7 +9,8 @@ moment_1.default.locale('zh-cn');
 class TrackingController {
     async eventTrackingID({ request, response, view, session }) {
         try {
-            const tracking = await Database_1.default.from('tracking').where({ type: 'information-improvement-process' });
+            const all = request.all();
+            const tracking = await Database_1.default.from('tracking').where({ type: 'information-improvement-process' }).orderBy('created_at', 'desc').forPage(request.input('page', 1), 30);
             for (let index = 0; index < tracking.length; index++) {
                 tracking[index].content = JSON.parse(tracking[index].content);
                 tracking[index].content.type = tracking[index].content.type == 'users' ? '创建用户' : '介绍好友';
@@ -97,7 +98,8 @@ class TrackingController {
                 data: {
                     title: '[IIP] 信息完善流程',
                     active: 'datas',
-                    tracking
+                    tracking,
+                    all
                 }
             });
         }
