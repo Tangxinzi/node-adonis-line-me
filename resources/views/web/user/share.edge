@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>派 PIE</title>
+    <style>
+        html, body { margin: 0; background-color: #F3F3F3; }
+        .userinfo { position: relative; margin: 1em; border-radius: 10px; overflow: hidden; background-color: #FFF; }
+        .userinfo .header { position: relative; }
+        .userinfo .header::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; backdrop-filter: blur(20px); background-color: rgb(204 197 197 / 44%); z-index: 1; }
+        .userinfo .header img { width: 60px; height: 60px; border-radius: 100%; margin-right: 1em; }
+        .userinfo .row { position: relative; padding: 1em; z-index: 2; }
+        .userinfo .row .title { font-size: 14px; font-weight: 600; color: #666; margin: 0 0 .75em; }
+        .userinfo .nickname span { font-size: 18px; font-weight: 600; color: #FFF; text-shadow: 0 0 0 #CCC; }
+        .userinfo .flex { display: flex; align-items: center; }
+        .userinfo .photos img { width: 100%; }
+        .userinfo .labels .label { background-color: #FFF; color: #333; padding: 3px 10px; font-size: 12px; border-radius: 12px; margin-top: 1em; margin-right: 0.5em; display: inline-block; }
+        .userinfo .bottom { position: fixed; text-align: center; left: 0; bottom: 60px; width: 100%; z-index: 2; }
+        .userinfo .bottom .button { display: inline; background-image: linear-gradient(to right, #2DA1F2 , #f8a1cd); color: #FFF; padding: 0.75em 1em; border-radius: 30px; }
+        .userinfo .bottom img { width: 18px; height: 18px; border-radius: 5px; margin-right: 8px; position: relative; top: 2.6px; left: 3px; }
+
+        @media (min-width: 500px) {
+            .userinfo { width: 500px; margin: 1em auto; }
+        }
+    </style>
+</head>
+<body>
+    <div class="userinfo">
+        <div class="header" style="background-image: url({{ data.user.avatar_url }})">
+            <div class="row nickname flex">
+                <img src="{{ data.user.avatar_url }}" alt="{{ data.user.nickname }}" />
+                <span>{{ data.user.nickname }}</span>
+            </div>
+            <div class="row labels" style="padding-top: 0;">
+                <span class="label">{{ data.user.sex == 0 ? '女 ' : '' }}{{ data.user.sex == 1 ? '男 ' : '' }}{{ data.user.age }} 岁</span>
+                <span class="label">{{ data.user.height }}cm</span>
+                <span class="label">{{ data.user.zodiac_sign }}</span>
+                <span class="label">{{ data.user.work.text }}</span>
+                @if(data.user.location.length)
+                    <span class="label">{{ data.user.location.value[0] + data.user.location.value[1] }}</span>
+                @endif
+                @if(data.user.mbti)
+                    <span class="label">{{ data.user.mbti.text }} {{ data.user.mbti.value }}</span>                  
+                @endif
+            </div>
+        </div>
+        <div class="main">
+            <div class="row introduction">
+                <div class="title">介绍</div>
+                <div class="value">{{ data.user.introduction || '' }}</div>
+            </div>
+            <div class="row photos">
+                <div class="title">照片</div>
+                <div class="value" style="font-size: 0;">
+                    @each((photo, index) in data.user.photos)
+                        @if(index < 3)
+                            <img src="{{ photo }}" alt="" />
+                        @endif
+                    @endeach
+                </div>
+            </div>
+        </div>
+        <div class="bottom">
+            <div class="button">
+                <img src="{{ data.user.parent.avatar_url }}" alt="" />
+                <span>{{ data.user.parent.nickname || 'PIE' }}介绍推荐</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

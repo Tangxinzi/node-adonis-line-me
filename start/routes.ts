@@ -178,3 +178,7 @@ Route.group(() => {
   Route.get('/login', 'admin/UsersController.login')
   Route.post('/login', 'admin/UsersController.login')
 }).middleware('adminCheck').prefix('/admin')
+
+Route.group(() => {
+  Route.get('/user/share', 'web/UserController.share')
+}).middleware('webCheck').prefix('/web')

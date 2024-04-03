@@ -348,7 +348,7 @@ class CustomerController {
     async customerShow({ params, request, response, session }) {
         try {
             const all = request.all();
-            const customer = await Database_1.default.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'relation', 'verify_phone', 'relation_log_id', 'introduction').where({ 'id': params.id }).first() || {};
+            const customer = await Database_1.default.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'recommend', 'relation', 'verify_phone', 'relation_log_id', 'introduction').where({ 'id': params.id }).first() || {};
             if (customer.verify_phone) {
                 if (/^1[0-9]{10}$/.test(customer.verify_phone)) {
                     customer.verify_phone = customer.verify_phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');

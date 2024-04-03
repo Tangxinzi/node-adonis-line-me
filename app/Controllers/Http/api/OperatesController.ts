@@ -110,7 +110,7 @@ export default class OperatesController {
   public async pendingType({ params, response, session }: HttpContextContract) {
     try {
       switch (`${ params.table }`) {
-        case `users.${ params.field }`:
+        case `users`:
         var authentication = await Database.from('verification').select('id', 'value', 'created_at').where({ 
           user_id: session.get('user_id'), 
           verification_status: 'pending', 

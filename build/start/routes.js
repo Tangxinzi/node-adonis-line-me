@@ -129,4 +129,7 @@ Route_1.default.group(() => {
     Route_1.default.get('/login', 'admin/UsersController.login');
     Route_1.default.post('/login', 'admin/UsersController.login');
 }).middleware('adminCheck').prefix('/admin');
+Route_1.default.group(() => {
+    Route_1.default.get('/user/share', 'web/UserController.share');
+}).middleware('webCheck').prefix('/web');
 //# sourceMappingURL=routes.js.map

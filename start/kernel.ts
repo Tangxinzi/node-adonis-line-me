@@ -46,6 +46,7 @@ Server.middleware.register([
 */
 Server.middleware.registerNamed({
   // check: () => import('App/Middleware/Check'),
+  webCheck: () => import('App/Middleware/WebCheck'),
   apiCheck: () => import('App/Middleware/ApiCheck'),
   adminCheck: () => import('App/Middleware/AdminCheck'),
 })

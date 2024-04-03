@@ -417,7 +417,7 @@ export default class CustomerController {
   public async customerShow({ params, request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const customer = await Database.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'relation', 'verify_phone', 'relation_log_id', 'introduction').where({ 'id': params.id }).first() || {}
+      const customer = await Database.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'recommend', 'relation', 'verify_phone', 'relation_log_id', 'introduction').where({ 'id': params.id }).first() || {}
       if (customer.verify_phone) {
         // 判断手机号格式
         if (/^1[0-9]{10}$/.test(customer.verify_phone)) {

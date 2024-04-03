@@ -98,7 +98,7 @@ class OperatesController {
     async pendingType({ params, response, session }) {
         try {
             switch (`${params.table}`) {
-                case `users.${params.field}`:
+                case `users`:
                     var authentication = await Database_1.default.from('verification').select('id', 'value', 'created_at').where({
                         user_id: session.get('user_id'),
                         verification_status: 'pending',
