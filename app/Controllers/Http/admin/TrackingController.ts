@@ -10,7 +10,7 @@ export default class TrackingController {
       const tracking = await Database.from('tracking').where({ type: 'information-improvement-process' }).orderBy('created_at', 'desc').forPage(request.input('page', 1), 30)
       for (let index = 0; index < tracking.length; index++) {
         tracking[index].content = JSON.parse(tracking[index].content)
-        tracking[index].content.type = tracking[index].content.type == 'users' ? '创建用户' : '介绍好友'
+        tracking[index].content.type = tracking[index].content.type == 'users' ? '注册' : '介绍'
         tracking[index].created_at = Moment(tracking[index].created_at).format('YYYY-MM-DD HH:mm:ss')
         tracking[index].content.itemStayValue = {
           userType: {},
@@ -96,6 +96,44 @@ export default class TrackingController {
           //   type: tracking[index].content.itemStayType[typeIndex],
           //   time: tracking[index].content.itemStayTime[typeIndex],
           // }
+        }
+
+        switch (tracking[index].content.node) {
+          case 'userType':
+            tracking[index].content.node = '角色';
+            break;
+          case 'userAvatarNick':
+            tracking[index].content.node = '头像';
+            break;
+          case 'userSex':
+            tracking[index].content.node = '性别';
+            break;
+          case 'userHeight':
+            tracking[index].content.node = '身高';
+            break;
+          case 'userBirthday':
+            tracking[index].content.node = '生日';
+            break;
+          case 'userSchool':
+            tracking[index].content.node = '学校';
+            break;
+          case 'userCompany':
+            tracking[index].content.node = '公司';
+            break;
+          case 'userJobTitle':
+            tracking[index].content.node = '职位';
+            break;
+          case 'userWork':
+            tracking[index].content.node = '职业';
+            break;
+          case 'userPhotos':
+            tracking[index].content.node = '照片';
+            break;
+          case 'userOver':
+            tracking[index].content.node = 'END';
+            break;
+          default:
+            break;
         }
 
         delete tracking[index].content.itemStayType, delete tracking[index].content.itemStayTime

@@ -28,7 +28,7 @@
       <table class="ui celled center aligned rounded table">
         <thead>
           <tr>
-            <th class="left aligned">埋点项</th>
+            <th class="left aligned">[操作人] 动作 - 节点</th>
             <th>累计</th>
             <th>角色</th>
             <th>头像</th>
@@ -47,13 +47,19 @@
           @each(item in data.tracking)
           <tr>
             <td class="td left aligned">
-              {{ item.content.type }} - {{ item.content.node }}
-              @if(item.content.type == '创建用户' && item.content.id)
-                <a href="{{ route('admin/UsersController.edit', { user_id: item.content.id }) }}"> - {{ item.content.id }}</a>
-              @endif
-              @if(item.content.type == '介绍好友' && item.content.id)
-                <a href="{{ route('admin/CustomersController.edit', { id: item.content.id }) }}"> - {{ item.content.id }}</a>
-              @endif
+              <div class="flex-between">
+                <span>
+                  <a href="{{ route('admin/UsersController.edit', { user_id: item.user_id }) }}">[{{ item.user_id }}]</a>
+                  {{ item.content.type }} - {{ item.content.node }}
+                  @if(item.content.type == '注册' && item.content.id)
+                    <a href="{{ route('admin/UsersController.edit', { user_id: item.content.id }) }}"> - {{ item.content.id }}</a>
+                  @endif
+                  @if(item.content.type == '介绍' && item.content.id)
+                    <a href="{{ route('admin/CustomersController.edit', { id: item.content.id }) }}"> - {{ item.content.id }}</a>
+                  @endif
+                </span>
+                <a class="ui {{ item.content.node == 'END' ? 'green' : 'red' }} empty circular label"></a>
+              </div>
             </td>
             <td class="td">{{ (
               (item.content.itemStayValue.userType.time || 0) +
