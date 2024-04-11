@@ -3,7 +3,7 @@ import Database from '@ioc:Adonis/Lucid/Database';
 import Logger from '@ioc:Adonis/Core/Logger'
 import Moment from 'moment';
 
-const { percentUserinfo } = require('../lib/Percent');
+const { percentUserinfo, percentCustomerinfo } = require('../lib/Percent');
 const Verification = require('../lib/Verification');
 
 export default class OperatesController {
@@ -150,6 +150,66 @@ export default class OperatesController {
     } catch (error) {
       console.log(error);
       Logger.error("error 获取失败 %s", JSON.stringify(error));
+    }
+  }
+
+  public async incentive({ request, response, view, session }: HttpContextContract) {
+    try {
+      const all = request.all(), operates_log = (await Database.rawQuery(`
+          SELECT 
+            users_operates_log.id AS id, 
+            users_operates_log.customer_id, 
+            users_operates_log.customer_log_id, 
+            users_operates_log.user_id, 
+            users_operates_log.loading, 
+            users_operates_log.price, 
+            customer.recommend, 
+            customer.introduction, 
+            customer.recommend_at, 
+            customer.status AS c_status,
+            users.avatar_url, 
+            users.nickname, 
+            users.phone,
+            users_operates_log.created_at
+          FROM users_operates_log 
+          LEFT JOIN customer ON users_operates_log.customer_id = customer.id 
+          LEFT JOIN users ON users_operates_log.user_id = users.user_id
+          WHERE users_operates_log.user_id = '${ session.get('user_id') }' AND customer.status IN (${ all.orderBy || '1' })
+          ORDER BY users_operates_log.id DESC
+          LIMIT ${ request.input('page', 0) * 15 }, 15
+      `))[0]
+
+      for (let index = 0; index < operates_log.length; index++) {
+        if (operates_log[index].customer_log_id) {
+          operates_log[index] = {
+            ...operates_log[index],
+            percent: await percentCustomerinfo(operates_log[index].customer_log_id),
+            customer: {
+              ...await Database.from('customer_log').select('avatar_url', 'nickname', 'sex', 'work', 'company', 'birthday', 'phone', 'photos', 'location').where('id', operates_log[index].customer_log_id).first() || {}
+            }
+          }
+        }
+
+        operates_log[index].created_at = Moment(operates_log[index].created_at).format('YYYY-MM-DD HH:mm:ss')
+        operates_log[index].modified_at = Moment(operates_log[index].modified_at).format('YYYY-MM-DD HH:mm:ss')
+      }
+      
+      return response.json({
+        status: 200,
+        message: "ok",
+        data: {
+          operates_log,
+          onboard: (await Database.rawQuery(`
+            SELECT data.type, data.value, data.text, data.unit FROM (
+              SELECT 'customer' AS type, count(*) AS value, '介绍' AS text, '' AS unit FROM users_operates_log LEFT JOIN customer ON users_operates_log.customer_id = customer.id WHERE users_operates_log.user_id = '${ session.get('user_id') }' AND customer.status IN (${ all.orderBy || '1' })
+              UNION ALL
+              SELECT 'price' AS type, sum(0) AS value, '入账' AS text, '' AS unit FROM users_operates_log WHERE user_id = '${ session.get('user_id') }'
+            ) AS data
+          `))[0],
+        }
+      })
+    } catch (error) {
+      console.log(error);
     }
   }
 }

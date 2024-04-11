@@ -127,8 +127,8 @@ export default class TrackingController {
             tracking[index].content.node = '职业';
             break;
           case 'userPhotos':
-            tracking[index].content.node = '照片';
-            break;
+            // tracking[index].content.node = '照片';
+            // break;
           case 'userOver':
             tracking[index].content.node = 'END';
             break;

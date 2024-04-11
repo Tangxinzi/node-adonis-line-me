@@ -61,6 +61,7 @@ Route_1.default.group(() => {
     Route_1.default.get('/verification/pending/:table/:field', 'api/OperatesController.pendingType');
     Route_1.default.get('/authentication/verification', 'api/OperatesController.authenticationVerification');
     Route_1.default.post('/authentication/verification', 'api/OperatesController.authenticationVerification');
+    Route_1.default.get('/user/incentive', 'api/OperatesController.incentive');
     Route_1.default.get('/descovery', 'api/DescoveriesController.index');
     Route_1.default.get('/descovery/type/:type/:id', 'api/DescoveriesController.type');
     Route_1.default.get('/descovery/personal/:type', 'api/DescoveriesController.personal');

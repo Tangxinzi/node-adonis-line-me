@@ -4,14 +4,15 @@ import Jwt from 'App/Models/Jwt';
 import Moment from 'moment'
 Moment.locale('zh-cn')
 const Verification = require('../lib/Verification');
+const { percentUserinfo, percentCustomerinfo } = require('../lib/Percent');
 
 export default class OperatesController {
   public async index({ request, response, view, session }: HttpContextContract) {
     try {
-      const all = request.all(), operates = await Database.table('users_operates')
+      const all = request.all(), operates = await Database.from('users_operates').orderBy('status', 'desc').orderBy('created_at', 'desc')
       for (let index = 0; index < operates.length; index++) {
         operates[index].customerTotal = (await Database.from('customer').where({ status: 1, user_id: operates[index].user_id }).count('* as total'))[0].total
-        operates[index].userinfo = await Database.from('users').select('avatar_url', 'nickname').where({ user_id: operates[index].user_id }).first()
+        operates[index].userinfo = await Database.from('users').select('avatar_url', 'nickname', 'phone').where({ user_id: operates[index].user_id }).first() || {}
         operates[index].created_at = Moment(operates[index].created_at).format('YYYY-MM-DD HH:mm:ss')
         operates[index].modified_at = Moment(operates[index].modified_at).format('YYYY-MM-DD HH:mm:ss')
       }
@@ -33,39 +34,83 @@ export default class OperatesController {
   public async save({ request, response, view, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const user_id = all.user_id.split(',')
-      for (let index = 0; index < user_id.length; index++) {
-        await Database.table('users_operates').returning('id').insert({ type: all.type, user_id: user_id[index] })
+
+      if(all.button == 'insert') {
+        const user_id = all.user_id.split(',')
+        for (let index = 0; index < user_id.length; index++) {
+          await Database.table('users_operates').returning('id').insert({ type: all.type, user_id: user_id[index] })
+        }
+
+        session.flash('message', { type: 'success', header: '创建成功', message: `已添加特邀用户 ${ JSON.stringify(user_id) }` })
       }
 
-      session.flash('message', { type: 'success', header: '创建成功', message: `已添加特邀用户 ${ JSON.stringify(user_id) }` })
+      if (all.button == 'edit') {
+        await Database.from('users_operates').where({ status: 1, user_id: all.user_id }).update({ price: all.price, type: all.type })
+        session.flash('message', { type: 'success', header: '更新成功', message: all.user_id })
+      }
+
+      if (all.button == 'delete') {
+        await Database.from('users_operates').where({ id: all.id }).update({ status: all.status == 0 ? 1 : 0 })
+        session.flash('message', { type: 'success', header: '状态已调整', message: `` })
+      }
+
       return response.redirect('back')
     } catch (error) {
       console.log(error);
+      session.flash('message', { type: 'error', header: '提交失败', message: `${ JSON.stringify(error) }` })
+      return response.redirect('back')
     }
   }
 
   public async incentive({ request, response, view, session }: HttpContextContract) {
     try {
-      const all = request.all(), verification = await Database.from('verification').orderBy('is_verified', 'asc').orderBy('id', 'desc').forPage(request.input('page', 1), 20)
-      for (let index = 0; index < verification.length; index++) {
-        if (verification[index].field == 'photos') {
-          verification[index].before = JSON.parse(verification[index].before)
-          verification[index].value = JSON.parse(verification[index].value)
+      const all = request.all(), operates_log = (await Database.rawQuery(`
+          SELECT 
+            users_operates_log.id AS id, 
+            users_operates_log.customer_id, 
+            users_operates_log.customer_log_id, 
+            users_operates_log.user_id, 
+            users_operates_log.loading, 
+            users_operates_log.price, 
+            customer.recommend, 
+            customer.introduction, 
+            customer.recommend_at, 
+            customer.status AS c_status,
+            users.avatar_url, 
+            users.nickname, 
+            users.phone,
+            users_operates_log.created_at
+          FROM users_operates_log 
+          LEFT JOIN customer ON users_operates_log.customer_id = customer.id 
+          LEFT JOIN users ON users_operates_log.user_id = users.user_id
+          WHERE customer.status IN (${ all.orderBy || '1' })
+          ORDER BY users_operates_log.id DESC
+          LIMIT ${ request.input('page', 0) * 15 }, 15
+      `))[0]
+
+      for (let index = 0; index < operates_log.length; index++) {
+        if (operates_log[index].customer_log_id) {
+          operates_log[index] = {
+            ...operates_log[index],
+            percent: await percentCustomerinfo(operates_log[index].customer_log_id),
+            customer: {
+              ...await Database.from('customer_log').select('avatar_url', 'nickname', 'sex', 'work', 'company', 'birthday', 'phone', 'photos', 'location').where('id', operates_log[index].customer_log_id).first() || {}
+            }
+          }
         }
-        verification[index].userinfo = await Database.from('users').select('avatar_url', 'nickname').where({ user_id: verification[index].user_id }).first()
-        verification[index].checker = await Database.from('users').select('avatar_url', 'nickname').where({ user_id: verification[index].verification_user_id }).first() || {}
-        verification[index].verification_status = verification[index].verification_status.toUpperCase()
-        verification[index].created_at = Moment(verification[index].created_at).fromNow()
-        verification[index].modified_at = verification[index].modified_at ? Moment(verification[index].modified_at).format('YYYY-MM-DD HH:mm:ss') : ''
+
+        operates_log[index].created_at = Moment(operates_log[index].created_at).format('YYYY-MM-DD HH:mm:ss')
+        operates_log[index].modified_at = Moment(operates_log[index].modified_at).format('YYYY-MM-DD HH:mm:ss')
       }
+
+      console.log(operates_log);      
 
       return view.render('admin/operates/incentive', {
         data: {
-          title: '内容审核 - 运营',
+          title: '激励下发 - 运营',
           active: 'operates',
-          subActive: 'verification',
-          verification,
+          subActive: 'incentive',
+          operates_log,
           all
         }
       })
@@ -215,6 +260,7 @@ export default class OperatesController {
     } catch (error) {
       console.log(error);
       session.flash('message', { type: 'error', header: '提交失败', message: `${ JSON.stringify(error) }` })
+      return response.redirect('back')
     }
   }
 }

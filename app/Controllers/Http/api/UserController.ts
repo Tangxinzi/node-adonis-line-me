@@ -107,9 +107,21 @@ export default class UserController {
         user.videos = user.videos ? JSON.parse(user.videos) : []
         user.zodiac_sign = this.getZodiacSign(Moment(user.birthday).format('DD'), Moment(user.birthday).format('MM'))
         user.age = Moment().diff(user.birthday, 'years')
-        user.operates = await Database.from('users_operates').where({ user_id, type: 'examine' }).first() ? true : false
-        if (user.operates) {
+
+        // 审核
+        user.examine = await Database.from('users_operates').where({ user_id, status: 1 }).where('type', 'like', '%examine%').first() ? true : false
+        if (user.examine) {
           user.verification_count = (await Database.from('verification').where({ is_verified: 0 }).count('* as total'))[0].total
+        } else {
+          delete user.examine
+        }
+
+        // 激励
+        user.inspire = await Database.from('users_operates').where({ user_id, status: 1 }).where('type', 'like', '%inspire%').first() ? true : false
+        if (user.inspire) {
+          user.verification_count = (await Database.from('verification').where({ is_verified: 0 }).count('* as total'))[0].total
+        } else {
+          delete user.inspire
         }
 
         user.introduces = await Database.from('answer').select('introduce_name', 'content').where({ type: 1, status: 1, recommend: 1, user_id }).orderBy('created_at', 'desc')
@@ -240,7 +252,7 @@ export default class UserController {
 
   public async verification({ request, response, session }: HttpContextContract) {
     try {
-      const all = request.all(), operates = await Database.from('users_operates').where({ user_id: session.get('user_id'), type: 'examine' }).first() ? true : false
+      const all = request.all(), operates = await Database.from('users_operates').where({ user_id: session.get('user_id') }).where('type', 'like', '%examine%').first() ? true : false
       if (operates) {
         var verify = await Database.from('verification').orderBy('is_verified', 'asc').orderBy('id', 'desc').forPage(request.input('page', 1), 20)
         for (let index = 0; index < verify.length; index++) {

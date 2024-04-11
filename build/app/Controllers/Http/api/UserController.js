@@ -97,9 +97,19 @@ class UserController {
                 user.videos = user.videos ? JSON.parse(user.videos) : [];
                 user.zodiac_sign = this.getZodiacSign((0, moment_1.default)(user.birthday).format('DD'), (0, moment_1.default)(user.birthday).format('MM'));
                 user.age = (0, moment_1.default)().diff(user.birthday, 'years');
-                user.operates = await Database_1.default.from('users_operates').where({ user_id, type: 'examine' }).first() ? true : false;
-                if (user.operates) {
+                user.examine = await Database_1.default.from('users_operates').where({ user_id, status: 1 }).where('type', 'like', '%examine%').first() ? true : false;
+                if (user.examine) {
                     user.verification_count = (await Database_1.default.from('verification').where({ is_verified: 0 }).count('* as total'))[0].total;
+                }
+                else {
+                    delete user.examine;
+                }
+                user.inspire = await Database_1.default.from('users_operates').where({ user_id, status: 1 }).where('type', 'like', '%inspire%').first() ? true : false;
+                if (user.inspire) {
+                    user.verification_count = (await Database_1.default.from('verification').where({ is_verified: 0 }).count('* as total'))[0].total;
+                }
+                else {
+                    delete user.inspire;
                 }
                 user.introduces = await Database_1.default.from('answer').select('introduce_name', 'content').where({ type: 1, status: 1, recommend: 1, user_id }).orderBy('created_at', 'desc');
                 user.work = user.work ? JSON.parse(user.work) : {};
@@ -192,7 +202,7 @@ class UserController {
     }
     async verification({ request, response, session }) {
         try {
-            const all = request.all(), operates = await Database_1.default.from('users_operates').where({ user_id: session.get('user_id'), type: 'examine' }).first() ? true : false;
+            const all = request.all(), operates = await Database_1.default.from('users_operates').where({ user_id: session.get('user_id') }).where('type', 'like', '%examine%').first() ? true : false;
             if (operates) {
                 var verify = await Database_1.default.from('verification').orderBy('is_verified', 'asc').orderBy('id', 'desc').forPage(request.input('page', 1), 20);
                 for (let index = 0; index < verify.length; index++) {

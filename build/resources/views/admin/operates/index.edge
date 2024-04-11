@@ -23,12 +23,13 @@
       <table class="ui celled center aligned table">
         <thead>
           <tr>
-            <th class="one wide">用户</th>
-            <th class="one wide">类别</th>
+            <th class="two wide">用户</th>
+            <th class="one wide">权限</th>
             <th class="one wide">手机</th>
             <th class="one wide">介绍数量</th>
-            <!-- <th class="one wide">价格</th> -->
-            <th class="one wide">时间</th>
+            <th class="one wide">介绍价格</th>
+            <th class="one wide">状态</th>
+            <th class="two wide">加入时间</th>
             <th class="one wide">操作</th>
           </tr>
         </thead>
@@ -46,16 +47,26 @@
               <td class="td">
                 {{ row.type == 'inspire' ? '激励' : '' }}
                 {{ row.type == 'examine' ? '审核' : '' }}
+                {{ row.type == 'examine,inspire' || row.type == 'inspire,examine' ? '激励 & 审核' : '' }}
               </td>
-              <td class="td">{{ row.phone || '' }}</td>
-              <td class="td">{{ row.customerTotal || 0 }}</td>
-              <!-- <td class="td">{{ row.price || 0 }}</td> -->
+              <td class="td">{{ row.userinfo.phone || '' }}</td>
+              <td class="td">{{ row.customerTotal || '-' }}</td>
+              <td class="td">{{ row.price || '-' }}</td>
+              <td class="td">
+                <span class="ui label">
+                  <i class="circle {{ row.status == 1 ? 'green' : 'grey' }} icon"></i>
+                  {{ row.status == 1 ? '正常' : '禁用' }}
+                </span>
+              </td>
               <td class="td">{{ row.created_at }}</td>
               <td class="td" style="position: relative;">
-                <a class="activating click" data-position="bottom center" data-html="<form class='ui mini basic vertical buttons' method='post' action='/admin/customers/field'>
+                <a class='button edit' data-user_id='{{ row.user_id }}' data-type='{{ row.type }}' data-price='{{ row.price }}'>编辑</a>
+                &nbsp;&nbsp;&nbsp;
+                <a class="activating click" data-position="bottom center" data-html="<form class='ui mini basic vertical buttons' method='post' action='{{ route('admin/OperatesController.save') }}'>
                   {{ csrfField() }}
                   <input type='text' name='id' value='{{ row.id }}' hidden />
-                  <button class='ui negative button' name='button' value='delete' style='color: red !important;'>删除</button>
+                  <input type='text' name='status' value='{{ row.status }}' hidden />
+                  <button class='ui negative button' name='button' value='delete' style='color: red !important;'>状态更新</button>
                 </form>">
                   操作
                 </a>
@@ -66,13 +77,21 @@
       </table>
     </div>
   </div>
-  <form class="ui modal form" action="{{ route('admin/OperatesController.save') }}" method="post">
+  <form class="ui modal form add" action="{{ route('admin/OperatesController.save') }}" method="post">
     <i class="close icon"></i>
     <h3 class="header">添加特邀用户</h3>
     <div class="content">
       <div class="field">
-        <label>类型</label>
-        <div class="ui selection dropdown">
+        <label for="user_id">用户 User ID</label>
+        <input type="text" name="user_id" value="" />
+      </div>
+      <div class="field">
+        <label for="">介绍价格</label>
+        <input type="number" name="price" value="" />
+      </div>
+      <div class="field">
+        <label>权限类型</label>
+        <div class="ui selection multiple dropdown">
           <input type="hidden" name="type" value="" />
           <i class="dropdown icon"></i>
           <div class="default text">点击选择</div>
@@ -82,18 +101,46 @@
           </div>
         </div>
       </div>
+      {{ csrfField() }}
+    </div>
+    <div class="actions">
+      <div class="ui black deny button">取消</div>
+      <button class="ui right labeled icon button" name="button" value="insert">
+        添加
+        <i class="checkmark icon"></i>
+      </button>
+    </div>
+  </form>
+  <form class="ui modal form edit" action="{{ route('admin/OperatesController.save') }}" method="post">
+    <i class="close icon"></i>
+    <h3 class="header">编辑用户</h3>
+    <div class="content">
       <div class="field">
         <label for="user_id">用户 User ID</label>
         <input type="text" id="user_id" name="user_id" value="" />
       </div>
+      <div class="field">
+        <label for="">介绍价格</label>
+        <input type="number" id="price" name="price" value="" />
+      </div>
+      <div class="field">
+        <label>权限类型</label>
+        <div class="ui selection multiple dropdown type">
+          <input type="hidden" id="type" name="type" value="" />
+          <i class="dropdown icon"></i>
+          <div class="default text">点击选择</div>
+          <div class="menu">
+            <div class="item" data-value="inspire">审核</div>
+            <div class="item" data-value="examine">激励</div>
+          </div>
+        </div>
+      </div>
       {{ csrfField() }}
     </div>
     <div class="actions">
-      <div class="ui black deny button">
-        取消
-      </div>
-      <button class="ui right labeled icon button" name="button" value="insert">
-        添加
+      <div class="ui black deny button">取消</div>
+      <button class="ui right labeled icon button" name="button" value="edit">
+        更新
         <i class="checkmark icon"></i>
       </button>
     </div>
@@ -103,7 +150,19 @@
 @section('script')
 <script type="text/javascript">
   function add() {
-    $('.ui.modal.form').modal('show')
+    $('.ui.modal.form.add').modal('show')
   }
+
+  $('.button.edit').each((index, item) => {
+    $(item).click(() => {
+      $('#user_id').val($(item).data('user_id')), $('#price').val($(item).data('price'))
+      $('.dropdown.type')
+        .dropdown({
+          'set value': $('#type').val($(item).data('type'))
+        })
+      ;
+      $('.ui.modal.form.edit').modal('show')
+    })
+  })
 </script>
 @endsection

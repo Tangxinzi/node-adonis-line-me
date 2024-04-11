@@ -88,6 +88,9 @@ Route.group(() => {
   Route.get('/verification/pending/:table/:field', 'api/OperatesController.pendingType')
   Route.get('/authentication/verification', 'api/OperatesController.authenticationVerification')
   Route.post('/authentication/verification', 'api/OperatesController.authenticationVerification')
+  
+  // 介绍激励
+  Route.get('/user/incentive', 'api/OperatesController.incentive')
 
   Route.get('/descovery', 'api/DescoveriesController.index')
   Route.get('/descovery/type/:type/:id', 'api/DescoveriesController.type')

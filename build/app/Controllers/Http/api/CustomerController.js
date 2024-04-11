@@ -265,6 +265,16 @@ class CustomerController {
                 introduction: all.introduction || '',
                 userinfo: JSON.stringify(all)
             });
+            const status = await Database_1.default.from('users_operates').where({ 'user_id': session.get('user_id'), status: 1 }).where('type', 'like', '%inspire%').first() || {};
+            if (status.id) {
+                await Database_1.default.table('users_operates_log').insert({
+                    status: 2,
+                    user_id: session.get('user_id'),
+                    customer_id: customer_id,
+                    customer_log_id: relation_log_id,
+                    price: status.price
+                });
+            }
             return response.json({
                 status: 200,
                 sms: "ok",
@@ -284,7 +294,7 @@ class CustomerController {
     async customerList({ request, response, session }) {
         try {
             const all = request.all();
-            const user = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url', 'sex', 'detail', 'company', 'work', 'job_title').where('user_id', all.user_id || session.get('user_id')).first();
+            const user = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url', 'sex', 'detail', 'school', 'company', 'work', 'job_title').where('user_id', all.user_id || session.get('user_id')).first();
             user.work = user.work ? JSON.parse(user.work) : [];
             if (user.work.value) {
                 user.work.text = await zpData.data(user.work.value[0], user.work.value[1]);

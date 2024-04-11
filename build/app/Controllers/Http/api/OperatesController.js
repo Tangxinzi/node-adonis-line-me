@@ -5,7 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const Database_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Lucid/Database"));
 const Logger_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Core/Logger"));
-const { percentUserinfo } = require('../lib/Percent');
+const moment_1 = __importDefault(require("moment"));
+const { percentUserinfo, percentCustomerinfo } = require('../lib/Percent');
 const Verification = require('../lib/Verification');
 class OperatesController {
     async authenticationVerification({ request, response, session }) {
@@ -135,6 +136,63 @@ class OperatesController {
         catch (error) {
             console.log(error);
             Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
+        }
+    }
+    async incentive({ request, response, view, session }) {
+        try {
+            const all = request.all(), operates_log = (await Database_1.default.rawQuery(`
+          SELECT 
+            users_operates_log.id AS id, 
+            users_operates_log.customer_id, 
+            users_operates_log.customer_log_id, 
+            users_operates_log.user_id, 
+            users_operates_log.loading, 
+            users_operates_log.price, 
+            customer.recommend, 
+            customer.introduction, 
+            customer.recommend_at, 
+            customer.status AS c_status,
+            users.avatar_url, 
+            users.nickname, 
+            users.phone,
+            users_operates_log.created_at
+          FROM users_operates_log 
+          LEFT JOIN customer ON users_operates_log.customer_id = customer.id 
+          LEFT JOIN users ON users_operates_log.user_id = users.user_id
+          WHERE users_operates_log.user_id = '${session.get('user_id')}' AND customer.status IN (${all.orderBy || '1'})
+          ORDER BY users_operates_log.id DESC
+          LIMIT ${request.input('page', 0) * 15}, 15
+      `))[0];
+            for (let index = 0; index < operates_log.length; index++) {
+                if (operates_log[index].customer_log_id) {
+                    operates_log[index] = {
+                        ...operates_log[index],
+                        percent: await percentCustomerinfo(operates_log[index].customer_log_id),
+                        customer: {
+                            ...await Database_1.default.from('customer_log').select('avatar_url', 'nickname', 'sex', 'work', 'company', 'birthday', 'phone', 'photos', 'location').where('id', operates_log[index].customer_log_id).first() || {}
+                        }
+                    };
+                }
+                operates_log[index].created_at = (0, moment_1.default)(operates_log[index].created_at).format('YYYY-MM-DD HH:mm:ss');
+                operates_log[index].modified_at = (0, moment_1.default)(operates_log[index].modified_at).format('YYYY-MM-DD HH:mm:ss');
+            }
+            return response.json({
+                status: 200,
+                message: "ok",
+                data: {
+                    operates_log,
+                    onboard: (await Database_1.default.rawQuery(`
+            SELECT data.type, data.value, data.text, data.unit FROM (
+              SELECT 'customer' AS type, count(*) AS value, '介绍' AS text, '' AS unit FROM users_operates_log LEFT JOIN customer ON users_operates_log.customer_id = customer.id WHERE users_operates_log.user_id = '${session.get('user_id')}' AND customer.status IN (${all.orderBy || '1'})
+              UNION ALL
+              SELECT 'price' AS type, sum(0) AS value, '入账' AS text, '' AS unit FROM users_operates_log WHERE user_id = '${session.get('user_id')}'
+            ) AS data
+          `))[0],
+                }
+            });
+        }
+        catch (error) {
+            console.log(error);
         }
     }
 }
