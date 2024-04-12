@@ -45,7 +45,7 @@ export default class OperatesController {
       }
 
       if (all.button == 'edit') {
-        await Database.from('users_operates').where({ status: 1, user_id: all.user_id }).update({ price: all.price, type: all.type })
+        await Database.from('users_operates').where({ status: 1, user_id: all.user_id }).update({ price: all.price || '', type: all.type || '' })
         session.flash('message', { type: 'success', header: '更新成功', message: all.user_id })
       }
 
