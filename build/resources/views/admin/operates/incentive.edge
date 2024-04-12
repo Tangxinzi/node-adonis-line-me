@@ -34,7 +34,7 @@
         @each(item in data.operates_log)
           <div class="ui segment">
             <p class="flex-between">
-              <span style="font-weight: 600;">{{ item.id }}. <a {{ route('admin/UsersController.edit', { user_id: item.user_id }) }}>{{ item.nickname }}</a> 介绍</span>
+              <span style="font-weight: 600;">{{ item.id }}. <a href="{{ route('admin/UsersController.edit', { user_id: item.user_id }) }}">{{ item.nickname }}</a> 介绍</span>
               <span class="ui mini label">评分</span>
             </p>
             <div class="ui horizontal bulleted list">
@@ -50,6 +50,7 @@
               <span>
                 <i class="circle small {{ item.loading == 0 ? 'grey' : '' }}{{ item.loading == 1 ? 'orange' : '' }}{{ item.loading == 2 ? 'green' : '' }} icon"></i>
                 {{ item.loading == 0 ? '失效' : '' }}{{ item.loading == 1 ? '未下发' : '' }}{{ item.loading == 2 ? '已下发' : '' }}
+                &nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;{{ item.verify_phone ? '已验证' : '未验证' }}
                 &nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;{{ (item.price || 0) + item.recommend }} 元&nbsp;&nbsp;&nbsp;<i class="activating info circle icon" style="cursor: pointer;" data-content="基础价 {{ item.price || 0 }} + {{ item.recommend ? '推荐 1' : '未推荐 0' }}"></i>
               </span>
             </div>

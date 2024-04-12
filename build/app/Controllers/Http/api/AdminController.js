@@ -99,7 +99,7 @@ class AdminController {
     }
     async verification({ request, response, session }) {
         try {
-            const all = request.all(), operates = await Database_1.default.from('users_operates').where({ user_id: session.get('user_id'), type: 'examine' }).first() ? true : false;
+            const all = request.all(), operates = await Database_1.default.from('users_operates').where({ user_id: session.get('user_id') }).where('type', 'like', '%examine%').first() ? true : false;
             if (operates) {
                 var verify = await Database_1.default.from('verification').orderBy('is_verified', 'asc').orderBy('id', 'desc').forPage(request.input('page', 1), 20);
                 for (let index = 0; index < verify.length; index++) {

@@ -71,6 +71,7 @@ class OperatesController {
             users_operates_log.price, 
             customer.recommend, 
             customer.introduction, 
+            customer.verify_phone, 
             customer.recommend_at, 
             customer.status AS c_status,
             users.avatar_url, 

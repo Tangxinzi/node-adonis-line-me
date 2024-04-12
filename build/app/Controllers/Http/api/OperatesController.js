@@ -150,6 +150,7 @@ class OperatesController {
             users_operates_log.price, 
             customer.recommend, 
             customer.introduction, 
+            customer.verify_phone, 
             customer.recommend_at, 
             customer.status AS c_status,
             users.avatar_url, 
@@ -165,6 +166,12 @@ class OperatesController {
       `))[0];
             for (let index = 0; index < operates_log.length; index++) {
                 if (operates_log[index].customer_log_id) {
+                    if (operates_log[index].verify_phone) {
+                        operates_log[index].verify_phone = true;
+                    }
+                    else {
+                        operates_log[index].verify_phone = false;
+                    }
                     operates_log[index] = {
                         ...operates_log[index],
                         percent: await percentCustomerinfo(operates_log[index].customer_log_id),
@@ -185,7 +192,7 @@ class OperatesController {
             SELECT data.type, data.value, data.text, data.unit FROM (
               SELECT 'customer' AS type, count(*) AS value, '介绍' AS text, '' AS unit FROM users_operates_log LEFT JOIN customer ON users_operates_log.customer_id = customer.id WHERE users_operates_log.user_id = '${session.get('user_id')}' AND customer.status IN (${all.orderBy || '1'})
               UNION ALL
-              SELECT 'price' AS type, sum(0) AS value, '入账' AS text, '' AS unit FROM users_operates_log WHERE user_id = '${session.get('user_id')}'
+              SELECT 'price' AS type, sum(0) AS value, '待入账' AS text, '' AS unit FROM users_operates_log WHERE user_id = '${session.get('user_id')}'
             ) AS data
           `))[0],
                 }
