@@ -15,7 +15,6 @@ const zpData = require('../lib/Zhipin');
 const { percentUserinfo, percentCustomerinfo } = require('../lib/Percent');
 const Weixin = require('../lib/Weixin');
 const Verification = require('../lib/Verification');
-const RELATION = ["朋友", "闺蜜", "亲戚", "同学", "同事", "其他"];
 const SALARY_RANGE = [
     { index: 0, value: '5w 以内' },
     { index: 1, value: '5 - 10w' },
@@ -67,7 +66,6 @@ class CustomerController {
             customer[index]['videos'] = customer[index]['videos'] ? JSON.parse(customer[index]['videos']) : [];
             customer[index]['zodiac_sign'] = this.getZodiacSign((0, moment_1.default)(customer[index]['birthday']).format('DD'), (0, moment_1.default)(customer[index]['birthday']).format('MM'));
             customer[index]['age'] = (0, moment_1.default)().diff(customer[index]['birthday'], 'years');
-            customer[index].relation = RELATION[customer[index].relation];
             customer[index].salary = customer[index].salary ? SALARY_RANGE[customer[index].salary].value : '';
             customer[index]['work'] = customer[index]['work'] ? JSON.parse(customer[index]['work']) : [];
             if (customer[index]['work']['value']) {
@@ -127,7 +125,7 @@ class CustomerController {
                     let database = [];
                     for (let index = 0; index < distance[0].length; index++)
                         database[index] = distance[0][index].user_id;
-                    const customer = await Database_1.default.from('customer').select('id as cid', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id').where({ status: 1, recommend: 1 }).whereIn('user_id', database).orderBy('recommend_at', 'desc').limit(10);
+                    const customer = await Database_1.default.from('customer').select('id as cid', 'user_id', 'introduction', 'relation', 'relation_text', 'relation_log_id', 'relation_user_id').where({ status: 1, recommend: 1 }).whereIn('user_id', database).orderBy('recommend_at', 'desc').limit(10);
                     data = await this.customerFormat(customer, session);
                     for (let index = 0; index < location.length; index++) {
                         for (let j = 0; j < data.length; j++) {
@@ -262,6 +260,7 @@ class CustomerController {
                 user_id: session.get('user_id'),
                 relation_log_id: relation_log_id,
                 relation: all.relation,
+                relation_text: all.relationCodeText || '',
                 introduction: all.introduction || '',
                 userinfo: JSON.stringify(all)
             });
@@ -306,7 +305,7 @@ class CustomerController {
             else {
                 user.authentication = false;
             }
-            const customer = await Database_1.default.from('customer').select('id', 'user_id', 'relation', 'introduction', 'relation_log_id', 'relation_user_id', 'status', 'created_at').whereIn('status', all.status ? all.status.split(',') : [1, 2]).where('user_id', all.user_id || session.get('user_id')).orderBy('created_at', 'desc');
+            const customer = await Database_1.default.from('customer').select('id', 'user_id', 'relation', 'relation_text', 'introduction', 'relation_log_id', 'relation_user_id', 'status', 'created_at').whereIn('status', all.status ? all.status.split(',') : [1, 2]).where('user_id', all.user_id || session.get('user_id')).orderBy('created_at', 'desc');
             for (let index = 0; index < customer.length; index++) {
                 if (customer[index].relation_user_id) {
                     customer[index] = {
@@ -326,7 +325,6 @@ class CustomerController {
                 customer[index].age = (0, moment_1.default)().diff(customer[index].birthday, 'years');
                 customer[index].photos = customer[index].photos ? JSON.parse(customer[index].photos) : [];
                 customer[index].location = customer[index].location ? JSON.parse(customer[index].location) : [];
-                customer[index].relation = RELATION[customer[index].relation];
                 customer[index].work = customer[index].work ? JSON.parse(customer[index].work) : [];
                 if (customer[index].work.value) {
                     customer[index].work.text = await zpData.data(customer[index].work.value[0], customer[index].work.value[1]);
@@ -358,7 +356,7 @@ class CustomerController {
     async customerShow({ params, request, response, session }) {
         try {
             const all = request.all();
-            const customer = await Database_1.default.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'recommend', 'relation', 'verify_phone', 'relation_log_id', 'introduction').where({ 'id': params.id }).first() || {};
+            const customer = await Database_1.default.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'recommend', 'relation', 'relation_text', 'verify_phone', 'relation_log_id', 'introduction').where({ 'id': params.id }).first() || {};
             if (customer.verify_phone) {
                 if (/^1[0-9]{10}$/.test(customer.verify_phone)) {
                     customer.verify_phone = customer.verify_phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
@@ -367,7 +365,6 @@ class CustomerController {
                     customer.verify_phone = "手机号格式不正确";
                 }
             }
-            customer.relation_text = RELATION[customer.relation];
             if (customer.relation_log_id) {
                 customer.percent = await percentCustomerinfo(customer.relation_log_id),
                     customer.userinfo = await Database_1.default.from('customer_log').select('*').where({ 'id': customer.relation_log_id }).first();

@@ -51,7 +51,7 @@ export default class UserController {
       result.user = await Database.from('users').where('wechat_open_id', result.openid).first() || {}
       if (!result.user.id) {
         const user_id = 'pie_a' + RandomString.generate({ length: 8, charset: ['numeric'] })
-        const id = await Database.table('users').returning('id').insert({ user_id wechat_open_id: result.openid })
+        const id = await Database.table('users').returning('id').insert({ user_id, wechat_open_id: result.openid })
         result.user.id = id[0]
         await Messages.push({ user_id, content: '相亲交友找对象，熟人介绍更靠谱。欢迎使用体验，如您在体验中遇任何问题请与管理员联系。' }) // 推送注册成功消息
       }

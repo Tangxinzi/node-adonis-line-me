@@ -44,7 +44,7 @@ class OperatesController {
                 session.flash('message', { type: 'success', header: '创建成功', message: `已添加特邀用户 ${JSON.stringify(user_id)}` });
             }
             if (all.button == 'edit') {
-                await Database_1.default.from('users_operates').where({ status: 1, user_id: all.user_id }).update({ price: all.price, type: all.type });
+                await Database_1.default.from('users_operates').where({ status: 1, user_id: all.user_id }).update({ price: all.price || '', type: all.type || '' });
                 session.flash('message', { type: 'success', header: '更新成功', message: all.user_id });
             }
             if (all.button == 'delete') {
