@@ -7,7 +7,6 @@ const Database_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Lucid/D
 const Logger_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Core/Logger"));
 const moment_1 = __importDefault(require("moment"));
 const Zhipin_1 = __importDefault(require("../lib/Zhipin"));
-const RELATION = ["朋友", "亲戚", "伙伴", "同事", "其他"];
 const SALARY_RANGE = [
     { index: 0, value: '5w 以内' },
     { index: 1, value: '5 - 10w' },
@@ -79,6 +78,7 @@ class FiltersController {
         	IFNULL(customer_log.location, users.location) AS location,
         	IFNULL(customer_log.salary, users.salary) AS salary,
           customer.relation,
+          customer.relation_text,
           customer.introduction,
         	customer.created_at
         FROM customer
@@ -99,7 +99,6 @@ class FiltersController {
                 customer[index].videos = customer[index].videos ? JSON.parse(customer[index].videos) : [];
                 customer[index].zodiac_sign = this.getZodiacSign((0, moment_1.default)(customer[index].birthday).format('DD'), (0, moment_1.default)(customer[index].birthday).format('MM'));
                 customer[index].age = (0, moment_1.default)().diff(customer[index].birthday, 'years');
-                customer[index].relation = RELATION[customer[index].relation];
                 customer[index].salary = customer[index].salary ? SALARY_RANGE[customer[index].salary].value : '';
                 customer[index].work = customer[index].work ? JSON.parse(customer[index].work) : [];
                 if (customer[index].work.value) {

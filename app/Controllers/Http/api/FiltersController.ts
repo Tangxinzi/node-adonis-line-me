@@ -3,7 +3,6 @@ import Logger from '@ioc:Adonis/Core/Logger'
 import Moment from 'moment'
 import zpData from '../lib/Zhipin'
 import { percentUserinfo, percentCustomerinfo } from '../lib/Percent'
-const RELATION = ["朋友", "亲戚", "伙伴", "同事", "其他"]
 const SALARY_RANGE = [
   { index: 0, value: '5w 以内' },
   { index: 1, value: '5 - 10w' },
@@ -82,6 +81,7 @@ export default class FiltersController {
         	IFNULL(customer_log.location, users.location) AS location,
         	IFNULL(customer_log.salary, users.salary) AS salary,
           customer.relation,
+          customer.relation_text,
           customer.introduction,
         	customer.created_at
         FROM customer
@@ -107,7 +107,6 @@ export default class FiltersController {
         customer[index].videos = customer[index].videos ? JSON.parse(customer[index].videos) : []
         customer[index].zodiac_sign = this.getZodiacSign(Moment(customer[index].birthday).format('DD'), Moment(customer[index].birthday).format('MM'))
         customer[index].age = Moment().diff(customer[index].birthday, 'years')
-        customer[index].relation = RELATION[customer[index].relation]
         customer[index].salary = customer[index].salary ? SALARY_RANGE[customer[index].salary].value : ''
         customer[index].work = customer[index].work ? JSON.parse(customer[index].work) : []
         if (customer[index].work.value) {

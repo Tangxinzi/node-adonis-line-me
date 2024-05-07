@@ -163,7 +163,7 @@ class CustomerController {
                     introduction: all.introduction,
                     userinfo: JSON.stringify(all.userinfo)
                 });
-                return response.json({ status: 200, sms: "ok" });
+                return response.json({ status: 200, sms: "ok", data: id });
             }
         }
         catch (error) {
@@ -356,7 +356,7 @@ class CustomerController {
     async customerShow({ params, request, response, session }) {
         try {
             const all = request.all();
-            const customer = await Database_1.default.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'recommend', 'relation', 'relation_text', 'verify_phone', 'relation_log_id', 'introduction').where({ 'id': params.id }).first() || {};
+            const customer = await Database_1.default.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'recommend', 'relation', 'relation_text', 'verify_phone', 'relation_log_id', 'introduction', 'created_at', 'modified_at').where({ 'id': params.id }).first() || {};
             if (customer.verify_phone) {
                 if (/^1[0-9]{10}$/.test(customer.verify_phone)) {
                     customer.verify_phone = customer.verify_phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
@@ -386,6 +386,8 @@ class CustomerController {
             if (customer.userinfo.work.value) {
                 customer.userinfo.work.text = await zpData.data(customer.userinfo.work.value[0], customer.userinfo.work.value[1]);
             }
+            customer.modified_at = (0, moment_1.default)(customer.created_at).format('YYYY-MM-DD HH:mm');
+            customer.created_at = (0, moment_1.default)(customer.created_at).format('YYYY-MM-DD HH:mm');
             customer.userinfo.created_at = (0, moment_1.default)(customer.userinfo.created_at).format('YYYY-MM-DD');
             customer.userinfo.modified_at = (0, moment_1.default)(customer.userinfo.modified_at).format('YYYY-MM-DD');
             customer.like = await Database_1.default.from('likes').select('id').where({ status: 1, type: 'customer', relation_type_id: customer.cid, user_id: all.user_id || session.get('user_id') || '' }).first() || {};
@@ -437,7 +439,7 @@ class CustomerController {
             let customer = await Database_1.default.from('customer').where({ id: params.id, user_id: session.get('user_id') }).first();
             switch (`${all.type}.${all.field}`) {
                 case 'customer.relation':
-                    var result = await Database_1.default.from('customer').where({ id: params.id, user_id: session.get('user_id') }).update({ relation: all.value });
+                    var result = await Database_1.default.from('customer').where({ id: params.id, user_id: session.get('user_id') }).update({ relation: all.value.relation, relation_text: all.value.relation_text });
                     break;
                 case 'customer.introduction':
                     var result = await Database_1.default.from('customer').where({ id: params.id, user_id: session.get('user_id') }).update({ introduction: all.value });

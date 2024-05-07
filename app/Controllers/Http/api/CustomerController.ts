@@ -207,7 +207,7 @@ export default class CustomerController {
           userinfo: JSON.stringify(all.userinfo)
         })
 
-        return response.json({ status: 200, sms: "ok" })
+        return response.json({ status: 200, sms: "ok", data: id })
       }
     } catch (error) {
       console.log(error);
@@ -427,7 +427,7 @@ export default class CustomerController {
   public async customerShow({ params, request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      const customer = await Database.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'recommend', 'relation', 'relation_text', 'verify_phone', 'relation_log_id', 'introduction').where({ 'id': params.id }).first() || {}
+      const customer = await Database.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'recommend', 'relation', 'relation_text', 'verify_phone', 'relation_log_id', 'introduction', 'created_at', 'modified_at').where({ 'id': params.id }).first() || {}
       if (customer.verify_phone) {
         // 判断手机号格式
         if (/^1[0-9]{10}$/.test(customer.verify_phone)) {
@@ -451,16 +451,16 @@ export default class CustomerController {
       }
 
       customer.introduces = await Database.from('answer').where({ type: 1, status: 1, recommend: 1, user_id: customer.relation_user_id })
-
       customer.userinfo.location = customer.userinfo.location ? JSON.parse(customer.userinfo.location) : ''
       customer.userinfo.age = Moment().diff(customer.userinfo.birthday, 'years')
       customer.userinfo.zodiac_sign = this.getZodiacSign(Moment(customer.userinfo.birthday).format('DD'), Moment(customer.userinfo.birthday).format('MM'))
       customer.userinfo.photos = customer.userinfo.photos ? JSON.parse(customer.userinfo.photos) : []
-
       customer.userinfo.work = customer.userinfo.work ? JSON.parse(customer.userinfo.work) : []
       if (customer.userinfo.work.value) {
         customer.userinfo.work.text = await zpData.data(customer.userinfo.work.value[0], customer.userinfo.work.value[1])
       }
+      customer.modified_at = Moment(customer.created_at).format('YYYY-MM-DD HH:mm')
+      customer.created_at = Moment(customer.created_at).format('YYYY-MM-DD HH:mm')
 
       customer.userinfo.created_at = Moment(customer.userinfo.created_at).format('YYYY-MM-DD')
       customer.userinfo.modified_at = Moment(customer.userinfo.modified_at).format('YYYY-MM-DD')
@@ -524,7 +524,7 @@ export default class CustomerController {
       let customer = await Database.from('customer').where({ id: params.id, user_id: session.get('user_id') }).first()
       switch (`${ all.type }.${ all.field }`) {
         case 'customer.relation':
-          var result = await Database.from('customer').where({ id: params.id, user_id: session.get('user_id') }).update({ relation: all.value })
+          var result = await Database.from('customer').where({ id: params.id, user_id: session.get('user_id') }).update({ relation: all.value.relation, relation_text: all.value.relation_text })
           break;
         case 'customer.introduction':
           var result = await Database.from('customer').where({ id: params.id, user_id: session.get('user_id') }).update({ introduction: all.value })
