@@ -188,8 +188,14 @@ class DescoveriesController {
                 WHEN comments.type = 'moment' THEN moments.content
                 ELSE 'Unknown Type'
               END AS related_content,
+              CASE
+                WHEN comments.type = 'answer' THEN answer.photos
+                WHEN comments.type = 'moment' THEN moments.photos
+                ELSE 'Unknown Type'
+              END AS related_photos,
               users.nickname,
-              users.avatar_url
+              users.avatar_url,
+              comments.created_at
             FROM comments
             LEFT JOIN answer ON comments.relation_type_id = answer.id AND comments.type = 'answer'
             LEFT JOIN moments ON comments.relation_type_id = moments.id AND comments.type = 'moment'
@@ -197,6 +203,10 @@ class DescoveriesController {
             WHERE comments.user_id = '${session.get('user_id')}' AND comments.status = 1 AND comments.type in ('answer', 'moment')
             ORDER BY comments.created_at DESC;
           `))[0];
+                    for (let index = 0; index < comments.length; index++) {
+                        comments[index].related_photos = comments[index].related_photos ? JSON.parse(comments[index].related_photos) : [];
+                        comments[index].created_at = (0, moment_1.default)(comments[index].created_at).fromNow();
+                    }
                     return response.json({ status: 200, message: "ok", data: comments });
                     break;
                 default:
