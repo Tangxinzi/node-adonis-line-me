@@ -593,7 +593,7 @@ class CustomerController {
       `))[0];
             let step_2 = (await Database_1.default.rawQuery(`
         SELECT id, name FROM (
-          SELECT id, name FROM labels WHERE type IN (1) AND status = 2 ORDER BY RAND() LIMIT 100
+          SELECT id, name FROM labels WHERE type IN (2) AND status = 1 ORDER BY RAND() LIMIT 100
         ) AS subquery
         ORDER BY RAND() LIMIT 25;
       `))[0];
