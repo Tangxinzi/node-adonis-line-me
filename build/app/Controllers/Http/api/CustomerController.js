@@ -585,12 +585,24 @@ class CustomerController {
     }
     async introduceLabels({ request, response, session }) {
         try {
+            let step_1 = (await Database_1.default.rawQuery(`
+        SELECT id, name FROM (
+          SELECT id, name FROM labels WHERE type IN (1) AND status = 1 ORDER BY RAND() LIMIT 100
+        ) AS subquery
+        ORDER BY RAND() LIMIT 25;
+      `))[0];
+            let step_2 = (await Database_1.default.rawQuery(`
+        SELECT id, name FROM (
+          SELECT id, name FROM labels WHERE type IN (1) AND status = 1 ORDER BY RAND() LIMIT 100
+        ) AS subquery
+        ORDER BY RAND() LIMIT 25;
+      `))[0];
             return response.json({
                 status: 200,
                 sms: "ok",
                 data: {
-                    step_1: await Database_1.default.from('labels').select('id', 'name').whereIn('type', [1]).where('status', 1).orderBy('sort', 'asc'),
-                    step_2: await Database_1.default.from('labels').select('id', 'name').whereIn('type', [2]).where('status', 1).orderBy('sort', 'asc'),
+                    step_1,
+                    step_2
                 }
             });
         }

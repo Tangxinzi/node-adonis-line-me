@@ -685,12 +685,28 @@ export default class CustomerController {
 
   public async introduceLabels({ request, response, session }: HttpContextContract) {
     try {
+      let step_1 = (await Database.rawQuery(`
+        SELECT id, name FROM (
+          SELECT id, name FROM labels WHERE type IN (1) AND status = 1 ORDER BY RAND() LIMIT 100
+        ) AS subquery
+        ORDER BY RAND() LIMIT 25;
+      `))[0]
+
+      let step_2 = (await Database.rawQuery(`
+        SELECT id, name FROM (
+          SELECT id, name FROM labels WHERE type IN (1) AND status = 1 ORDER BY RAND() LIMIT 100
+        ) AS subquery
+        ORDER BY RAND() LIMIT 25;
+      `))[0]
+      
       return response.json({
         status: 200,
         sms: "ok",
         data: {
-          step_1: await Database.from('labels').select('id', 'name').whereIn('type', [1]).where('status', 1).orderBy('sort', 'asc'),
-          step_2: await Database.from('labels').select('id', 'name').whereIn('type', [2]).where('status', 1).orderBy('sort', 'asc'),
+          step_1,
+          step_2
+          // step_1: await Database.from('labels').select('id', 'name').whereIn('type', [1]).where('status', 1).orderBy('sort', 'asc').offset(Math.floor(Math.random() * (totalUsersCount - 10))).limit(30),
+          // step_2: await Database.from('labels').select('id', 'name').whereIn('type', [2]).where('status', 1).orderBy('sort', 'asc').offset(Math.floor(Math.random() * (totalUsersCount - 10))).limit(30)
         }
       })
     } catch (error) {

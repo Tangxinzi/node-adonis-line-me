@@ -35,14 +35,14 @@ class CustomersController {
     async index({ request, view, session }) {
         try {
             const all = request.all();
-            const customer = await Database_1.default.from('customer').select('id', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id', 'recommend').whereIn('status', [0, 1, 2]).orderBy('id', 'desc').forPage(request.input('page', 1), 20);
+            const customer = await Database_1.default.from('customer').select('id', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id', 'recommend').whereIn('status', [0, 1, 2]).orderBy('id', 'desc').forPage(request.input('page', 1), 30);
             for (let index = 0; index < customer.length; index++) {
                 if (customer[index].relation_log_id) {
                     customer[index] = {
                         ...customer[index],
                         ...await Database_1.default.from('customer_log').select('nickname', 'avatar_url', 'sex', 'birthday', 'contact_wechat', 'photos', 'videos', 'work', 'phone', 'created_at', 'modified_at').where('id', customer[index].relation_log_id).first(),
                         percent: await percentCustomerinfo(customer[index].relation_log_id),
-                        parent: await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].user_id).first()
+                        parent: await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].user_id).first() || {}
                     };
                 }
                 if (customer[index].relation_user_id) {
@@ -50,7 +50,7 @@ class CustomersController {
                         ...customer[index],
                         ...await Database_1.default.from('users').select('nickname', 'avatar_url', 'sex', 'birthday', 'contact_wechat', 'photos', 'videos', 'work', 'phone', 'created_at', 'modified_at').where('user_id', customer[index].relation_user_id).first(),
                         percent: await percentUserinfo(customer[index].relation_user_id),
-                        parent: await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].relation_user_id).first()
+                        parent: await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].relation_user_id).first() || {}
                     };
                 }
                 customer[index]['photos'] = customer[index]['photos'] ? JSON.parse(customer[index]['photos']) : [];
@@ -95,10 +95,9 @@ class CustomersController {
     async edit({ params, request, response, session, view }) {
         try {
             const all = request.all();
-            const customer = await Database_1.default.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'relation', 'relation_log_id', 'introduction', 'recommend', 'created_at').where({ 'id': params.id, status: 1 }).first();
-            customer.relation_text = RELATION[customer.relation];
+            const customer = await Database_1.default.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'relation', 'relation_log_id', 'introduction', 'recommend', 'created_at').where({ 'id': params.id }).first() || {};
             if (customer.relation_log_id) {
-                console.log(all);
+                customer.relation_text = RELATION[customer.relation];
                 customer.userinfo = await Database_1.default.from('customer_log').select('*').where({ 'id': customer.relation_log_id }).first();
                 if (request.method() == 'POST') {
                     await Database_1.default.from('customer').where({ id: customer.cid }).update({ introduction: all.introduction });
@@ -110,7 +109,7 @@ class CustomersController {
             else if (customer.relation_user_id) {
                 customer.userinfo = await Database_1.default.from('users').select('*').where({ 'user_id': customer.relation_user_id }).first();
             }
-            customer.parent = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer.user_id).first();
+            customer.parent = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer.user_id).first() || {};
             customer.userinfo.photos = customer.userinfo.photos ? JSON.parse(customer.userinfo.photos) : [];
             customer.userinfo.work = customer.userinfo.work ? JSON.parse(customer.userinfo.work) : [];
             if (customer.userinfo.work.value) {
