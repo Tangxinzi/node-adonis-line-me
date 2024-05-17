@@ -34,13 +34,25 @@ class CustomersController {
     }
     async index({ request, view, session }) {
         try {
-            const all = request.all();
-            const customer = await Database_1.default.from('customer').select('id', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id', 'recommend').whereIn('status', [0, 1, 2]).orderBy('id', 'desc').forPage(request.input('page', 1), 30);
+            let all = request.all(), status = [1, 2];
+            if (all.status == 1) {
+                status = [1];
+                all.orderBy = 'status_1';
+            }
+            else if (all.status == 2) {
+                status = [2];
+                all.orderBy = 'status_2';
+            }
+            else {
+                status = [1, 2];
+                all.orderBy = '';
+            }
+            const customer = await Database_1.default.from('customer').select('id', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id', 'recommend', 'status').whereIn('status', status).orderBy('id', 'desc').forPage(request.input('page', 1), 30);
             for (let index = 0; index < customer.length; index++) {
                 if (customer[index].relation_log_id) {
                     customer[index] = {
                         ...customer[index],
-                        ...await Database_1.default.from('customer_log').select('nickname', 'avatar_url', 'sex', 'birthday', 'contact_wechat', 'photos', 'videos', 'work', 'phone', 'created_at', 'modified_at').where('id', customer[index].relation_log_id).first(),
+                        ...await Database_1.default.from('customer_log').select('nickname', 'avatar_url', 'sex', 'birthday', 'contact_wechat', 'photos', 'videos', 'school', 'company', 'work', 'phone', 'created_at', 'modified_at').where('id', customer[index].relation_log_id).first(),
                         percent: await percentCustomerinfo(customer[index].relation_log_id),
                         parent: await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].user_id).first() || {}
                     };
@@ -48,7 +60,7 @@ class CustomersController {
                 if (customer[index].relation_user_id) {
                     customer[index] = {
                         ...customer[index],
-                        ...await Database_1.default.from('users').select('nickname', 'avatar_url', 'sex', 'birthday', 'contact_wechat', 'photos', 'videos', 'work', 'phone', 'created_at', 'modified_at').where('user_id', customer[index].relation_user_id).first(),
+                        ...await Database_1.default.from('users').select('nickname', 'avatar_url', 'sex', 'birthday', 'contact_wechat', 'photos', 'videos', 'school', 'company', 'work', 'phone', 'created_at', 'modified_at').where('user_id', customer[index].relation_user_id).first(),
                         percent: await percentUserinfo(customer[index].relation_user_id),
                         parent: await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].relation_user_id).first() || {}
                     };
@@ -58,7 +70,7 @@ class CustomersController {
                 customer[index]['age'] = (0, moment_1.default)().diff(customer[index]['birthday'], 'years');
                 customer[index]['work'] = customer[index]['work'] ? JSON.parse(customer[index]['work']) : [];
                 customer[index].recommend_at = (0, moment_1.default)(customer[index].recommend_at).format('YYYY-MM-DD HH:mm:ss');
-                customer[index].created_at = (0, moment_1.default)(customer[index].created_at).fromNow();
+                customer[index].created_at = (0, moment_1.default)(customer[index].created_at).format('YYYY-MM-DD HH:mm:ss');
                 customer[index].modified_at = (0, moment_1.default)(customer[index].modified_at).fromNow();
                 let relation = ["朋友", "亲戚", "伙伴", "同事", "其他"];
                 customer[index].relation = relation[customer[index].relation];

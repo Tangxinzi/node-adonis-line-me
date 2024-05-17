@@ -94,7 +94,7 @@ export default class UserController {
     try {
       const all = request.all()
       const user_id = all.user_id || session.get('user_id') || ''
-      const user = await Database.from('users').where({ user_id }).first() || {}
+      const user = await Database.from('users').select('id', 'type', 'user_id', 'nickname', 'avatar_url', 'birthday', 'height', 'weight', 'sex', 'photos', 'videos', 'detail', 'expectation', 'contact_wechat', 'school', 'education', 'company', 'work', 'job_title', 'mbti', 'location', 'realname', 'salary', 'phone', 'parent_id', 'ip').where({ user_id }).first() || {}
 
       if (user) {
         user.percent = await percentUserinfo(user_id)
@@ -165,6 +165,12 @@ export default class UserController {
             // console.log(error)
           })
         }
+
+        // 删除不必要数据
+        // delete user.ip_city
+        // delete user.brand
+        // delete user.platform
+        // delete user.system
       }
 
       return user

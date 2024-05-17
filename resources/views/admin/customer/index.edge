@@ -24,8 +24,10 @@
             <i class="dropdown icon"></i>
             <div class="default text">排序</div>
             <div class="menu">
-              <a href="" class="item" data-value="">默认</a>
-              <a href="?orderBy=recommend_at" class="item" data-value="online_at">推荐时间</a>
+              <a href="?" class="item" data-value="">默认</a>
+              {{--  <a href="?orderBy=recommend_at" class="item" data-value="recommend_at">推荐时间</a>  --}}
+              <a href="?status=1" class="item" data-value="status_1">发布</a>
+              <a href="?status=2" class="item" data-value="status_2">草稿</a>
             </div>
           </div>
           <div class="ui small action input">
@@ -41,87 +43,101 @@
           </div>
         </div>
       </div>
-      <table class="ui celled center aligned table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>推荐人</th>
-            <th>被推荐人</th>
-            <th class="three wide">介绍内容</th>
-            <th>关系</th>
-            <th>性别</th>
-            <th class="one wide">联系</th>
-            <th>手机验证</th>
-            <th>照片</th>
-            <th>资料</th>
-            <th>时间</th>
-            <th>推荐</th>
-            <th>操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          @each(row in data.customer)
+      <div class="scroll-container" style="width: 100%; overflow-x: scroll; margin: 1em 0;">
+        <table class="ui celled center aligned table" style="width: 140%;">
+          <thead>
             <tr>
-              <td class="td">
-                <a href="{{ route('admin/CustomersController.edit', { id: row.id }) }}">{{ row.id }}</a>
-              </td>
-              <td class="td">
-                <a class="ui image label" title="{{ row.parent.user_id }}" href="{{ route('admin/UsersController.edit', { user_id: row.parent.user_id || '-' }) }}">
-                  @if(row.parent.avatar_url)
-                    <img class="ui avatar image" src="{{ row.parent.avatar_url }}" />
-                  @endif
-                  {{ row.parent.nickname || ('Unnamed ' + row.parent.user_id) }}
-                </a>
-              </td>
-              <td class="td">
-                <a class="ui image label basic" href="{{ route('admin/CustomersController.edit', { id: row.id }) }}">
-                  @if(row.avatar_url)
-                    <img class="ui avatar image" src="{{ row.avatar_url }}" />
-                  @endif
-                  {{ row.nickname || ('Unnamed ' + row.user_id) }}
-                  @if(row.relation_user_id)
-                    <div class="detail" title="该用户已注册 {{ row.relation_user_id }}">已注册</div>
-                  @endif
-                </a>
-              </td>
-              <td class="td" style="position: relative;">
-                <span class="activating click one-line" data-content="{{ row.introduction }}" data-position="bottom center" data-inverted="">{{ row.introduction }}</span>
-              </td>
-              <td class="td">{{ row.relation || '' }}</td>
-              <td class="td">{{ row.sex == 1 ? '男' : '' }}{{ row.sex == 0 ? '女' : '' }}</td>
-              <td class="td" title="{{ row.contact_wechat }}">
-                <span class="one-line">{{ row.contact_wechat || '' }}</span>
-              </td>
-              <td class="td">{{ row.phone || '' }}</td>
-              <td class="td">
-                <span class="activating fluid click one-line" data-variation="small" data-html="
-                  @each(photo in row.photos)
-                    <image class='ui small image' src='{{ photo }}' />
-                  @endeach
-                " data-position="bottom center" data-inverted="">{{ row.photos.length || '' }}</span>
-              </td>
-              <td class="td" title="{{ row.percent.text }}">{{ row.percent.value }}</td>
-              <td class="td">{{ row.created_at }}</td>
-              <td class="td" title="推荐时间 {{ row.recommend_at }}">
-                <i class="{{ row.recommend ? 'pink heartbeat' : 'heart outline' }} icon"></i>
-              </td>
-              <td class="td" style="position: relative;">
-                <a class="activating click" data-position="bottom center" data-html="<form class='ui mini basic vertical buttons' method='post' action='/admin/customers/field'>
-                  {{ csrfField() }}
-                  <input type='text' name='id' value='{{ row.id }}' hidden />
-                  <button class='ui button' name='button' value='re-recommend' style='display: {{ row.recommend ? '' : 'none' }}'>更新推荐</button>
-                  <button class='ui button' name='button' value='recommend'>{{ row.recommend ? '取消推荐' : '首页推荐' }}</button>
-                  <a class='ui button' name='button' value='delete' href='{{ route("admin/CustomersController.edit", { id: row.id }) }}'>编辑</a>
-                  <a class='ui button' target='_blank' href='/uploads/wxacode/customer-{{ row.id }}.png'>小程序码</a>
-                  <button class='ui negative button' name='button' value='delete' style='color: red !important;'>删除</button>
-                </form>">
-                  操作
-                </a>
-              </td>
+              <th>ID</th>
+              <th class="wide">推荐人</th>
+              <th class="wide">被推荐人</th>
+              <th class="two wide">介绍内容</th>
+              <th>标签</th>
+              <th class="one wide">联系</th>
+              <th>手机验证</th>
+              <th>照片</th>
+              <th>资料</th>
+              <th class="two wide">时间</th>
+              <th>推荐</th>
+              <th>状态</th>
+              <th>操作</th>
             </tr>
-          @endeach
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @each(row in data.customer)
+              <tr>
+                <td class="td">
+                  <a href="{{ route('admin/CustomersController.edit', { id: row.id }) }}">{{ row.id }}</a>
+                </td>
+                <td class="td">
+                  <a class="ui image label" title="{{ row.parent.user_id }}" href="{{ route('admin/UsersController.edit', { user_id: row.parent.user_id || '-' }) }}">
+                    @if(row.parent.avatar_url)
+                      <img class="ui avatar image" src="{{ row.parent.avatar_url }}" />
+                    @endif
+                    {{ row.parent.nickname || ('Unnamed ' + row.parent.user_id) }}
+                  </a>
+                </td>
+                <td class="td">
+                  <a class="ui image label basic" href="{{ route('admin/CustomersController.edit', { id: row.id }) }}">
+                    @if(row.avatar_url)
+                      <img class="ui avatar image" src="{{ row.avatar_url }}" />
+                    @endif
+                    {{ row.nickname || ('Unnamed ' + row.user_id) }}
+                    @if(row.relation_user_id)
+                      <div class="detail" title="该用户已注册 {{ row.relation_user_id }}">已注册</div>
+                    @endif
+                  </a>
+                </td>
+                <td class="td" style="position: relative;">
+                  <span class="activating click one-line" data-content="{{ row.introduction }}" data-position="bottom center" data-inverted="">{{ row.introduction }}</span>
+                </td>
+                <td class="td">
+                  <span class="ui label">{{ row.sex == 1 ? '男' : '' }}{{ row.sex == 0 ? '女' : '' }}</span>
+                  <span class="ui label">{{ row.relation_text || row.relation || '' }}</span>
+                  @if(row.school)
+                    <span class="ui label">{{ row.school }}</span>
+                  @endif
+                  @if(row.company)
+                    <span class="ui label">{{ row.company }}</span>
+                  @endif
+                </td>
+                <td class="td" title="{{ row.contact_wechat }}">
+                  <span class="one-line">{{ row.contact_wechat || '' }}</span>
+                </td>
+                <td class="td">{{ row.phone || '' }}</td>
+                <td class="td">
+                  <span class="activating fluid click one-line" data-variation="small" data-html="
+                    @each(photo in row.photos)
+                      <image class='ui small image' src='{{ photo }}' />
+                    @endeach
+                  " data-position="bottom center" data-inverted="">{{ row.photos.length || '' }}</span>
+                </td>
+                <td class="td" title="{{ row.percent.text }}">{{ row.percent.value }}</td>
+                <td class="td">{{ row.created_at }}</td>
+                <td class="td" title="推荐时间 {{ row.recommend_at }}">
+                  <i class="{{ row.recommend ? 'pink heartbeat' : 'heart outline' }} icon"></i>
+                </td>
+                <td class="td">
+                  {{ row.status == 1 ? '发布' : '' }}
+                  {{ row.status == 2 ? '草稿' : '' }}
+                </td>
+                <td class="td" style="position: relative;">
+                  <a class="activating click" data-position="bottom center" data-html="<form class='ui mini basic vertical buttons' method='post' action='/admin/customers/field'>
+                    {{ csrfField() }}
+                    <input type='text' name='id' value='{{ row.id }}' hidden />
+                    <button class='ui button' name='button' value='re-recommend' style='display: {{ row.recommend ? '' : 'none' }}'>更新推荐</button>
+                    <button class='ui button' name='button' value='recommend'>{{ row.recommend ? '取消推荐' : '推荐' }}</button>
+                    <a class='ui button' name='button' value='delete' href='{{ route("admin/CustomersController.edit", { id: row.id }) }}'>编辑</a>
+                    <a class='ui button' target='_blank' href='/uploads/wxacode/customer-{{ row.id }}.png'>小程序码</a>
+                    <button class='ui negative button' name='button' value='delete' style='color: red !important;'>删除</button>
+                  </form>">
+                    操作
+                  </a>
+                </td>
+              </tr>
+            @endeach
+          </tbody>
+        </table>
+      </div>
       @!component('components/pagination', all=data.all)
     </div>
   </div>
