@@ -253,7 +253,7 @@ class CustomerController {
                 height: all.height || 0,
                 sex: all.sex || 0,
                 work: JSON.stringify(all.work || ''),
-                work_code: all.work.code || '',
+                work_code: all.work ? all.work.code : '',
                 photos: JSON.stringify(all.photos || [])
             });
             const customer_id = await Database_1.default.table('customer').insert({
