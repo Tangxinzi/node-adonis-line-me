@@ -421,7 +421,7 @@ class UserController {
                     await Database_1.default.from('users').where('user_id', session.get('user_id')).update({ weight: all.value });
                     break;
                 case 'work':
-                    await Database_1.default.from('users').where('user_id', session.get('user_id')).update({ work: JSON.stringify(all.value || '') });
+                    await Database_1.default.from('users').where('user_id', session.get('user_id')).update({ work: JSON.stringify(all.value || ''), work_code: all.value.code || '' });
                     break;
                 case 'birthday':
                     await Database_1.default.from('users').where('user_id', session.get('user_id')).update({ birthday: all.value });

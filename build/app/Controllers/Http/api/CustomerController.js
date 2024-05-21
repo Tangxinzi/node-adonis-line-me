@@ -505,8 +505,8 @@ class CustomerController {
             Logger_1.default.error("error 获取失败 %s", JSON.stringify(error));
             response.json({
                 status: 500,
-                sms: "ok",
-                data: error
+                sms: "error",
+                data: ''
             });
         }
     }
