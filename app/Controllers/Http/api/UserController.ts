@@ -423,6 +423,7 @@ export default class UserController {
         company: all.company,
         job_title: all.job_title,
         work: JSON.stringify(all.work),
+        work_code: all.work.code || '',
         height: all.height,
         sex: all.sex,
         birthday: all.birthday,

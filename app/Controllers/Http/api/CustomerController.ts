@@ -302,6 +302,7 @@ export default class CustomerController {
         height: all.height || 0,
         sex: all.sex || 0,
         work: JSON.stringify(all.work || ''),
+        work_code: all.work.code || '',
         photos: JSON.stringify(all.photos || [])
       })
 
@@ -551,7 +552,7 @@ export default class CustomerController {
           var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ photos: JSON.stringify(all.value) })
           break;
         case 'userinfo.work':
-          var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ work: JSON.stringify(all.value) })
+          var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ work: JSON.stringify(all.value), work_code: all.value.code || '' })
           break;
         case 'userinfo.job_title':
           var result = await Database.from('customer_log').where({ id: customer.relation_log_id }).update({ job_title: all.value })
