@@ -37,6 +37,7 @@ class AdminController {
             if (request.method() == 'GET') {
                 const user = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', session.get('user_id')).first() || {};
                 const review = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url', 'type').where({ user_id: verification.user_id }).first() || {};
+                verification.verification_user = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url', 'type').where({ user_id: verification.verification_user_id || '' }).first() || {};
                 verification.verification_status = verification.verification_status.toUpperCase();
                 verification.created_at = (0, moment_1.default)(verification.created_at).format('YYYY-MM-DD HH:mm:ss');
                 verification.modified_at = verification.modified_at ? (0, moment_1.default)(verification.modified_at).format('YYYY-MM-DD HH:mm:ss') : '';

@@ -32,7 +32,7 @@ export default class CustomersController {
 
   public async index({ request, view, session }: HttpContextContract) {
     try {
-      let all = request.all(), status = [1, 2]
+      let all = request.all(), status = [1, 2, 3]
       if (all.status == 1) {
         status = [1]
         all.orderBy = 'status_1'
@@ -40,7 +40,7 @@ export default class CustomersController {
         status = [2]
         all.orderBy = 'status_2'
       } else {
-        status = [1, 2]
+        status = [1, 2, 3]
         all.orderBy = ''
       }
 

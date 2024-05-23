@@ -34,7 +34,7 @@ class CustomersController {
     }
     async index({ request, view, session }) {
         try {
-            let all = request.all(), status = [1, 2];
+            let all = request.all(), status = [1, 2, 3];
             if (all.status == 1) {
                 status = [1];
                 all.orderBy = 'status_1';
@@ -44,10 +44,15 @@ class CustomersController {
                 all.orderBy = 'status_2';
             }
             else {
-                status = [1, 2];
+                status = [1, 2, 3];
                 all.orderBy = '';
             }
-            const customer = await Database_1.default.from('customer').select('id', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id', 'recommend', 'status').whereIn('status', status).orderBy('id', 'desc').forPage(request.input('page', 1), 30);
+            if (all.user_id) {
+                var customer = await Database_1.default.from('customer').select('id', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id', 'recommend', 'status').where({ user_id: all.user_id }).orderBy('id', 'desc');
+            }
+            else {
+                var customer = await Database_1.default.from('customer').select('id', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id', 'recommend', 'status').whereIn('status', status).orderBy('id', 'desc').forPage(request.input('page', 1), 30);
+            }
             for (let index = 0; index < customer.length; index++) {
                 if (customer[index].relation_log_id) {
                     customer[index] = {

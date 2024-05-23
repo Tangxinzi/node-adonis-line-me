@@ -24,14 +24,18 @@
       <form class="ui segments form" method="post" action="#">
         <div class="ui segment">
           <h3 class="ui header">介绍人</h3>
-          <div class="four fields">
+          <div class="five fields">
             <div class="field">
               <label>昵称 - {{ data.customer.parent.nickname }}</label>
               <input type="text" name="parent.user_id" value="{{ data.customer.parent.user_id }}" placeholder="" />
             </div>
             <div class="field">
-              <label>关系</label>
-              <input type="text" name="relation_text" value="{{ data.customer.relation_text }}" placeholder="" />
+              <label title="{{ data.customer.relation }}">关系</label>
+              <input type="text" name="relation_text" value="{{ data.customer.relation_text || '' }}" placeholder="" />
+            </div>
+            <div class="field">
+              <label>手机号验证</label>
+              <input type="number" name="number" value="{{ data.customer.verify_phone || '' }}" placeholder="" />
             </div>
             <div class="field">
               <label>主页推荐</label>
@@ -46,14 +50,16 @@
               </div>
             </div>
             <div class="field">
-              <label>删除</label>
+              <label>状态</label>
               <div class="ui selection dropdown">
                 <input type="hidden" name="status" value="{{ data.customer.status }}" />
                 <i class="dropdown icon"></i>
                 <div class="default text">点击选择</div>
                 <div class="menu">
-                  <div class="item" data-value="0">是</div>
-                  <div class="item" data-value="1">否</div>
+                  <div class="item" data-value="0">删除</div>
+                  <div class="item" data-value="1">发布</div>
+                  <div class="item" data-value="2">草稿</div>
+                  <div class="item" data-value="3">审核</div>
                 </div>
               </div>
             </div>
@@ -70,15 +76,21 @@
             <p>当前被推荐人已注册账号，前往用户账号查看信息 User ID: {{ data.customer.relation_user_id }}</p>
           </div>
           @endif
-          <div class="four {{ data.customer.relation_user_id ? 'disabled' : '' }} fields">
+          <div class="five {{ data.customer.relation_user_id ? 'disabled' : '' }} fields">
             <div class="field">
               <label>被推荐人昵称</label>
-              <input type="text" name="userinfo.user_id" value="{{ data.customer.userinfo.nickname }}" placeholder="" />
+              <div class="ui left icon input">
+                <input type="text" name="userinfo.user_id" value="{{ data.customer.userinfo.nickname }}" placeholder="" />
+                <i class="address card icon"></i>
+              </div>
             </div>
             <div class="field">
               <label>头像</label>
               <div class="ui action input">
-                <input type="text" name="userinfo.avatar_url" value="{{ data.customer.userinfo.avatar_url }}" placeholder="" />
+                <div class="ui left icon input">
+                  <input type="text" name="userinfo.avatar_url" value="{{ data.customer.userinfo.avatar_url }}" placeholder="" />
+                  <i class="user circle icon"></i>
+                </div>
                 <a class="ui icon button" target="_blank" href="{{ data.customer.userinfo.avatar_url }}">
                   <i class="eye icon"></i>
                 </a>
@@ -86,17 +98,30 @@
             </div>
             <div class="field">
               <label>生日</label>
-              <input type="text" name="userinfo.birthday" value="{{ data.customer.userinfo.birthday }}" placeholder="" />
+              <div class="ui left icon input">
+                <input type="text" name="userinfo.birthday" value="{{ data.customer.userinfo.birthday }}" placeholder="" />
+                <i class="birthday cake icon"></i>
+              </div>
             </div>
             <div class="field">
               <label>身高</label>
               <div class="ui right labeled input">
-                <input type="text" name="userinfo.height" value="{{ data.customer.userinfo.height }}" placeholder="" />
+                <div class="ui left icon input">
+                  <input type="text" name="userinfo.height" value="{{ data.customer.userinfo.height }}" placeholder="" />
+                  <i class="child icon"></i>
+                </div>
                 <div class="ui basic label">cm</div>
               </div>
             </div>
+            <div class="field">
+              <label>MBTI</label>
+              <div class="ui left icon input">
+                <input type="text" name="mbti" value="{{ data.customer.userinfo.mbti || '' }}" placeholder="" />
+                <i class="user plus icon"></i>
+              </div>
+            </div>
           </div>
-          <div class="four {{ data.customer.relation_user_id ? 'disabled' : '' }} fields">
+          <div class="five {{ data.customer.relation_user_id ? 'disabled' : '' }} fields">
             <div class="field">
               <label>性别</label>
               <div class="ui selection dropdown">
@@ -131,22 +156,62 @@
               </div>
             </div>
           </div>
-          <div class="four {{ data.customer.relation_user_id ? 'disabled' : '' }} fields">
+          <div class="five {{ data.customer.relation_user_id ? 'disabled' : '' }} fields">
             <div class="field">
-              <label>职业 - {{ data.customer.userinfo.work.text }}</label>
-              <input type="text" name="userinfo.work" value="{{ JSON.stringify(data.customer.userinfo.work) }}" placeholder="" />
+              <label>单位 / 公司</label>
+              <div class="ui left icon input">
+                <input type="text" name="userinfo.company" value="{{ data.customer.userinfo.company || '' }}" placeholder="" />
+                <i class="building icon"></i>
+              </div>
+            </div>
+            <div class="field">
+              <label>行业 - {{ data.customer.userinfo.work.text }}</label>
+              <div class="ui left icon input">
+                <input type="text" name="userinfo.work" value="{{ JSON.stringify(data.customer.userinfo.work) }}" placeholder="" />
+                <i class="flag icon"></i>
+              </div>
+            </div>
+            <div class="field">
+              <label>职位</label>
+              <div class="ui left icon input">
+                <input type="text" name="job_title" value="{{ data.customer.userinfo.job_title || '' }}" placeholder="" />
+                <i class="briefcase icon"></i>
+              </div>
             </div>
             <div class="field">
               <label>学校</label>
-              <input type="text" name="userinfo.school" value="{{ data.customer.userinfo.school || '' }}" placeholder="" />
+              <div class="ui left icon input">
+                <input type="text" name="userinfo.school" value="{{ data.customer.userinfo.school || '' }}" placeholder="" />
+                <i class="graduation cap icon"></i>
+              </div>
             </div>
             <div class="field">
-              <label>公司</label>
-              <input type="text" name="userinfo.company" value="{{ data.customer.userinfo.company || '' }}" placeholder="" />
+              <label>学位</label>
+              <div class="ui left icon input">
+                <input type="text" name="education" value="{{ data.customer.userinfo.education || '' }}" placeholder="" />
+                <i class="graduation cap icon"></i>
+              </div>
+            </div>
+          </div>
+          <div class="five fields">
+            <div class="field">
+              <label>真名</label>
+              <input type="text" name="videos" value="{{ data.customer.userinfo.realname || '' }}" placeholder="" />
             </div>
             <div class="field">
               <label>薪资</label>
-              <input type="text" name="userinfo.salary" value="{{ data.customer.userinfo.salary || '' }}" placeholder="" />
+              <input type="text" name="salary" value="{{ data.customer.userinfo.salary || '' }}" placeholder="" />
+            </div>
+            <div class="field">
+              <label>体重</label>
+              <input type="text" name="weight" value="{{ data.customer.userinfo.weight || '' }}" placeholder="" />
+            </div>
+            <div class="field">
+              <label>发布时间</label>
+              <div class="ui left icon input">
+                <input type="text" name="created_at" value="{{ data.customer.userinfo.created_at || '' }}" placeholder="" />
+                <i class="clock icon"></i>
+              </div>
             </div>
           </div>
           <div class="field {{ data.customer.relation_user_id ? 'disabled' : '' }}">

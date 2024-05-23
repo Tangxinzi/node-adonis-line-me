@@ -307,7 +307,7 @@ export default class CustomerController {
       })
 
       const customer_id = await Database.table('customer').insert({
-        status: 2,
+        status: all.status == 1 ? 3 : 2, // 客户状态 0 - 删除；1 - 发布；2 - 草稿；3 - 审核
         user_id: session.get('user_id'), // 关联 发布用户 user id
         relation_log_id: relation_log_id, // 关联 customer log
         relation: all.relation, // 红娘关系索引
@@ -315,6 +315,22 @@ export default class CustomerController {
         introduction: all.introduction || '',
         userinfo: JSON.stringify(all)
       })
+
+      // 红娘发布客户 - 加入审核列表
+      if (all.status == 1 && customer_id.length && relation_log_id.length) {
+        await Verification.regularData({
+          user_id: session.get('user_id'),
+          table: 'customer',
+          field: '',
+          before: '',
+          value: JSON.stringify({
+            user_id: session.get('user_id'), // 关联 发布用户 user id
+            customer_id: customer_id[0], // 关联 customer id
+            relation_log_id: relation_log_id[0], // 关联 customer log id
+          }),
+          ip: request.ip()
+        })
+      }
 
       // 判断红娘 user_id 是否加入激励
       const status = await Database.from('users_operates').where({ 'user_id': session.get('user_id'), status: 1 }).where('type', 'like', '%inspire%').first() || {}      
@@ -327,22 +343,6 @@ export default class CustomerController {
           price: status.price
         })
       }
-
-      // 红娘发布客户 - 加入审核列表
-      // if (customer_id.length && relation_log_id.length) {
-      //   await Verification.regularData({
-      //     user_id: session.get('user_id'),
-      //     table: 'customer',
-      //     field: '',
-      //     before: '',
-      //     value: JSON.stringify({
-      //       user_id: session.get('user_id'), // 关联 发布用户 user id
-      //       customer_id: customer_id[0], // 关联 customer id
-      //       relation_log_id: relation_log_id[0], // 关联 customer log id
-      //     }),
-      //     ip: request.ip()
-      //   })
-      // }
 
       return response.json({
         status: 200,
@@ -375,7 +375,7 @@ export default class CustomerController {
         user.authentication = false
       }
 
-      const customer = await Database.from('customer').select('id', 'user_id', 'relation', 'relation_text', 'introduction', 'relation_log_id', 'relation_user_id', 'status', 'created_at').whereIn('status', all.status ? all.status.split(',') : [1, 2]).where('user_id', all.user_id || session.get('user_id')).orderBy('created_at', 'desc')
+      const customer = await Database.from('customer').select('id', 'user_id', 'relation', 'relation_text', 'introduction', 'relation_log_id', 'relation_user_id', 'status', 'created_at').whereIn('status', all.status ? all.status.split(',') : [1, 2, 3]).where('user_id', all.user_id || session.get('user_id')).orderBy('created_at', 'desc')
       for (let index = 0; index < customer.length; index++) {
         if (customer[index].relation_user_id) {
           customer[index] = {

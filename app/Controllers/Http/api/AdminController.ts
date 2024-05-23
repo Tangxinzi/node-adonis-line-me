@@ -53,6 +53,7 @@ export default class AdminController {
       if (request.method() == 'GET') {
         const user = await Database.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', session.get('user_id')).first() || {}
         const review = await Database.from('users').select('user_id', 'nickname', 'avatar_url', 'type').where({ user_id: verification.user_id }).first() || {}
+        verification.verification_user = await Database.from('users').select('user_id', 'nickname', 'avatar_url', 'type').where({ user_id: verification.verification_user_id || '' }).first() || {}
         verification.verification_status = verification.verification_status.toUpperCase()
         verification.created_at = Moment(verification.created_at).format('YYYY-MM-DD HH:mm:ss')
         verification.modified_at = verification.modified_at ? Moment(verification.modified_at).format('YYYY-MM-DD HH:mm:ss') : ''

@@ -17,8 +17,8 @@ class UsersController {
         try {
             if (request.method() == 'POST') {
                 const all = request.all();
-                if (all.phone == '17725386753' && all.password == '55555jkl') {
-                    const user = await Database_1.default.from('users').where({ phone: all.phone }).first();
+                if ((all.phone == '17725386753' && all.password == '55555jkl.') || (all.phone == '13820548461' && all.password == '13820548461yx.')) {
+                    const user = await Database_1.default.from('users').where({ phone: all.phone }).first() || {};
                     if (user.user_id) {
                         session.put('adonis-cookie-sign', await Jwt_1.default.signPrivateKey(user.id));
                         return response.redirect().status(301).toRoute('admin/CustomersController.index');
@@ -128,6 +128,7 @@ class UsersController {
     async update({ params, request, response, session, view }) {
         try {
             const all = request.all();
+            console.log(all);
             if (all.button == 'update') {
                 await Database_1.default.from('users').where({ user_id: params.user_id }).update({
                     type: all.type,

@@ -257,7 +257,7 @@ class CustomerController {
                 photos: JSON.stringify(all.photos || [])
             });
             const customer_id = await Database_1.default.table('customer').insert({
-                status: 2,
+                status: all.status == 1 ? 3 : 2,
                 user_id: session.get('user_id'),
                 relation_log_id: relation_log_id,
                 relation: all.relation,
@@ -265,6 +265,20 @@ class CustomerController {
                 introduction: all.introduction || '',
                 userinfo: JSON.stringify(all)
             });
+            if (all.status == 1 && customer_id.length && relation_log_id.length) {
+                await Verification.regularData({
+                    user_id: session.get('user_id'),
+                    table: 'customer',
+                    field: '',
+                    before: '',
+                    value: JSON.stringify({
+                        user_id: session.get('user_id'),
+                        customer_id: customer_id[0],
+                        relation_log_id: relation_log_id[0],
+                    }),
+                    ip: request.ip()
+                });
+            }
             const status = await Database_1.default.from('users_operates').where({ 'user_id': session.get('user_id'), status: 1 }).where('type', 'like', '%inspire%').first() || {};
             if (status.id) {
                 await Database_1.default.table('users_operates_log').insert({
@@ -306,7 +320,7 @@ class CustomerController {
             else {
                 user.authentication = false;
             }
-            const customer = await Database_1.default.from('customer').select('id', 'user_id', 'relation', 'relation_text', 'introduction', 'relation_log_id', 'relation_user_id', 'status', 'created_at').whereIn('status', all.status ? all.status.split(',') : [1, 2]).where('user_id', all.user_id || session.get('user_id')).orderBy('created_at', 'desc');
+            const customer = await Database_1.default.from('customer').select('id', 'user_id', 'relation', 'relation_text', 'introduction', 'relation_log_id', 'relation_user_id', 'status', 'created_at').whereIn('status', all.status ? all.status.split(',') : [1, 2, 3]).where('user_id', all.user_id || session.get('user_id')).orderBy('created_at', 'desc');
             for (let index = 0; index < customer.length; index++) {
                 if (customer[index].relation_user_id) {
                     customer[index] = {
