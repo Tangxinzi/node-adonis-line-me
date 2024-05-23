@@ -43,8 +43,13 @@ export default class CustomersController {
         status = [1, 2]
         all.orderBy = ''
       }
-      
-      const customer = await Database.from('customer').select('id', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id', 'recommend', 'status').whereIn('status', status).orderBy('id', 'desc').forPage(request.input('page', 1), 30)
+
+      if (all.user_id) {
+        var customer = await Database.from('customer').select('id', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id', 'recommend', 'status').where({ user_id: all.user_id }).orderBy('id', 'desc')
+      } else {
+        var customer = await Database.from('customer').select('id', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id', 'recommend', 'status').whereIn('status', status).orderBy('id', 'desc').forPage(request.input('page', 1), 30)
+      }
+
       for (let index = 0; index < customer.length; index++) {
         // 红娘自行发布
         if (customer[index].relation_log_id) {
@@ -96,7 +101,7 @@ export default class CustomersController {
       for (let index = 0; index < users_recommend.length; index++) {
         users_recommend[index].user = await Database.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', users_recommend[index].user_id).first() || {}
         users_recommend[index].created_at = Moment(users_recommend[index].created_at).format('YYYY-MM-DD HH:mm:ss')
-      }      
+      }
 
       return view.render('admin/customer/index', {
         data: {

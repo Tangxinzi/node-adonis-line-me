@@ -20,18 +20,28 @@
     <div class="sixteen wide column">
       <div class="ui header-title flex-between">
         <span>编辑 {{ data.user.nickname }}</span>
+        <div class="right">
+          <a class="ui small button" onclick="clearUserinfo()">清空内容</a>
+          <a class="ui small button" href="{{ route('admin/CustomersController.index') }}?user_id={{ data.user.user_id }}">介绍</a>
+        </div>
       </div>
       <form class="ui segments form" method="post" action="{{ route('admin/UsersController.update', { user_id: data.user.user_id }) }}">
         <div class="ui segment">
-          <div class="four fields">
+          <div class="five fields">
             <div class="field">
               <label>昵称</label>
-              <input type="text" name="nickname" value="{{ data.user.nickname }}" placeholder="" />
+              <div class="ui left icon input">
+                <input class="nickname" type="text" name="nickname" value="{{ data.user.nickname }}" placeholder="" />
+                <i class="address card icon"></i>
+              </div>
             </div>
             <div class="field">
               <label>头像</label>
               <div class="ui action input">
-                <input type="text" name="avatar_url" value="{{ data.user.avatar_url }}" placeholder="" />
+                <div class="ui left icon input">
+                  <input type="text" name="avatar_url" value="{{ data.user.avatar_url }}" placeholder="" />
+                  <i class="user circle icon"></i>
+                </div>
                 <a class="ui icon button" target="_blank" href="{{ data.user.avatar_url }}">
                   <i class="eye icon"></i>
                 </a>
@@ -39,17 +49,30 @@
             </div>
             <div class="field">
               <label>生日</label>
-              <input type="text" name="birthday" value="{{ data.user.birthday || '' }}" placeholder="" />
+              <div class="ui left icon input">
+                <input type="text" name="birthday" value="{{ data.user.birthday || '' }}" placeholder="" />
+                <i class="birthday cake icon"></i>
+              </div>
             </div>
             <div class="field">
               <label>身高</label>
               <div class="ui right labeled input">
-                <input type="text" name="height" value="{{ data.user.height || '' }}" placeholder="" />
+                <div class="ui left icon input">
+                  <input type="text" name="height" value="{{ data.user.height || '' }}" placeholder="" />
+                  <i class="child icon"></i>
+                </div>
                 <div class="ui basic label">cm</div>
               </div>
             </div>
+            <div class="field">
+              <label>MBTI</label>
+              <div class="ui left icon input">
+                <input type="text" name="mbti" value="{{ data.user.mbti || '' }}" placeholder="" />
+                <i class="user plus icon"></i>
+              </div>
+            </div>
           </div>
-          <div class="four fields">
+          <div class="five fields">
             <div class="field">
               <label>性别</label>
               <div class="ui selection dropdown">
@@ -83,48 +106,80 @@
                 <i class="home icon"></i>
               </div>
             </div>
-          </div>
-          <div class="four fields">
             <div class="field">
-              <label>职业 - {{ data.user.work.text }}</label>
-              <input type="text" name="work" value="{{ JSON.stringify(data.user.work) }}" placeholder="" />
+              <label>位置（IP {{ data.user.ip.city || '未知' }}）</label>
+              <div class="ui left icon input">
+                <input type="text" name="location" value="{{ data.user.location || '' }}" placeholder="" />
+                <i class="map marker alternate icon"></i>
+              </div>
+            </div>
+          </div>
+          <div class="five fields">
+            <div class="field">
+              <label>单位 / 公司</label>
+              <div class="ui left icon input">
+                <input type="text" name="company" value="{{ data.user.company || '' }}" placeholder="" />
+                <i class="building icon"></i>
+              </div>
+            </div>
+            <div class="field">
+              <label>行业 - {{ data.user.work.text }}</label>
+              <div class="ui left icon input">
+                <input type="text" name="work" value="{{ JSON.stringify(data.user.work) }}" placeholder="" />
+                <i class="flag icon"></i>
+              </div>
             </div>
             <div class="field">
               <label>职位</label>
-              <input type="text" name="job_title" value="{{ data.user.job_title || '' }}" placeholder="" />
+              <div class="ui left icon input">
+                <input type="text" name="job_title" value="{{ data.user.job_title || '' }}" placeholder="" />
+                <i class="briefcase icon"></i>
+              </div>
             </div>
             <div class="field">
               <label>学校</label>
-              <input type="text" name="school" value="{{ data.user.school || '' }}" placeholder="" />
+              <div class="ui left icon input">
+                <input type="text" name="school" value="{{ data.user.school || '' }}" placeholder="" />
+                <i class="graduation cap icon"></i>
+              </div>
             </div>
             <div class="field">
-              <label>单位 / 公司</label>
-              <input type="text" name="company" value="{{ data.user.company || '' }}" placeholder="" />
+              <label>学位</label>
+              <div class="ui left icon input">
+                <input type="text" name="education" value="{{ data.user.education || '' }}" placeholder="" />
+                <i class="graduation cap icon"></i>
+              </div>
             </div>
           </div>
-          <div class="four fields">
-            <div class="field">
-              <label>位置（IP {{ data.user.ip.city || '未知' }}）</label>
-              <input type="text" name="location" value="{{ data.user.location || '' }}" placeholder="" />
-            </div>
+          <div class="five fields">
             <div class="field">
               <label>真名</label>
               <input type="text" name="videos" value="{{ data.user.realname || '' }}" placeholder="" />
             </div>
             <div class="field">
-              <label>注册时间</label>
-              <input type="text" name="created_at" value="{{ data.user.created_at || '' }}" placeholder="" />
-            </div>
-            <div class="field">
-              <label>最近上线</label>
-              <input type="text" name="online_at" value="{{ data.user.online_at || '' }}" placeholder="" />
-            </div>
-          </div>
-          <div class="four fields">
-            <div class="field">
               <label>薪资</label>
               <input type="text" name="salary" value="{{ data.user.salary || '' }}" placeholder="" />
             </div>
+            <div class="field">
+              <label>体重</label>
+              <input type="text" name="weight" value="{{ data.user.weight || '' }}" placeholder="" />
+            </div>
+            <div class="field">
+              <label>注册时间</label>
+              <div class="ui left icon input">
+                <input type="text" name="created_at" value="{{ data.user.created_at || '' }}" placeholder="" />
+                <i class="clock icon"></i>
+              </div>
+            </div>
+            <div class="field">
+              <label>最近上线</label>
+              <div class="ui left icon input">
+                <input type="text" name="online_at" value="{{ data.user.online_at || '' }}" placeholder="" />
+                <i class="clock icon"></i>
+              </div>
+            </div>
+          </div>
+          <div class="five fields">
             {{-- <div class="field">
               <label>个人视频</label>
               <input type="text" name="videos" value="{{ JSON.stringify(data.user.videos) }}" placeholder="" />
@@ -141,6 +196,18 @@
                 </div>
               </div>
             </div>
+            <div class="field">
+              <label>状态</label>
+              <div class="ui selection dropdown">
+                <input type="hidden" name="status" value="{{ data.user.status }}" />
+                <i class="dropdown icon"></i>
+                <div class="default text">点击选择</div>
+                <div class="menu">
+                  <div class="item" data-value="0">删除拉黑</div>
+                  <div class="item" data-value="1">默认</div>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="field">
             <label>头像 / 照片集</label>
@@ -154,7 +221,7 @@
               @endeach
             </div>
           <div class="field">
-            <label>个性签名 / 介绍</label>
+            <label>个性签名 / 介绍 / 关于我</label>
             <textarea name="detail" rows="8" cols="80">{{ data.user.detail || '' }}</textarea>
           </div>
           <div class="field">
@@ -165,7 +232,7 @@
         <div {{ data.user.relation_user_id ? 'hidden' : '' }}>
           {{ csrfField() }}
           <div class="flex-between">
-            <button class="ui tiny button" type="submit" name="button" value="update">更新</button>
+            <button class="ui tiny button submit" type="submit" name="button" value="update">更新</button>
             <span>更新时间：{{ data.user.created_at }}</span>
           </div>
         </div>
@@ -182,6 +249,15 @@
 
   function removeImage (className) {
     $('.ui.image.' + className).remove()
+  }
+
+  function clearUserinfo () {
+    $('form :input').not('[name="_csrf"], [name="button"]').each(function() {
+      if (!$(this).is('#specificInput, #specificTextarea, #specificSelect')) {
+        $(this).val('');
+      }
+    });
+    $('.nickname').val('[已注销]')
   }
 </script>
 @endsection

@@ -64,7 +64,7 @@ export default class UsersController {
         users[index].percent = await percentUserinfo(users[index].user_id)
         users[index].photos = JSON.parse(users[index].photos)
         // users[index].ip = GeoIP.lookup(users[index].ip)
-        
+
         if (!users[index].ip_city && users[index].ip && ips.indexOf(users[index].ip) == '-1') {
           ipinfoWrapper.lookupIp(users[index].ip).then(async (response: IPinfo) => {
             if (response.city) {
@@ -73,7 +73,7 @@ export default class UsersController {
                 ip_city: response.city
               })
             }
-          })            
+          })
         }
         users[index].online_at_fromNow = Moment(users[index].online_at_fromNow).fromNow()
         users[index].online_at = Moment(users[index].online_at).format('YYYY-MM-DD HH:mm:ss')
@@ -127,6 +127,8 @@ export default class UsersController {
   public async update({ params, request, response, session, view }: HttpContextContract) {
     try {
       const all = request.all()
+      console.log(all);
+
       if (all.button == 'update') {
         await Database.from('users').where({ user_id: params.user_id }).update({
           type: all.type,
