@@ -77,7 +77,7 @@ export default class TrackingController {
               break;
             case 'userWork':
               tracking[index].content.itemStayValue.userWork = {
-                text: '职业',
+                text: '行业',
                 time: tracking[index].content.itemStayTime[typeIndex]
               }
               break;
@@ -124,7 +124,7 @@ export default class TrackingController {
             tracking[index].content.node = '职位';
             break;
           case 'userWork':
-            tracking[index].content.node = '职业';
+            tracking[index].content.node = '行业';
             break;
           case 'userPhotos':
             // tracking[index].content.node = '照片';

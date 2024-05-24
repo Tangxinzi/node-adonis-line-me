@@ -159,7 +159,7 @@ export default class AdminController {
               break;
             case 'authentication_log.work':
               verify[index].table = '认证审核'
-              verify[index].value = '职业'
+              verify[index].value = '行业'
               break;
             case 'authentication_log.job_title':
               verify[index].table = '认证审核'
