@@ -117,8 +117,12 @@ class CustomersController {
                 customer.relation_text = RELATION[customer.relation];
                 customer.userinfo = await Database_1.default.from('customer_log').select('*').where({ 'id': customer.relation_log_id }).first();
                 if (request.method() == 'POST') {
-                    await Database_1.default.from('customer').where({ id: customer.cid }).update({ introduction: all.introduction });
-                    await Database_1.default.from('customer_log').where({ id: customer.userinfo.id }).update({ expectation: all.userinfo.expectation || '', photos: JSON.stringify(all.userinfo.photos || []) });
+                    await Database_1.default.from('customer').where({ id: customer.cid }).update({
+                        introduction: all.introduction || '',
+                        status: all.status,
+                        recommend: all.recommend,
+                        verify_phone: all.verify_phone || '',
+                    });
                     session.flash('message', { type: 'success', header: '更新成功', message: `` });
                     return response.redirect('back');
                 }

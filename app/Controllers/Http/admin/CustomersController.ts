@@ -124,12 +124,22 @@ export default class CustomersController {
       if (customer.relation_log_id) {
         customer.relation_text = RELATION[customer.relation]
         customer.userinfo = await Database.from('customer_log').select('*').where({ 'id': customer.relation_log_id }).first()
-        if (request.method() == 'POST') {
-          await Database.from('customer').where({ id: customer.cid }).update({ introduction: all.introduction })
-          await Database.from('customer_log').where({ id: customer.userinfo.id }).update({ expectation: all.userinfo.expectation || '', photos: JSON.stringify(all.userinfo.photos || []) })
+        
+        if (request.method() == 'POST') {          
+          await Database.from('customer').where({ id: customer.cid }).update({ 
+            introduction: all.introduction || '',
+            status: all.status,
+            recommend: all.recommend,
+            verify_phone: all.verify_phone || '',
+          })
+
+          // await Database.from('customer_log').where({ id: customer.userinfo.id }).update({ 
+          //   expectation: all.userinfo.expectation || '', photos: JSON.stringify(all.userinfo.photos || []) 
+          // })
           session.flash('message', { type: 'success', header: '更新成功', message: `` })
           return response.redirect('back')
         }
+        
       } else if(customer.relation_user_id) {
         customer.userinfo = await Database.from('users').select('*').where({ 'user_id': customer.relation_user_id }).first()
       }

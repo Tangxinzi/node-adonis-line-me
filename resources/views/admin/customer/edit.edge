@@ -25,17 +25,17 @@
         <div class="ui segment">
           <h3 class="ui header">介绍人</h3>
           <div class="five fields">
-            <div class="field">
+            <div class="field disabled">
               <label>昵称 - {{ data.customer.parent.nickname }}</label>
               <input type="text" name="parent.user_id" value="{{ data.customer.parent.user_id }}" placeholder="" />
             </div>
-            <div class="field">
+            <div class="field disabled">
               <label title="{{ data.customer.relation }}">关系</label>
               <input type="text" name="relation_text" value="{{ data.customer.relation_text || '' }}" placeholder="" />
             </div>
             <div class="field">
               <label>手机号验证</label>
-              <input type="number" name="number" value="{{ data.customer.verify_phone || '' }}" placeholder="" />
+              <input type="number" name="verify_phone" value="{{ data.customer.verify_phone || '' }}" placeholder="" />
             </div>
             <div class="field">
               <label>主页推荐</label>
