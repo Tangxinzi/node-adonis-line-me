@@ -80,7 +80,7 @@
             <div class="field">
               <label>被推荐人昵称</label>
               <div class="ui left icon input">
-                <input type="text" name="userinfo.user_id" value="{{ data.customer.userinfo.nickname }}" placeholder="" />
+                <input type="text" name="userinfo.nickname" value="{{ data.customer.userinfo.nickname }}" placeholder="" />
                 <i class="address card icon"></i>
               </div>
             </div>
@@ -116,7 +116,7 @@
             <div class="field">
               <label>MBTI</label>
               <div class="ui left icon input">
-                <input type="text" name="mbti" value="{{ data.customer.userinfo.mbti || '' }}" placeholder="" />
+                <input type="text" name="userinfo.mbti" value="{{ data.customer.userinfo.mbti || '' }}" placeholder="" />
                 <i class="user plus icon"></i>
               </div>
             </div>
@@ -164,7 +164,7 @@
                 <i class="building icon"></i>
               </div>
             </div>
-            <div class="field">
+            <div class="field disabled">
               <label>行业 - {{ data.customer.userinfo.work.text }}</label>
               <div class="ui left icon input">
                 <input type="text" name="userinfo.work" value="{{ JSON.stringify(data.customer.userinfo.work) }}" placeholder="" />
@@ -174,7 +174,7 @@
             <div class="field">
               <label>职位</label>
               <div class="ui left icon input">
-                <input type="text" name="job_title" value="{{ data.customer.userinfo.job_title || '' }}" placeholder="" />
+                <input type="text" name="userinfo.job_title" value="{{ data.customer.userinfo.job_title || '' }}" placeholder="" />
                 <i class="briefcase icon"></i>
               </div>
             </div>
@@ -188,7 +188,7 @@
             <div class="field">
               <label>学位</label>
               <div class="ui left icon input">
-                <input type="text" name="education" value="{{ data.customer.userinfo.education || '' }}" placeholder="" />
+                <input type="text" name="userinfo.education" value="{{ data.customer.userinfo.education || '' }}" placeholder="" />
                 <i class="graduation cap icon"></i>
               </div>
             </div>
@@ -196,20 +196,20 @@
           <div class="five fields">
             <div class="field">
               <label>真名</label>
-              <input type="text" name="videos" value="{{ data.customer.userinfo.realname || '' }}" placeholder="" />
+              <input type="text" name="userinfo.realname" value="{{ data.customer.userinfo.realname || '' }}" placeholder="" />
             </div>
             <div class="field">
               <label>薪资</label>
-              <input type="text" name="salary" value="{{ data.customer.userinfo.salary || '' }}" placeholder="" />
+              <input type="text" name="userinfo.salary" value="{{ data.customer.userinfo.salary || '' }}" placeholder="" />
             </div>
             <div class="field">
               <label>体重</label>
-              <input type="text" name="weight" value="{{ data.customer.userinfo.weight || '' }}" placeholder="" />
+              <input type="text" name="userinfo.weight" value="{{ data.customer.userinfo.weight || '' }}" placeholder="" />
             </div>
-            <div class="field">
+            <div class="field disabled">
               <label>发布时间</label>
               <div class="ui left icon input">
-                <input type="text" name="created_at" value="{{ data.customer.userinfo.created_at || '' }}" placeholder="" />
+                <input type="text" name="created_at" value="{{ data.customer.created_at || '' }}" placeholder="" />
                 <i class="clock icon"></i>
               </div>
             </div>
@@ -235,7 +235,7 @@
           {{ csrfField() }}
           <div class="flex-between">
             <button class="ui tiny button" type="submit" name="button" value="update">更新</button>
-            <span>更新时间：{{ data.customer.created_at }}</span>
+            <span>更新时间：{{ data.customer.modified_at }}</span>
           </div>
         </div>
       </form>

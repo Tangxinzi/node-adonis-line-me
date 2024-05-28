@@ -126,8 +126,54 @@ function action(data, value) {
         }
     });
 }
+function field(field) {
+    let result = ['', ''];
+    switch (field) {
+        case 'customer.':
+            result = ['介绍好友', ''];
+            break;
+        case 'users.avatar_url':
+            result = ['用户信息', '头像'];
+            break;
+        case 'users.photos':
+            result = ['用户信息', '照片集'];
+            break;
+        case 'authentication_log.idcard':
+            result = ['认证审核', '用户身份'];
+            break;
+        case 'users.photos':
+            result = ['用户信息', '照片集'];
+            break;
+        case 'users.photos':
+            result = ['用户信息', '照片集'];
+            break;
+        case 'users.photos':
+            result = ['用户信息', '照片集'];
+            break;
+        case 'authentication_log.idcard':
+            result = ['认证审核', '用户身份'];
+            break;
+        case 'authentication_log.school':
+            result = ['认证审核', '学校'];
+            break;
+        case 'authentication_log.company':
+            result = ['认证审核', '公司'];
+            break;
+        case 'authentication_log.work':
+            result = ['认证审核', '行业'];
+            break;
+        case 'authentication_log.job_title':
+            result = ['认证审核', '职位'];
+            break;
+        case 'authentication_log.salary':
+            result = ['认证审核', '薪资'];
+            break;
+    }
+    return result;
+}
 module.exports = {
     regularData,
-    action
+    action,
+    field
 };
 //# sourceMappingURL=Verification.js.map

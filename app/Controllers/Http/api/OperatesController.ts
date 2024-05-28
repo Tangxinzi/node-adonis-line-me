@@ -111,15 +111,16 @@ export default class OperatesController {
     try {
       switch (`${ params.table }`) {
         case `users`:
-        var authentication = await Database.from('verification').select('id', 'value', 'created_at').where({ 
-          user_id: session.get('user_id'), 
-          verification_status: 'pending', 
-          is_verified: 0,
-          table: params.table || '',
-          field: params.field || ''
-        }).orderBy('created_at', 'desc').first()
+          var authentication = await Database.from('verification').select('id', 'value', 'table', 'field', 'created_at').where({ 
+            user_id: session.get('user_id'), 
+            verification_status: 'pending', 
+            is_verified: 0,
+            table: params.table || '',
+            field: params.field || ''
+          }).orderBy('created_at', 'desc').first()
+          break;
         case 'authentication_log':
-          var authentication = await Database.from('verification').select('id', 'value', 'created_at').where({ 
+          var authentication = await Database.from('verification').select('id', 'value', 'table', 'field', 'created_at').where({ 
             user_id: session.get('user_id'), 
             verification_status: 'pending', 
             is_verified: 0,
@@ -128,19 +129,29 @@ export default class OperatesController {
           }).orderBy('created_at', 'desc').first()
           break;
         case 'customer':
-          var authentication = await Database.from('verification').select('id', 'value', 'created_at').where({ 
+          var authentication = await Database.from('verification').select('id', 'value', 'table', 'field', 'created_at').where({ 
             user_id: session.get('user_id'), 
             verification_status: 'pending', 
             is_verified: 0,
             table: params.table || ''
           }).orderBy('created_at', 'desc')
+
+          for (let index = 0; index < authentication.length; index++) {
+            authentication[index].value = JSON.parse(authentication[index].value)
+          }
           break;
-        
         default:
           var authentication = null
           break;
       }
-      
+
+      for (let index = 0; index < authentication.length; index++) {
+        authentication[index].field = await Verification.field(`${ authentication[index].table }.${ authentication[index].field }`)
+        authentication[index].text = authentication[index].field[0] + authentication[index].field[1]
+        delete authentication[index].table
+        delete authentication[index].field
+        authentication[index].created_at = Moment(authentication[index].created_at).fromNow()
+      }
       
       return response.json({
         status: 200,

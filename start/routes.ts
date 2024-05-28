@@ -65,6 +65,7 @@ Route.group(() => {
   Route.get('/customer/userlist', 'api/CustomerController.customerList')
   Route.get('/customer/userlist/show/:id', 'api/CustomerController.customerShow')
   Route.post('/customer/create', 'api/CustomerController.createCustomerinfo')
+  Route.post('/customer/update', 'api/CustomerController.updateCustomerinfo')
   Route.post('/customer/create/relation', 'api/CustomerController.relationCustomerinfo')
   Route.post('/customer/:status/:id', 'api/CustomerController.statusCustomer')
   Route.get('/customer/verify/phone', 'api/CustomerController.verifyPhone')
@@ -85,7 +86,7 @@ Route.group(() => {
   Route.get('/business/show/:id/moments', 'api/BusinessesController.moments')
 
   // 认证
-  Route.get('/verification/pending/:table/:field', 'api/OperatesController.pendingType')
+  Route.get('/verification/pending/:table/:field', 'api/OperatesController.pendingType') // 审核队列
   Route.get('/authentication/verification', 'api/OperatesController.authenticationVerification')
   Route.post('/authentication/verification', 'api/OperatesController.authenticationVerification')
   

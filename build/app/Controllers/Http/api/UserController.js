@@ -646,7 +646,7 @@ class UserController {
     async messages({ request, response, session }) {
         try {
             const all = request.all(), user_id = session.get('user_id');
-            const messages = await Database_1.default.from('messages').where({ user_id, status: 1 }).orderBy('created_at', 'asc').forPage(request.input('page', 1), 20);
+            const messages = await Database_1.default.from('messages').where({ user_id, status: 1 }).orderBy('created_at', 'desc').forPage(request.input('page', 1), 20);
             const messages_log = await Database_1.default.from('messages_log').where({ user_id }).first() || {};
             if (messages_log.id) {
                 await Database_1.default.from('messages_log').where({ user_id }).update({ last_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss') });

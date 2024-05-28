@@ -125,7 +125,8 @@ export default class CustomersController {
         customer.relation_text = RELATION[customer.relation]
         customer.userinfo = await Database.from('customer_log').select('*').where({ 'id': customer.relation_log_id }).first()
         
-        if (request.method() == 'POST') {          
+        if (request.method() == 'POST' && all.button == 'update') {
+          // 介绍人
           await Database.from('customer').where({ id: customer.cid }).update({ 
             introduction: all.introduction || '',
             status: all.status,
@@ -133,9 +134,26 @@ export default class CustomersController {
             verify_phone: all.verify_phone || '',
           })
 
-          // await Database.from('customer_log').where({ id: customer.userinfo.id }).update({ 
-          //   expectation: all.userinfo.expectation || '', photos: JSON.stringify(all.userinfo.photos || []) 
-          // })
+          // 被介绍人
+          await Database.from('customer_log').where({ id: customer.userinfo.id }).update({
+            nickname: all.userinfo.nickname || '',
+            avatar_url: all.userinfo.avatar_url || '',
+            birthday: all.userinfo.birthday || '',
+            height: all.userinfo.height || '',
+            sex: all.userinfo.sex || '',
+            phone: all.userinfo.phone || '',
+            contact_wechat: all.userinfo.contact_wechat || '',
+            school: all.userinfo.school || '',
+            education: all.userinfo.education || '',
+            mbti: all.userinfo.mbti || null,
+            weight: all.userinfo.weight || null,
+            salary: all.userinfo.salary || '',
+            realname: all.userinfo.realname || '',
+            job_title: all.userinfo.job_title || '',
+            expectation: all.userinfo.expectation || '', 
+            photos: JSON.stringify(all.userinfo.photos || [])
+          })
+
           session.flash('message', { type: 'success', header: '更新成功', message: `` })
           return response.redirect('back')
         }
@@ -151,6 +169,7 @@ export default class CustomersController {
         customer.userinfo.work.text = await zpData.data(customer.userinfo.work.value[0], customer.userinfo.work.value[1])
       }
       customer.created_at = Moment(customer.created_at).format('YYYY-MM-DD HH:mm:ss')
+      customer.modified_at = Moment(customer.modified_at).format('YYYY-MM-DD HH:mm:ss')
 
       return view.render('admin/customer/edit', {
         data: {

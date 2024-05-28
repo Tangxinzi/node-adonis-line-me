@@ -55,6 +55,8 @@ class AdminController {
                         verification.value = JSON.parse(verification.value);
                         break;
                 }
+                const field = await Verification.field(`${verification.table}.${verification.field}`);
+                verification.text = field[0] + field[1];
                 return response.json({
                     status: 200,
                     message: "ok",
@@ -109,42 +111,43 @@ class AdminController {
                     verify[index].verification_status = verify[index].verification_status.toUpperCase();
                     verify[index].created_at = (0, moment_1.default)(verify[index].created_at).fromNow();
                     verify[index].modified_at = verify[index].modified_at ? (0, moment_1.default)(verify[index].modified_at).format('YYYY-MM-DD HH:mm:ss') : '';
+                    const field = await Verification.field(`${verify[index].table}.${verify[index].field}`);
                     switch (`${verify[index].table}.${verify[index].field}`) {
-                        case 'users.avatar_url':
-                            verify[index].table = '用户信息';
-                            verify[index].value = '头像';
-                            break;
-                        case 'users.photos':
-                            verify[index].table = '用户信息';
-                            verify[index].value = '照片集';
-                            break;
                         case 'customer.':
-                            verify[index].table = '介绍好友';
+                            verify[index].table = field[0];
                             verify[index].value = JSON.parse(verify[index].value);
                             break;
+                        case 'users.avatar_url':
+                            verify[index].table = field[0];
+                            verify[index].value = field[1];
+                            break;
+                        case 'users.photos':
+                            verify[index].table = field[0];
+                            verify[index].value = field[1];
+                            break;
                         case 'authentication_log.idcard':
-                            verify[index].table = '认证审核';
-                            verify[index].value = '用户身份';
+                            verify[index].table = field[0];
+                            verify[index].value = field[1];
                             break;
                         case 'authentication_log.school':
-                            verify[index].table = '认证审核';
-                            verify[index].value = '学校';
+                            verify[index].table = field[0];
+                            verify[index].value = field[1];
                             break;
                         case 'authentication_log.company':
-                            verify[index].table = '认证审核';
-                            verify[index].value = '公司';
+                            verify[index].table = field[0];
+                            verify[index].value = field[1];
                             break;
                         case 'authentication_log.work':
-                            verify[index].table = '认证审核';
-                            verify[index].value = '行业';
+                            verify[index].table = field[0];
+                            verify[index].value = field[1];
                             break;
                         case 'authentication_log.job_title':
-                            verify[index].table = '认证审核';
-                            verify[index].value = '职位';
+                            verify[index].table = field[0];
+                            verify[index].value = field[1];
                             break;
                         case 'authentication_log.salary':
-                            verify[index].table = '认证审核';
-                            verify[index].value = '薪资';
+                            verify[index].table = field[0];
+                            verify[index].value = field[1];
                             break;
                     }
                 }

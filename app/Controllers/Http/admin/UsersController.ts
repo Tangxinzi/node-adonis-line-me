@@ -23,6 +23,7 @@ export default class UsersController {
             return response.redirect().status(301).toRoute('admin/UsersController.login')
           }
         } else {
+          session.clear()
           session.forget('adonis-cookie-sign')
           return view.render('admin/user/login', {
             data: {
@@ -124,15 +125,18 @@ export default class UsersController {
     }
   }
 
-  public async update({ params, request, response, session, view }: HttpContextContract) {
+  public async update({ params, request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
-      console.log(all);
 
-      if (all.button == 'update') {
+      if (request.method() == 'POST' && all.button == 'update') {
         await Database.from('users').where({ user_id: params.user_id }).update({
           type: all.type,
+          status: all.status,
           sex: all.sex,
+          mbti: all.mbti || null,
+          height: all.height || '',
+          weight: all.weight || null,
           nickname: all.nickname || '',
           avatar_url: all.avatar_url || '',
           birthday: all.birthday || '',

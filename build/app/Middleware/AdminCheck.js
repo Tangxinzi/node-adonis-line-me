@@ -9,25 +9,20 @@ class AdminCheck {
         try {
             const sign = session.get('adonis-cookie-sign');
             if (sign) {
-                const verificationTotal = (await Database_1.default.from('verification').where({ is_verified: 0 }).count('* as total'))[0].total;
-                response.plainCookie('dataset', {
-                    verificationTotal
-                }, {
-                    httpOnly: false,
-                });
+                const { total } = (await Database_1.default.from('verification').where({ is_verified: 0 }).count('* as total'))[0];
+                response.plainCookie('dataset', { verificationTotal: total }, { httpOnly: false });
                 await next();
-            }
-            else if (!sign && request.url() != '/admin/login') {
-                await next();
-                return response.redirect().status(301).toRoute('admin/UsersController.login');
             }
             else {
+                if (request.url() !== '/admin/login') {
+                    return response.redirect().status(301).toRoute('admin/UsersController.login');
+                }
                 await next();
             }
         }
-        catch (e) {
-            console.log(e);
-            response.abort('Not authenticated', 401);
+        catch (error) {
+            console.error(error);
+            response.status(500).json({ error: 'Internal Server Error' });
         }
     }
 }

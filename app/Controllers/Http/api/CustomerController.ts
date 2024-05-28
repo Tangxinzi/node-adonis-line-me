@@ -295,14 +295,9 @@ export default class CustomerController {
   public async createCustomerinfo({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
+
       const relation_log_id = await Database.table('customer_log').returning('id').insert({
         nickname: all.nickname || '',
-        avatar_url: all.avatar_url || '',
-        birthday: all.birthday || '',
-        height: all.height || 0,
-        sex: all.sex || 0,
-        work: JSON.stringify(all.work || ''),
-        work_code: all.work ? all.work.code : '',
         photos: JSON.stringify(all.photos || [])
       })
 
@@ -312,12 +307,11 @@ export default class CustomerController {
         relation_log_id: relation_log_id, // 关联 customer log
         relation: all.relation, // 红娘关系索引
         relation_text: all.relationCodeText || '', // 红娘关系文字
-        introduction: all.introduction || '',
-        userinfo: JSON.stringify(all)
+        introduction: all.introduction || ''
       })
-
+      
       // 红娘发布客户 - 加入审核列表
-      if (all.status == 1 && customer_id.length && relation_log_id.length) {
+      if (parseInt(all.status) == 1 && customer_id[0] && relation_log_id[0]) {
         await Verification.regularData({
           user_id: session.get('user_id'),
           table: 'customer',
@@ -357,6 +351,34 @@ export default class CustomerController {
         sms: "ok",
         data: error
       })
+    }
+  }
+
+  // 二步更新用户数据
+  public async updateCustomerinfo({ request, response, session }: HttpContextContract) {
+    try {
+      const all = request.all()      
+      const customer = await Database.from('customer').where({ user_id: session.get('user_id'), id: all.cid }).first() || {}
+
+      await Database.from('customer').where({ user_id: session.get('user_id'), id: all.cid }).update({ 
+        relation_text: all.relation_text || '' // 红娘关系索引
+      })
+
+      await Database.from('customer_log').where({ id: customer.relation_log_id }).update({
+        sex: all.userinfo.sex || null,
+        work: all.userinfo.work ? JSON.stringify(all.userinfo.work) : null,
+        work_code: all.userinfo.work ? all.userinfo.work.code : null,
+        location: all.userinfo.location ? JSON.stringify(all.userinfo.location) : null,
+        birthday: all.userinfo.birthday || null,
+        height: all.userinfo.height || null,
+        weight: all.userinfo.weight || null,
+        mbti: all.userinfo.mbti || null,
+      })
+
+      return
+    } catch (error) {
+      console.log(error);    
+      return  
     }
   }
 

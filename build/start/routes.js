@@ -44,6 +44,7 @@ Route_1.default.group(() => {
     Route_1.default.get('/customer/userlist', 'api/CustomerController.customerList');
     Route_1.default.get('/customer/userlist/show/:id', 'api/CustomerController.customerShow');
     Route_1.default.post('/customer/create', 'api/CustomerController.createCustomerinfo');
+    Route_1.default.post('/customer/update', 'api/CustomerController.updateCustomerinfo');
     Route_1.default.post('/customer/create/relation', 'api/CustomerController.relationCustomerinfo');
     Route_1.default.post('/customer/:status/:id', 'api/CustomerController.statusCustomer');
     Route_1.default.get('/customer/verify/phone', 'api/CustomerController.verifyPhone');
