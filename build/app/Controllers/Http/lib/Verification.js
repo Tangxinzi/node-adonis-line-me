@@ -9,15 +9,15 @@ const Messages = require('./Messages');
 function regularData(data) {
     return new Promise(async (resolve, reject) => {
         try {
-            const verified = await Database_1.default.from('verification').where({ user_id: data.user_id, table: data.table, field: data.field, is_verified: 0 }).orderBy('modified_at', 'desc').first() || {};
+            const verified = await Database_1.default.from('verification').where({ user_id: data.user_id, table: data.table, field: data.field, value: data.value, is_verified: 0 }).orderBy('modified_at', 'desc').first() || {};
             if (verified.id) {
-                await Database_1.default.from('verification').where({ user_id: data.user_id, table: data.table, field: data.field, is_verified: 0 }).update({
+                const verification = await Database_1.default.from('verification').where({ user_id: data.user_id, table: data.table, field: data.field, is_verified: 0 }).update({
                     before: data.before,
                     value: data.value,
                     is_verified: 0,
                     verification_status: 'pending'
                 });
-                resolve();
+                resolve(verification);
             }
             else {
                 const id = await Database_1.default.table('verification').insert({ user_id: data.user_id, table: data.table, before: data.before, field: data.field, value: data.value, ip: data.ip }).returning('id');
