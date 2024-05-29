@@ -12,7 +12,7 @@ class TrackingController {
             let all = request.all();
             if (all.type == 'users' && all.dataset.user) {
                 all.updateData = {
-                    type: all.type,
+                    type: all.type == 'users' ? 1 : 2,
                     avatar_url: all.dataset.user.avatar_url,
                     nickname: all.dataset.user.nickname,
                     school: all.dataset.user.school,

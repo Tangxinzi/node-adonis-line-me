@@ -360,20 +360,49 @@ export default class CustomerController {
       const all = request.all()      
       const customer = await Database.from('customer').where({ user_id: session.get('user_id'), id: all.cid }).first() || {}
 
-      await Database.from('customer').where({ user_id: session.get('user_id'), id: all.cid }).update({ 
-        relation_text: all.relation_text || '' // 红娘关系索引
-      })
-
-      await Database.from('customer_log').where({ id: customer.relation_log_id }).update({
-        sex: all.userinfo.sex || null,
-        work: all.userinfo.work ? JSON.stringify(all.userinfo.work) : null,
-        work_code: all.userinfo.work ? all.userinfo.work.code : null,
-        location: all.userinfo.location ? JSON.stringify(all.userinfo.location) : null,
-        birthday: all.userinfo.birthday || null,
-        height: all.userinfo.height || null,
-        weight: all.userinfo.weight || null,
-        mbti: all.userinfo.mbti || null,
-      })
+      switch (all.key) {
+        case 'relation_text':
+          await Database.from('customer').where({ user_id: session.get('user_id'), id: all.cid }).update({ 
+            relation_text: all.value || '' // 红娘关系索引
+          })
+          break;
+        case 'sex':
+          await Database.from('customer_log').where({ id: customer.relation_log_id }).update({
+            sex: all.value || null
+          })
+          break;
+        case 'work':
+          await Database.from('customer_log').where({ id: customer.relation_log_id }).update({
+            work: all.value || null,
+            work_code: all.value ? all.value.code : null,
+          })
+          break;
+        case 'location':
+          await Database.from('customer_log').where({ id: customer.relation_log_id }).update({
+            location: all.value ? JSON.stringify(all.value) : null,
+          })
+          break;
+        case 'birthday':
+          await Database.from('customer_log').where({ id: customer.relation_log_id }).update({
+            birthday: all.value || null
+          })
+          break;
+        case 'height':
+          await Database.from('customer_log').where({ id: customer.relation_log_id }).update({
+            height: all.value || null
+          })
+          break;
+        case 'weight':
+          await Database.from('customer_log').where({ id: customer.relation_log_id }).update({
+            weight: all.value || null
+          })
+          break;
+        case 'mbti':
+          await Database.from('customer_log').where({ id: customer.relation_log_id }).update({
+            mbti: all.value || null
+          })
+          break;
+      }
 
       return
     } catch (error) {

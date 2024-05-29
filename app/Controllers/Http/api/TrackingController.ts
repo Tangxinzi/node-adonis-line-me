@@ -10,7 +10,7 @@ export default class TrackingController {
       // 更新用户数据
       if (all.type == 'users' && all.dataset.user) {
         all.updateData = {
-          type: all.type,
+          type: all.type == 'users' ? 1 : 2, // 1 - 用户，2 - 红娘
           avatar_url: all.dataset.user.avatar_url,
           nickname: all.dataset.user.nickname,
           school: all.dataset.user.school,

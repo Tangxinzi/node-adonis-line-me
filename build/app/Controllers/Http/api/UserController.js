@@ -49,7 +49,7 @@ class UserController {
                 const user_id = 'pie_a' + randomstring_1.default.generate({ length: 8, charset: ['numeric'] });
                 const id = await Database_1.default.table('users').returning('id').insert({ user_id, wechat_open_id: result.openid });
                 result.user.id = id[0];
-                await Messages.push({ user_id, content: '相亲交友找对象，熟人介绍更靠谱。欢迎使用体验，如您在体验中遇任何问题请与管理员联系。' });
+                await Messages.push({ user_id, content: '欢迎使用体验「派 · PIE」，如您在体验中遇任何问题请与管理员联系。' });
             }
             delete result.session_key;
             result.user.percent = await percentUserinfo(result.user.user_id);
@@ -72,7 +72,7 @@ class UserController {
                 const user_id = 'pie_a' + randomstring_1.default.generate({ length: 8, charset: ['numeric'] });
                 const id = await Database_1.default.table('users').returning('id').insert({ user_id, wechat_open_id: result.openid });
                 result.user.id = id[0];
-                await Messages.push({ user_id, content: '相亲交友找对象，熟人介绍更靠谱。欢迎使用体验，如您在体验中遇任何问题请与管理员联系。' });
+                await Messages.push({ user_id, content: '欢迎使用体验「派 · PIE」，如您在体验中遇任何问题请与管理员联系。' });
             }
             result.user.percent = await percentUserinfo(result.user.user_id);
             result.user.sign = await Jwt_1.default.signPrivateKey(result.user.id);
