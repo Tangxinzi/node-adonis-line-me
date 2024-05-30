@@ -26,8 +26,8 @@
           <h3 class="ui header">介绍人</h3>
           <div class="five fields">
             <div class="field disabled">
-              <label>昵称 - {{ data.customer.parent.nickname }}</label>
-              <input type="text" name="parent.user_id" value="{{ data.customer.parent.user_id }}" placeholder="" />
+              <label>昵称 - {{ data.customer.parent.nickname || '' }}</label>
+              <input type="text" name="parent.user_id" value="{{ data.customer.parent.user_id || '' }}" placeholder="" />
             </div>
             <div class="field disabled">
               <label title="{{ data.customer.relation }}">关系</label>
@@ -84,7 +84,7 @@
                 <i class="address card icon"></i>
               </div>
             </div>
-            <div class="field">
+            {{--  <div class="field">
               <label>头像</label>
               <div class="ui action input">
                 <div class="ui left icon input">
@@ -95,7 +95,7 @@
                   <i class="eye icon"></i>
                 </a>
               </div>
-            </div>
+            </div>  --}}
             <div class="field">
               <label>生日</label>
               <div class="ui left icon input">
@@ -215,9 +215,9 @@
             </div>
           </div>
           <div class="field {{ data.customer.relation_user_id ? 'disabled' : '' }}">
-            <label>头像 / 照片集</label>
+            <label>照片集</label>
             <div class="ui tiny rounded bordered images" id="draggable">
-              <div class="ui image ignore-elements" style="background-image: url({{ data.customer.userinfo.avatar_url }})"></div>
+              {{--  <div class="ui image ignore-elements" style="background-image: url({{ data.customer.userinfo.avatar_url }})"></div>  --}}
               @each((row, index) in data.customer.userinfo.photos)
               <div class="ui image image-{{ index }}" style="background-image: url({{ row }})" id="image{{ index }}">
                 <input type="text" name="userinfo.photos[]" value="{{ row }}" hidden />

@@ -56,8 +56,10 @@ function percentUserinfo(user_id) {
                 percent += score.weight[2];
             if (user.sex >= 0)
                 percent += score.sex[2];
-            if (user.photos.length > 12)
-                percent += score.photos[2];
+            if (user.photos.length > 12) {
+                user.photos = JSON.parse(user.photos);
+                percent += user.photos.length * score.photos[2];
+            }
             if (user.detail)
                 percent += score.detail[2];
             if (user.expectation)
@@ -94,8 +96,10 @@ function percentUserinfo(user_id) {
                 percent += score.weight[0];
             if (user.sex >= 0)
                 percent += score.sex[0];
-            if (user.photos.length > 10)
-                percent += score.photos[0];
+            if (user.photos.length > 12) {
+                user.photos = JSON.parse(user.photos);
+                percent += user.photos.length * score.photos[2];
+            }
             if (user.detail)
                 percent += score.detail[0];
             if (user.expectation)
@@ -156,8 +160,10 @@ function percentCustomerinfo(id) {
             percent += score.weight[0];
         if (log.sex >= 0)
             percent += score.sex[0];
-        if (log.photos.length > 10)
-            percent += score.photos[0];
+        if (log.photos.length > 12) {
+            log.photos = JSON.parse(log.photos);
+            percent += log.photos.length * score.photos[2];
+        }
         if (log.expectation)
             percent += score.expectation[0];
         if (log.contact_wechat)

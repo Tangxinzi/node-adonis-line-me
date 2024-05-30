@@ -51,7 +51,10 @@ function percentUserinfo(user_id) {
       if (user.height) percent += score.height[2]
       if (user.weight) percent += score.weight[2]
       if (user.sex >= 0) percent += score.sex[2]
-      if (user.photos.length > 12) percent += score.photos[2]
+      if (user.photos.length > 12) {
+        user.photos = JSON.parse(user.photos)
+        percent += user.photos.length * score.photos[2]
+      }
       if (user.detail) percent += score.detail[2]
       if (user.expectation) percent += score.expectation[2]
       if (user.contact_wechat) percent += score.contact_wechat[2]
@@ -74,7 +77,10 @@ function percentUserinfo(user_id) {
       if (user.height) percent += score.height[0]
       if (user.weight) percent += score.weight[0]
       if (user.sex >= 0) percent += score.sex[0]
-      if (user.photos.length > 10) percent += score.photos[0]
+      if (user.photos.length > 12) {
+        user.photos = JSON.parse(user.photos)
+        percent += user.photos.length * score.photos[2]
+      }
       if (user.detail) percent += score.detail[0]
       if (user.expectation) percent += score.expectation[0]
       if (user.contact_wechat) percent += score.contact_wechat[0]
@@ -121,7 +127,10 @@ function percentCustomerinfo(id) {
     if (log.height) percent += score.height[0]
     if (log.weight) percent += score.weight[0]
     if (log.sex >= 0) percent += score.sex[0]
-    if (log.photos.length > 10) percent += score.photos[0]
+    if (log.photos.length > 12) {
+      log.photos = JSON.parse(log.photos)
+      percent += log.photos.length * score.photos[2]
+    }
     if (log.expectation) percent += score.expectation[0]
     if (log.contact_wechat) percent += score.contact_wechat[0]
     if (log.location) percent += score.location[0]
