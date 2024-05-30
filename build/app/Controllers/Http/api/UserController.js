@@ -351,8 +351,9 @@ class UserController {
     async updateUserinfo({ request, response, session }) {
         try {
             const all = request.all();
+            const type = all.type == 2 ? 2 : 1;
             await Database_1.default.from('users').where('user_id', session.get('user_id')).update({
-                type: all.type,
+                type,
                 nickname: all.nickname,
                 avatar_url: all.avatar_url || Avatar.data(all.sex || 0),
                 school: all.school,

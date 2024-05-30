@@ -46,7 +46,7 @@ export default class UserController {
 
   public async wxaLogin({ request }: HttpContextContract) {
     try {
-      const all = request.all()
+      const all = request.all()      
       const result = await jscode2session(all.code)
       result.user = await Database.from('users').where('wechat_open_id', result.openid).first() || {}
       if (!result.user.id) {
@@ -415,8 +415,10 @@ export default class UserController {
   public async updateUserinfo({ request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
+      const type = all.type == 2 ? 2 : 1
+      
       await Database.from('users').where('user_id', session.get('user_id')).update({
-        type: all.type,
+        type,
         nickname: all.nickname,
         avatar_url: all.avatar_url || Avatar.data(all.sex || 0),
         school: all.school,

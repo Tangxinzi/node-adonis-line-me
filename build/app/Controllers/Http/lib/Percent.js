@@ -4,57 +4,119 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Database_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Lucid/Database"));
+const score = {
+    company: [10, 10, 10],
+    work: [5, 3, 3],
+    job_title: [10, 5, 5],
+    salary: [5, 5, 5],
+    school: [10, 10, 10],
+    education: [5, 5, 5],
+    nickname: [3, 3, 3],
+    avatar_url: [5, 0, 5],
+    birthday: [5, 5, 5],
+    height: [3, 3, 3],
+    weight: [3, 3, 3],
+    sex: [3, 3, 3],
+    mbti: [3, 3, 3],
+    photos: [3, 5, 5],
+    introduction: [5, 5, 5],
+    detail: [5, 5, 5],
+    expectation: [0, 5, 5],
+    contact_wechat: [3, 3, 3],
+    location: [3, 3, 3],
+    phone: [3, 3, 3],
+    relation_text: [0, 5, 0]
+};
 function percentUserinfo(user_id) {
     return new Promise(async (resolve, reject) => {
         let percent = 0, value = '', text = '';
         const user = await Database_1.default.from('users').select('*').where({ user_id }).first() || {};
-        if (user.nickname)
-            percent += 5;
-        if (user.avatar_url) {
-            const url = user.avatar_url.split('/');
-            if (url[2] != 'normal-avatars')
-                percent += 10;
+        if (user.type == 1) {
+            if (user.company)
+                percent += score.company[2];
+            if (user.work.length > 5)
+                percent += score.work[2];
+            if (user.job_title)
+                percent += score.job_title[2];
+            if (user.salary)
+                percent += score.salary[2];
+            if (user.school)
+                percent += score.school[2];
+            if (user.education >= 0)
+                percent += score.education[2];
+            if (user.nickname)
+                percent += score.nickname[2];
+            if (user.avatar_url)
+                percent += score.avatar_url[2];
+            if (user.birthday)
+                percent += score.birthday[2];
+            if (user.height)
+                percent += score.height[2];
+            if (user.weight)
+                percent += score.weight[2];
+            if (user.sex >= 0)
+                percent += score.sex[2];
+            if (user.photos.length > 12)
+                percent += score.photos[2];
+            if (user.detail)
+                percent += score.detail[2];
+            if (user.expectation)
+                percent += score.expectation[2];
+            if (user.contact_wechat)
+                percent += score.contact_wechat[2];
+            if (user.location)
+                percent += score.location[2];
+            if (user.phone)
+                percent += score.phone[2];
         }
-        if (user.birthday)
-            percent += 5;
-        if (user.height)
-            percent += 5;
-        if (user.expectation)
-            percent += 5;
-        if (user.sex)
-            percent += 5;
-        if (user.work)
-            percent += 5;
-        if (user.photos && user.photos.length) {
-            if (user.photos.length > 4)
-                percent += 20;
-            else if (user.photos.length > 2)
-                percent += 10;
-            else
-                percent += 5;
+        if (user.type == 2) {
+            if (user.company)
+                percent += score.company[0];
+            if (user.work.length > 5)
+                percent += score.work[0];
+            if (user.job_title)
+                percent += score.job_title[0];
+            if (user.salary)
+                percent += score.salary[0];
+            if (user.school)
+                percent += score.school[0];
+            if (user.education >= 0)
+                percent += score.education[0];
+            if (user.nickname)
+                percent += score.nickname[0];
+            if (user.avatar_url)
+                percent += score.avatar_url[0];
+            if (user.birthday)
+                percent += score.birthday[0];
+            if (user.height)
+                percent += score.height[0];
+            if (user.weight)
+                percent += score.weight[0];
+            if (user.sex >= 0)
+                percent += score.sex[0];
+            if (user.photos.length > 10)
+                percent += score.photos[0];
+            if (user.detail)
+                percent += score.detail[0];
+            if (user.expectation)
+                percent += score.expectation[0];
+            if (user.contact_wechat)
+                percent += score.contact_wechat[0];
+            if (user.location)
+                percent += score.location[0];
+            if (user.phone)
+                percent += score.phone[0];
         }
-        if (user.video && user.video.length)
-            percent += 5;
-        if (user.detail)
-            percent += 5;
-        if (user.contact_wechat)
-            percent += 5;
-        if (user.school)
-            percent += 5;
-        if (user.company)
-            percent += 5;
-        if (user.location)
-            percent += 5;
-        if (user.salary)
-            percent += 5;
-        if (user.phone)
-            percent += 5;
         if (percent >= 100) {
             value = '100%';
             percent = 100;
             text = '';
         }
         else if (percent >= 80) {
+            value = percent + '%';
+            text = '';
+        }
+        else if (percent >= 65) {
             value = percent + '%';
             text = '';
         }
@@ -68,54 +130,56 @@ function percentUserinfo(user_id) {
 function percentCustomerinfo(id) {
     return new Promise(async (resolve, reject) => {
         let percent = 0, value = '', text = '';
-        const customer = await Database_1.default.from('customer_log').select('*').where({ id }).first();
-        if (customer.nickname)
-            percent += 5;
-        if (customer.avatar_url) {
-            const url = customer.avatar_url.split('/');
-            if (url[2] != 'normal-avatars')
-                percent += 10;
-        }
-        if (customer.birthday)
-            percent += 5;
-        if (customer.height)
-            percent += 5;
-        if (customer.expectation)
-            percent += 5;
-        if (customer.sex)
-            percent += 5;
-        if (customer.work)
-            percent += 5;
-        if (customer.photos && customer.photos.length) {
-            if (customer.photos.length > 4)
-                percent += 20;
-            else if (customer.photos.length > 2)
-                percent += 10;
-            else
-                percent += 5;
-        }
-        if (customer.video && customer.video.length)
-            percent += 5;
-        if (customer.detail)
-            percent += 5;
-        if (customer.contact_wechat)
-            percent += 5;
-        if (customer.school)
-            percent += 5;
-        if (customer.company)
-            percent += 5;
-        if (customer.location)
-            percent += 5;
-        if (customer.salary)
-            percent += 5;
-        if (customer.phone)
-            percent += 5;
+        const log = await Database_1.default.from('customer_log').select('*').where({ id }).first() || {};
+        const customer = await Database_1.default.from('customer').select('*').where({ relation_user_id: id }).first() || {};
+        if (log.company)
+            percent += score.company[0];
+        if (log.work.length > 5)
+            percent += score.work[0];
+        if (log.job_title)
+            percent += score.job_title[0];
+        if (log.salary)
+            percent += score.salary[0];
+        if (log.school)
+            percent += score.school[0];
+        if (log.education >= 0)
+            percent += score.education[0];
+        if (log.nickname)
+            percent += score.nickname[0];
+        if (log.avatar_url)
+            percent += score.avatar_url[0];
+        if (log.birthday)
+            percent += score.birthday[0];
+        if (log.height)
+            percent += score.height[0];
+        if (log.weight)
+            percent += score.weight[0];
+        if (log.sex >= 0)
+            percent += score.sex[0];
+        if (log.photos.length > 10)
+            percent += score.photos[0];
+        if (log.expectation)
+            percent += score.expectation[0];
+        if (log.contact_wechat)
+            percent += score.contact_wechat[0];
+        if (log.location)
+            percent += score.location[0];
+        if (log.phone)
+            percent += score.phone[0];
+        if (customer.relation_text)
+            percent += customer.relation_text[0];
+        if (customer.introduction)
+            percent += customer.introduction[0];
         if (percent >= 100) {
             value = '100%';
             percent = 100;
             text = '';
         }
         else if (percent >= 80) {
+            value = percent + '%';
+            text = '';
+        }
+        else if (percent >= 65) {
             value = percent + '%';
             text = '';
         }
