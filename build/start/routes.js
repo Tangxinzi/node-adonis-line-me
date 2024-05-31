@@ -73,6 +73,8 @@ Route_1.default.group(() => {
     Route_1.default.get('/query/company', 'api/QueryController.company');
     Route_1.default.get('/query/job_title', 'api/QueryController.job_title');
     Route_1.default.post('/datas/tracking/information-improvement-process', 'api/TrackingController.informationImprovementProcess');
+    Route_1.default.get('/gift/reward/videos', 'api/GiftController.rewardVideos');
+    Route_1.default.post('/gift/reward/videos', 'api/GiftController.rewardVideos');
 }).middleware('apiCheck').prefix('/api');
 Route_1.default.group(() => {
     Route_1.default.get('/verification', 'api/AdminController.verification');
@@ -92,6 +94,8 @@ Route_1.default.group(() => {
     Route_1.default.get('/operates', 'admin/OperatesController.index');
     Route_1.default.post('/operates', 'admin/OperatesController.save');
     Route_1.default.get('/incentive', 'admin/OperatesController.incentive');
+    Route_1.default.get('/operates/reward-video', 'admin/OperatesController.rewardVideo');
+    Route_1.default.post('/operates/reward-video', 'admin/OperatesController.rewardVideo');
     Route_1.default.get('/operates/verification', 'admin/OperatesController.verification');
     Route_1.default.get('/operates/verification/review/:id', 'admin/OperatesController.review');
     Route_1.default.post('/operates/verification/review/:id', 'admin/OperatesController.review');

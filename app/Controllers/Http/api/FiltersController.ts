@@ -58,7 +58,7 @@ export default class FiltersController {
       }
 
       let ageWhereSql = `(DATE_FORMAT(NOW(), '%Y-%m-%d') - DATE_FORMAT(IFNULL(customer_log.birthday, users.birthday), '%Y-%m-%d') BETWEEN ${ filter.age[0] } AND ${ filter.age[1] }) AND`
-
+      
       let customer = (await Database.rawQuery(`
         SELECT
           customer.id as cid,
@@ -70,7 +70,8 @@ export default class FiltersController {
         	IFNULL(customer_log.height, users.height) AS height,
         	IFNULL(customer_log.weight, users.weight) AS weight,
         	IFNULL(customer_log.work, users.work) AS work,
-          users.job_title,
+        	IFNULL(customer_log.job_title, users.job_title) AS job_title,
+          users.job_title as user_job_title,
         	IFNULL(customer_log.photos, users.photos) AS photos,
         	IFNULL(customer_log.videos, users.videos) AS videos,
         	IFNULL(customer_log.detail, users.detail) AS detail,
@@ -88,10 +89,10 @@ export default class FiltersController {
         LEFT JOIN customer_log ON customer.relation_user_id IS NULL AND customer.relation_log_id = customer_log.id
         LEFT JOIN users ON customer.relation_user_id IS NOT NULL AND customer.relation_user_id = users.user_id
         WHERE ` + ageWhereSql + ` customer.status = 1 AND customer.recommend = 1 AND customer.deleted_at IS NULL AND (customer_log.sex IN (${ filter.sex || '0, 1' }) OR users.sex IN (${ filter.sex || '0, 1' }))
-        LIMIT ${ request.input('page', 0) * 15 }, 15
         ORDER BY customer.created_at DESC
+        LIMIT ${ request.input('page', 0) * 15 }, 15
       `))[0]
-      // ORDER BY RAND()
+      // ORDER BY customer.created_at DESC
 
       for (let index = 0; index < customer.length; index++) {
         // 介绍人

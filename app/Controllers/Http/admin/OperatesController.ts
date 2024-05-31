@@ -5,6 +5,7 @@ import Moment from 'moment'
 Moment.locale('zh-cn')
 const Verification = require('../lib/Verification');
 const { percentUserinfo, percentCustomerinfo } = require('../lib/Percent');
+const Messages = require('../lib/Messages');
 
 export default class OperatesController {
   public async index({ request, response, view, session }: HttpContextContract) {
@@ -28,6 +29,50 @@ export default class OperatesController {
       })
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  public async rewardVideo({ request, response, view, session }: HttpContextContract) {
+    try {
+      const all = request.all(), gift = await Database.from('reward-gift').orderBy('created_at')
+      for (let index = 0; index < gift.length; index++) {
+        gift[index].userinfo = await Database.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', gift[index].user_id).first() || {}
+        gift[index].created_at = Moment(gift[index].created_at).format('YYYY-MM-DD HH:mm:ss')
+      }
+
+      if (request.method() == 'POST') {
+        if (!(parseInt(all.status) >= 0) || all.user_id || all.id) {          
+          session.flash('message', { type: 'error', header: '操作失败', message: `请检查必填项 ${ JSON.stringify(all) }` })
+          return response.redirect('back')
+        }
+
+        await Database.from('reward-gift').where({ id: all.id, user_id: all.user_id }).update({
+          status: all.status,
+          message: all.message || null,
+          modified_at: Moment().format('YYYY-MM-DD HH:mm:ss')
+        })
+
+        if (all.message) {
+          await Messages.push({ user_id: all.user_id, content: all.message }) // 推送填写消息
+        }
+        
+        session.flash('message', { type: 'success', header: '已操作', message: `${ all.nickname } ${ all.messages }` })
+        return response.redirect('back')
+      }
+
+      return view.render('admin/operates/reward-video', {
+        data: {
+          title: '兑换好礼 - 运营',
+          active: 'operates',
+          subActive: 'reward-video',
+          gift,
+          all
+        }
+      })
+    } catch (error) {
+      console.log(error);        
+      session.flash('message', { type: 'error', header: '遇到错误', message: `请检查必填项 ${ JSON.stringify(error) }` })
+      return response.redirect('back')
     }
   }
 
@@ -103,8 +148,6 @@ export default class OperatesController {
         operates_log[index].created_at = Moment(operates_log[index].created_at).format('YYYY-MM-DD HH:mm:ss')
         operates_log[index].modified_at = Moment(operates_log[index].modified_at).format('YYYY-MM-DD HH:mm:ss')
       }
-
-      console.log(operates_log);      
 
       return view.render('admin/operates/incentive', {
         data: {

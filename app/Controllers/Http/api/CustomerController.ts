@@ -373,7 +373,7 @@ export default class CustomerController {
           break;
         case 'work':
           await Database.from('customer_log').where({ id: customer.relation_log_id }).update({
-            work: all.value || null,
+            work: all.value ? JSON.stringify(all.value) : null,
             work_code: all.value ? all.value.code : null,
           })
           break;

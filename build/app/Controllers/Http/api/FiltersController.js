@@ -67,7 +67,8 @@ class FiltersController {
         	IFNULL(customer_log.height, users.height) AS height,
         	IFNULL(customer_log.weight, users.weight) AS weight,
         	IFNULL(customer_log.work, users.work) AS work,
-          users.job_title,
+        	IFNULL(customer_log.job_title, users.job_title) AS job_title,
+          users.job_title as user_job_title,
         	IFNULL(customer_log.photos, users.photos) AS photos,
         	IFNULL(customer_log.videos, users.videos) AS videos,
         	IFNULL(customer_log.detail, users.detail) AS detail,
@@ -85,8 +86,8 @@ class FiltersController {
         LEFT JOIN customer_log ON customer.relation_user_id IS NULL AND customer.relation_log_id = customer_log.id
         LEFT JOIN users ON customer.relation_user_id IS NOT NULL AND customer.relation_user_id = users.user_id
         WHERE ` + ageWhereSql + ` customer.status = 1 AND customer.recommend = 1 AND customer.deleted_at IS NULL AND (customer_log.sex IN (${filter.sex || '0, 1'}) OR users.sex IN (${filter.sex || '0, 1'}))
-        LIMIT ${request.input('page', 0) * 15}, 15
         ORDER BY customer.created_at DESC
+        LIMIT ${request.input('page', 0) * 15}, 15
       `))[0];
             for (let index = 0; index < customer.length; index++) {
                 customer[index].parent = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url', 'company', 'work', 'job_title').where('user_id', customer[index].user_id).first();

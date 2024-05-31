@@ -38,13 +38,15 @@
                 <a href="{{ route('admin/OperatesController.review', { id: row.id }) }}">{{ row.id }}</a>
               </td>
               <td>
-                <!-- <a class="ui image label" title="{{ row.user_id }}">
-                  @if(row.userinfo.avatar_url)
-                  <img src="{{ row.userinfo.avatar_url }}" />
-                  @endif
+                @if(row.userinfo)
+                  <a class="ui image label" title="{{ row.user_id }}">
+                    @if(row.userinfo.avatar_url)
+                    <img src="{{ row.userinfo.avatar_url }}" />
+                    @endif
+                    {{ row.userinfo.nickname }}
+                  </a>
                   {{ row.userinfo.nickname }}
-                </a> -->
-                {{ row.userinfo.nickname }}
+                @endif
               </td>
               <td>
                 {{ row.table == 'customer' ? '介绍好友' : '' }}

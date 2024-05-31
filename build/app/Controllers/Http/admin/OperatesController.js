@@ -9,6 +9,7 @@ const moment_1 = __importDefault(require("moment"));
 moment_1.default.locale('zh-cn');
 const Verification = require('../lib/Verification');
 const { percentUserinfo, percentCustomerinfo } = require('../lib/Percent');
+const Messages = require('../lib/Messages');
 class OperatesController {
     async index({ request, response, view, session }) {
         try {
@@ -31,6 +32,45 @@ class OperatesController {
         }
         catch (error) {
             console.log(error);
+        }
+    }
+    async rewardVideo({ request, response, view, session }) {
+        try {
+            const all = request.all(), gift = await Database_1.default.from('reward-gift').orderBy('created_at');
+            for (let index = 0; index < gift.length; index++) {
+                gift[index].userinfo = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', gift[index].user_id).first() || {};
+                gift[index].created_at = (0, moment_1.default)(gift[index].created_at).format('YYYY-MM-DD HH:mm:ss');
+            }
+            if (request.method() == 'POST') {
+                if (!(parseInt(all.status) >= 0) || all.user_id || all.id) {
+                    session.flash('message', { type: 'error', header: '操作失败', message: `请检查必填项 ${JSON.stringify(all)}` });
+                    return response.redirect('back');
+                }
+                await Database_1.default.from('reward-gift').where({ id: all.id, user_id: all.user_id }).update({
+                    status: all.status,
+                    message: all.message || null,
+                    modified_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss')
+                });
+                if (all.message) {
+                    await Messages.push({ user_id: all.user_id, content: all.message });
+                }
+                session.flash('message', { type: 'success', header: '已操作', message: `${all.nickname} ${all.messages}` });
+                return response.redirect('back');
+            }
+            return view.render('admin/operates/reward-video', {
+                data: {
+                    title: '兑换好礼 - 运营',
+                    active: 'operates',
+                    subActive: 'reward-video',
+                    gift,
+                    all
+                }
+            });
+        }
+        catch (error) {
+            console.log(error);
+            session.flash('message', { type: 'error', header: '遇到错误', message: `请检查必填项 ${JSON.stringify(error)}` });
+            return response.redirect('back');
         }
     }
     async save({ request, response, view, session }) {
@@ -98,7 +138,6 @@ class OperatesController {
                 operates_log[index].created_at = (0, moment_1.default)(operates_log[index].created_at).format('YYYY-MM-DD HH:mm:ss');
                 operates_log[index].modified_at = (0, moment_1.default)(operates_log[index].modified_at).format('YYYY-MM-DD HH:mm:ss');
             }
-            console.log(operates_log);
             return view.render('admin/operates/incentive', {
                 data: {
                     title: '激励下发 - 运营',

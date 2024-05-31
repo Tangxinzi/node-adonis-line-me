@@ -106,6 +106,10 @@ Route.group(() => {
 
   // datas event-tracking
   Route.post('/datas/tracking/information-improvement-process', 'api/TrackingController.informationImprovementProcess')
+
+  // 权益兑换
+  Route.get('/gift/reward/videos', 'api/GiftController.rewardVideos')
+  Route.post('/gift/reward/videos', 'api/GiftController.rewardVideos')
   
 }).middleware('apiCheck').prefix('/api')
 
@@ -134,6 +138,8 @@ Route.group(() => {
   Route.get('/operates', 'admin/OperatesController.index')
   Route.post('/operates', 'admin/OperatesController.save')
   Route.get('/incentive', 'admin/OperatesController.incentive')
+  Route.get('/operates/reward-video', 'admin/OperatesController.rewardVideo')
+  Route.post('/operates/reward-video', 'admin/OperatesController.rewardVideo')
   Route.get('/operates/verification', 'admin/OperatesController.verification')
   Route.get('/operates/verification/review/:id', 'admin/OperatesController.review')
   Route.post('/operates/verification/review/:id', 'admin/OperatesController.review')

@@ -1,0 +1,110 @@
+@layout('components/layouts/main')
+
+@section('title')
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<title>{{ data.title }} - Pie</title>
+@endsection
+
+@section('style')
+<style media="screen">
+
+</style>
+@endsection
+
+@section('content')
+  <div class="ui stackable four column grid">
+    @!component('components/operates-menus', data=data, csrf=csrfField())
+    <div class="thirteen wide column">
+      <div class="ui header-title flex-between">
+        <span>{{ data.title }}</span>
+      </div>
+      <table class="ui celled center aligned table" style="margin-top: 1em">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>用户</th>
+            <th>类型</th>
+            <th>内容</th>
+            <th>时间</th>
+            <th>状态</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          @each(item in data.gift)
+          <tr>
+            <td>{{ item.id }}</td>
+            <td>
+              <a class="ui image label" title="{{ item.user_id }}" href="{{ route('admin/UsersController.edit', { user_id: item.user_id }) }}">
+                @if(item.userinfo.avatar_url)
+                <img src="{{ item.userinfo.avatar_url }}" />
+                @endif
+                {{ item.userinfo.nickname || ('Unnamed ' + item.user_id) }}
+              </a>
+            </td>
+            <td>{{ item.type == 'video' ? '视频会员权益' : item.type }}</td>
+            <td>{{ item.content }}</td>
+            <td>{{ item.created_at }}</td>
+            <td title="{{ item.message || '' }}">{{ item.status == 0 ? '拒绝' : '' }}{{ item.status == 1 ? '待处理' : '' }}{{ item.status == 2 ? '通过' : '' }}</td>
+            <td>
+              <a onclick="action({{ item.id }}, '{{ item.user_id }}', '{{ item.userinfo.nickname }}')">操作</a>
+            </td>
+          </tr>              
+          @endeach
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <form class="ui modal form action" action="#" method="post">
+    <i class="close icon"></i>
+    <h3 class="header">操作 - <span id="nickname"></span></h3>
+    <div class="content">
+      <div class="field" hidden>
+        <label for="id">ID</label>
+        <input type="number" id="id" name="id" value="" />
+      </div>
+      <div class="field" hidden>
+        <label for="user_id">用户 User ID</label>
+        <input type="text" id="user_id" name="user_id" value="" />
+      </div>
+      <div class="field required">
+        <label>操作</label>
+        <div class="ui selection multiple dropdown type">
+          <input type="hidden" id="status" name="status" value="" />
+          <i class="dropdown icon"></i>
+          <div class="default text">点击选择</div>
+          <div class="menu">
+            <div class="item" data-value="0">拒绝</div>
+            <div class="item" data-value="2">通过</div>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label for="message">描述信息</label>
+        <textarea name="message" id="message" cols="30" rows="10" placeholder="填写消息将推送到用户，未填写则不推送。"></textarea>
+      </div>
+      {{ csrfField() }}
+    </div>
+    <div class="actions">
+      <div class="ui black deny button">取消</div>
+      <button class="ui right labeled icon button" name="button" value="edit">
+        提交
+        <i class="checkmark icon"></i>
+      </button>
+    </div>
+  </form>
+@endsection
+
+@section('script')
+<script type="text/javascript">
+  function action(id, user_id, nickname) {
+    console.log(id, user_id, nickname);
+    $('#id').val(id)
+    $('#user_id').val(user_id)
+    $('#nickname').text(nickname)
+    $('.ui.modal.form.action').modal('show')
+  }
+</script>
+@endsection
