@@ -42,7 +42,7 @@ class OperatesController {
                 gift[index].created_at = (0, moment_1.default)(gift[index].created_at).format('YYYY-MM-DD HH:mm:ss');
             }
             if (request.method() == 'POST') {
-                if (!(parseInt(all.status) >= 0) || all.user_id || all.id) {
+                if (!((parseInt(all.status) >= 0) || all.user_id || all.id)) {
                     session.flash('message', { type: 'error', header: '操作失败', message: `请检查必填项 ${JSON.stringify(all)}` });
                     return response.redirect('back');
                 }
