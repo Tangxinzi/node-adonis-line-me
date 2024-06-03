@@ -20,7 +20,9 @@ class UsersController {
                 if ((all.phone == '17725386753' && all.password == '55555jkl.') || (all.phone == '13820548461' && all.password == '13820548461yx.')) {
                     const user = await Database_1.default.from('users').where({ phone: all.phone }).first() || {};
                     if (user.user_id) {
-                        session.put('adonis-cookie-sign', await Jwt_1.default.signPrivateKey(user.id));
+                        const sign = await Jwt_1.default.signPrivateKey(user.id);
+                        session.put('adonis-cookie-sign', sign);
+                        response.plainCookie('adonis-cookie-sign', { sign }, { httpOnly: false });
                         return response.redirect().status(301).toRoute('admin/CustomersController.index');
                     }
                     else {
@@ -31,6 +33,7 @@ class UsersController {
                 else {
                     session.clear();
                     session.forget('adonis-cookie-sign');
+                    response.clearCookie('adonis-cookie-sign');
                     return view.render('admin/user/login', {
                         data: {
                             title: '登录'
@@ -40,6 +43,7 @@ class UsersController {
             }
             else {
                 session.forget('adonis-cookie-sign');
+                response.clearCookie('adonis-cookie-sign');
                 return view.render('admin/user/login', {
                     data: {
                         title: '登录'

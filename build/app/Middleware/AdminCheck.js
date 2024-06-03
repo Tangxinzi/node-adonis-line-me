@@ -11,14 +11,10 @@ class AdminCheck {
             if (sign) {
                 const { total } = (await Database_1.default.from('verification').where({ is_verified: 0 }).count('* as total'))[0];
                 response.plainCookie('dataset', { verificationTotal: total }, { httpOnly: false });
-                await next();
             }
             else {
-                if (request.url() !== '/admin/login') {
-                    return response.redirect().status(301).toRoute('admin/UsersController.login');
-                }
-                await next();
             }
+            await next();
         }
         catch (error) {
             console.error(error);

@@ -57,10 +57,14 @@
   <script src="/scripts/global.js" charset="utf-8"></script>
   <script type="text/javascript">
     window.onload = function() {
+      const cookieSign = document.cookie.split('adonis-cookie-sign=')[1]
+      if (!cookieSign) {
+        window.location.href = '/admin/login'
+      }
+
       const userIdValue = document.cookie.split('dataset=')[1].split(';')[0]
       const base64Decoded = atob(userIdValue)
       const jsonParsed = JSON.parse(base64Decoded)
-      console.log(jsonParsed.message && jsonParsed.message.verificationTotal);
       if (jsonParsed.message && jsonParsed.message.verificationTotal) {
         $('#verification.item').css({ display: 'flex', position: 'relative' })
         $('#verification.item .label').text(jsonParsed.message.verificationTotal)

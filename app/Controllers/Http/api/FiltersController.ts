@@ -84,12 +84,13 @@ export default class FiltersController {
           customer.relation,
           customer.relation_text,
           customer.introduction,
-        	customer.created_at
+        	customer.created_at,
+          customer.recommend_at
         FROM customer
         LEFT JOIN customer_log ON customer.relation_user_id IS NULL AND customer.relation_log_id = customer_log.id
         LEFT JOIN users ON customer.relation_user_id IS NOT NULL AND customer.relation_user_id = users.user_id
         WHERE ` + ageWhereSql + ` customer.status = 1 AND customer.recommend = 1 AND customer.deleted_at IS NULL AND (customer_log.sex IN (${ filter.sex || '0, 1' }) OR users.sex IN (${ filter.sex || '0, 1' }))
-        ORDER BY customer.created_at DESC
+        ORDER BY customer.recommend_at DESC
         LIMIT ${ request.input('page', 0) * 15 }, 15
       `))[0]
       // ORDER BY customer.created_at DESC
@@ -115,6 +116,9 @@ export default class FiltersController {
           customer[index].work.text = await zpData.data(customer[index].work.value[0], customer[index].work.value[1])
         }
         customer[index].created_at = Moment(customer[index].created_at).format('YYYY-MM-DD')
+
+        // delete 
+        delete customer[index].recommend_at
       }
 
       return response.json({ status: 200, message: "ok", data: customer || [] })

@@ -78,10 +78,10 @@
                 </td>
                 <td class="td">
                   <a class="ui image label basic" href="{{ route('admin/CustomersController.edit', { id: row.id }) }}">
-                    @if(row.avatar_url)
-                      <img class="ui avatar image" src="{{ row.avatar_url }}" />
+                    @if(row.photos.length)
+                      <img class="ui avatar image" src="{{ row.photos[0] }}" />
                     @endif
-                    {{ row.nickname || ('Unnamed ' + row.user_id) }}
+                    {{ row.nickname || ('Unnamed') }}
                     @if(row.relation_user_id)
                       <div class="detail" title="该用户已注册 {{ row.relation_user_id }}">已注册</div>
                     @endif
