@@ -367,8 +367,9 @@ class CustomerController {
             else {
                 user.authentication = false;
             }
-            const customer = await Database_1.default.from('customer').select('id', 'user_id', 'relation', 'relation_text', 'introduction', 'relation_log_id', 'relation_user_id', 'status', 'created_at').whereIn('status', all.status ? all.status.split(',') : [1, 2, 3]).where('user_id', all.user_id || session.get('user_id')).orderBy('created_at', 'desc');
+            const customer = await Database_1.default.from('customer').select('id', 'user_id', 'relation', 'relation_text', 'introduction', 'relation_log_id', 'relation_user_id', 'verify_phone', 'status', 'created_at').whereIn('status', all.status ? all.status.split(',') : [1, 2, 3]).where('user_id', all.user_id || session.get('user_id')).orderBy('created_at', 'desc');
             for (let index = 0; index < customer.length; index++) {
+                customer[index].verify_phone = customer[index].verify_phone ? customer[index].verify_phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') : '';
                 if (customer[index].relation_user_id) {
                     customer[index] = {
                         ...customer[index],
@@ -651,13 +652,13 @@ class CustomerController {
         SELECT id, name FROM (
           SELECT id, name FROM labels WHERE type IN (1) AND status = 1 ORDER BY RAND() LIMIT 100
         ) AS subquery
-        ORDER BY RAND() LIMIT 25;
+        ORDER BY RAND() LIMIT 30;
       `))[0];
             let step_2 = (await Database_1.default.rawQuery(`
         SELECT id, name FROM (
           SELECT id, name FROM labels WHERE type IN (2) AND status = 1 ORDER BY RAND() LIMIT 100
         ) AS subquery
-        ORDER BY RAND() LIMIT 25;
+        ORDER BY RAND() LIMIT 30;
       `))[0];
             return response.json({
                 status: 200,
@@ -680,12 +681,13 @@ class CustomerController {
     }
     async introduceGenerate({ request, response, session }) {
         try {
-            const tags = request.all();
+            const all = request.all();
             const activities = [
-                tags[0].map(tag => `${tag}`).join("，"),
-                tags[1].map(tag => `${tag}`).join("，")
+                all.tags[0].map(tag => `${tag}`).join("，"),
+                all.tags[1].map(tag => `${tag}`).join("，")
             ];
             const description = [
+                `${all.year ? '我们认识 ' + all.year + ' 年。' : ''}`,
                 `在我眼中是一个${activities[0]}的人。`,
                 `并且日常喜欢${activities[1]}。`,
             ];

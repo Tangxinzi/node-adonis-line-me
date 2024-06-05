@@ -655,6 +655,9 @@ class UserController {
             else {
                 await Database_1.default.table('messages_log').insert({ user_id, last_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss') });
             }
+            for (let index = 0; index < messages.length; index++) {
+                messages[index].created_at = (0, moment_1.default)(messages[index].created_at).format('YYYY-MM-DD HH:mm:ss');
+            }
             return response.json({
                 status: 200,
                 message: "ok",

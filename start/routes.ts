@@ -113,6 +113,10 @@ Route.group(() => {
   
 }).middleware('apiCheck').prefix('/api')
 
+// 邀请验证模块
+Route.post('/api/friend/verify', 'api/FriendController.verify')
+Route.post('/api/friend/customer/field/update/:id', 'api/FriendController.updateCustomerField')
+
 Route.group(() => {
   // 审核
   Route.get('/verification', 'api/AdminController.verification')

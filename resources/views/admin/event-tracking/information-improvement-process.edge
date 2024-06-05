@@ -49,7 +49,7 @@
             <td class="td left aligned">
               <div class="flex-between">
                 <span>
-                  <a href="{{ route('admin/UsersController.edit', { user_id: item.user_id }) }}">[{{ item.user_id }}]</a>
+                  <a href="{{ route('admin/UsersController.edit', { user_id: item.user_id }) }}">[{{ item.userinfo.nickname || item.user_id }}]</a>
                   {{ item.content.type }} - {{ item.content.node }}
                   @if(item.content.type == '注册' && item.content.id)
                     <a href="{{ route('admin/UsersController.edit', { user_id: item.content.id }) }}"> - {{ item.content.id }}</a>

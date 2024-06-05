@@ -48,7 +48,7 @@ function action(data, value) {
                 modified_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss')
             });
             if (result && value.verification_status == 'rejected') {
-                await Messages.push({ user_id: data.user_id, content: '您提交的认证信息被拒绝，请重新提交。' });
+                await Messages.push({ user_id: data.user_id, content: `您提交的认证信息被拒绝，请重新提交。原因：${value.verification_comment}` });
                 switch (`${data.table}.${data.field}`) {
                     case 'customer.':
                         data.value = JSON.parse(data.value);

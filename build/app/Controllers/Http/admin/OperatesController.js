@@ -36,7 +36,7 @@ class OperatesController {
     }
     async rewardVideo({ request, response, view, session }) {
         try {
-            const all = request.all(), gift = await Database_1.default.from('reward-gift').orderBy('created_at');
+            const all = request.all(), gift = await Database_1.default.from('reward-gift').orderBy('created_at', 'desc');
             for (let index = 0; index < gift.length; index++) {
                 gift[index].userinfo = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', gift[index].user_id).first() || {};
                 gift[index].created_at = (0, moment_1.default)(gift[index].created_at).format('YYYY-MM-DD HH:mm:ss');

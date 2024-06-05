@@ -20,8 +20,8 @@ export default class AliyunController {
       const params = {
         "RegionId": "default",
         "PhoneNumbers": all.PhoneNumbers || '',
-        "SignName": "江南商城",
-        "TemplateCode": "SMS_275205487",
+        "SignName": "Ferer",
+        "TemplateCode": "SMS_463915654",
         "TemplateParam": JSON.stringify({
           "code": code
         })

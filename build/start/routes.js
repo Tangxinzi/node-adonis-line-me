@@ -76,6 +76,8 @@ Route_1.default.group(() => {
     Route_1.default.get('/gift/reward/videos', 'api/GiftController.rewardVideos');
     Route_1.default.post('/gift/reward/videos', 'api/GiftController.rewardVideos');
 }).middleware('apiCheck').prefix('/api');
+Route_1.default.post('/api/friend/verify', 'api/FriendController.verify');
+Route_1.default.post('/api/friend/customer/field/update/:id', 'api/FriendController.updateCustomerField');
 Route_1.default.group(() => {
     Route_1.default.get('/verification', 'api/AdminController.verification');
     Route_1.default.get('/verification/review/:id', 'api/AdminController.review');

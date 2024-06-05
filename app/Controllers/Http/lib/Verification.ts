@@ -47,7 +47,7 @@ function action(data, value) {
 
       // 拒绝
       if (result && value.verification_status == 'rejected') {
-        await Messages.push({ user_id: data.user_id, content: '您提交的认证信息被拒绝，请重新提交。' }) // 拒绝
+        await Messages.push({ user_id: data.user_id, content: `您提交的认证信息被拒绝，请重新提交。原因：${ value.verification_comment }` }) // 拒绝
         switch (`${ data.table }.${ data.field }`) {
           case 'customer.':
             data.value = JSON.parse(data.value)

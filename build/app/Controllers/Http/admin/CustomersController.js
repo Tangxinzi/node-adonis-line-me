@@ -48,7 +48,7 @@ class CustomersController {
                 all.orderBy = '';
             }
             if (all.user_id) {
-                var customer = await Database_1.default.from('customer').select('id', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id', 'recommend', 'status').where({ user_id: all.user_id }).orderBy('id', 'desc');
+                var customer = await Database_1.default.from('customer').select('id', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id', 'recommend', 'status').where({ user_id: all.user_id }).whereIn('status', [1, 2, 3]).orderBy('id', 'desc');
             }
             else {
                 var customer = await Database_1.default.from('customer').select('id', 'user_id', 'introduction', 'relation', 'relation_log_id', 'relation_user_id', 'recommend', 'status').whereIn('status', status).orderBy('id', 'desc').forPage(request.input('page', 1), 30);

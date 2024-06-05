@@ -28,6 +28,7 @@ class TrackingController {
                     userJobTitle: {}
                 };
                 for (let typeIndex = 0; typeIndex < tracking[index].content.itemStayType.length; typeIndex++) {
+                    tracking[index].userinfo = await Database_1.default.from('users').select('avatar_url', 'nickname', 'phone').where({ user_id: tracking[index].user_id }).first() || {};
                     switch (tracking[index].content.itemStayType[typeIndex]) {
                         case 'userType':
                             tracking[index].content.itemStayValue.userType = {
