@@ -28,8 +28,8 @@ class AliyunController {
                     "code": code
                 })
             };
-            let sms = await Database_1.default.from('sms').where({ phone: all.PhoneNumbers, user_id: session.get('user_id') }).orderBy('created_at', 'desc').first();
-            if (sms) {
+            let sms = await Database_1.default.from('sms').where({ phone: all.PhoneNumbers, user_id: session.get('user_id') || null }).orderBy('created_at', 'desc').first() || {};
+            if (sms.id) {
                 const seconds = (0, moment_1.default)().diff(sms.created_at, 'seconds');
                 if (seconds < 300) {
                     response.json({ status: 200, message: "timeout", data: '当前验证码已失效' });
@@ -37,11 +37,11 @@ class AliyunController {
             }
             client.sendSMS(params).then(async (result) => {
                 console.log(result);
-                await Database_1.default.table('sms').insert({ user_id: session.get('user_id'), phone: all.PhoneNumbers, code, result: JSON.stringify(result), ip: request.ip() });
+                await Database_1.default.table('sms').insert({ user_id: session.get('user_id') || null, phone: all.PhoneNumbers, code, result: JSON.stringify(result), ip: request.ip() });
                 return { errno: 1, message: result };
             }, async (ex) => {
                 console.error(ex);
-                await Database_1.default.table('sms').insert({ user_id: session.get('user_id'), phone: all.PhoneNumbers, code, result: JSON.stringify(ex), ip: request.ip() });
+                await Database_1.default.table('sms').insert({ user_id: session.get('user_id') || null, phone: all.PhoneNumbers, code, result: JSON.stringify(ex), ip: request.ip() });
                 return { errno: 0, message: ex };
             });
         }

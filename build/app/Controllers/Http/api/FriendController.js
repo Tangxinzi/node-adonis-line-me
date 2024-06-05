@@ -12,7 +12,7 @@ class FriendController {
             const all = request.all();
             const sms = await Database_1.default.from('sms').where({ phone: all.phone, code: all.code }).first() || {};
             if (sms.id) {
-                if (!((0, moment_1.default)(sms.created_at).diff((0, moment_1.default)()) > 5 * 60 * 1000)) {
+                if ((0, moment_1.default)(sms.created_at).diff((0, moment_1.default)()) > 5 * 60 * 1000) {
                     return response.json({ status: 200, message: "error", data: '验证码已过期' });
                 }
                 const customer = await Database_1.default.from('customer').where({ id: all.id, verify_phone: all.phone }).whereIn('status', [1, 2]).first() || {};

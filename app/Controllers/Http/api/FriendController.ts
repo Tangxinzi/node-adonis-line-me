@@ -8,7 +8,7 @@ export default class FriendController {
       const all = request.all()
       const sms = await Database.from('sms').where({ phone: all.phone, code: all.code }).first() || {}
       if (sms.id) {
-        if (!(Moment(sms.created_at).diff(Moment()) > 5 * 60 * 1000)) {
+        if (Moment(sms.created_at).diff(Moment()) > 5 * 60 * 1000) {
           return response.json({ status: 200, message: "error", data: '验证码已过期' })
         }
 
