@@ -4,10 +4,10 @@ import Database from '@ioc:Adonis/Lucid/Database';
 const score = {
   // 职业数据
   company: [10, 10, 10],
-  work: [5, 3, 3],
-  job_title: [10, 5, 5],
+  work: [10, 10, 10],
+  job_title: [10, 10, 10],
   salary: [5, 5, 5],
-  school: [10, 10, 10],
+  school: [5, 5, 5],
   education: [5, 5, 5],
 
   // 个人数据
@@ -41,17 +41,17 @@ function percentUserinfo(user_id) {
       if (user.company) percent += score.company[2]
       if (user.work.length > 5) percent += score.work[2]
       if (user.job_title) percent += score.job_title[2]
-      if (user.salary >= 0) percent += score.salary[2]
+      if (user.salary != null) percent += score.salary[2]
       if (user.school) percent += score.school[2]
-      if (user.education >= 0) percent += score.education[2]
-      if (user.mbti >= 0) percent += score.mbti[2]
+      if (user.education != null) percent += score.education[2]
+      if (user.mbti != null) percent += score.mbti[2]
       
       if (user.nickname) percent += score.nickname[2]
       if (user.avatar_url) percent += score.avatar_url[2]
       if (user.birthday) percent += score.birthday[2]
       if (user.height) percent += score.height[2]
-      if (user.weight >= 0) percent += score.weight[2]
-      if (user.sex >= 0) percent += score.sex[2]
+      if (user.weight != null) percent += score.weight[2]
+      if (user.sex != null) percent += score.sex[2]
       if (user.photos.length > 12) {
         user.photos = JSON.parse(user.photos)
         percent += user.photos.length * score.photos[2]
@@ -68,17 +68,17 @@ function percentUserinfo(user_id) {
       if (user.company) percent += score.company[0]
       if (user.work.length > 5) percent += score.work[0]
       if (user.job_title) percent += score.job_title[0]
-      if (user.salary >= 0) percent += score.salary[0]
+      if (user.salary != null) percent += score.salary[0]
       if (user.school) percent += score.school[0]
-      if (user.education >= 0) percent += score.education[0]
-      if (user.mbti >= 0) percent += score.mbti[0]
+      if (user.education != null) percent += score.education[0]
+      if (user.mbti != null) percent += score.mbti[0]
 
       if (user.nickname) percent += score.nickname[0]
       if (user.avatar_url) percent += score.avatar_url[0]
       if (user.birthday) percent += score.birthday[0]
       if (user.height) percent += score.height[0]
-      if (user.weight >= 0) percent += score.weight[0]
-      if (user.sex >= 0) percent += score.sex[0]
+      if (user.weight != null) percent += score.weight[0]
+      if (user.sex != null) percent += score.sex[0]
       if (user.photos.length > 12) {
         user.photos = JSON.parse(user.photos)
         percent += user.photos.length * score.photos[0]
@@ -114,33 +114,33 @@ function percentCustomerinfo(id) {
   return new Promise(async (resolve, reject) => {
     let percent = 0, value = '', text = ''
     const log = await Database.from('customer_log').select('*').where({ id }).first() || {}
-    const customer = await Database.from('customer').select('*').where({ relation_user_id: id }).first() || {}
+    const customer = await Database.from('customer').select('*').where({ relation_log_id: id }).first() || {}
 
-    if (log.company) percent += score.company[0]
-    if (log.work.length > 5) percent += score.work[0]
-    if (log.job_title) percent += score.job_title[0]
-    if (log.salary >= 0) percent += score.salary[0]
-    if (log.school) percent += score.school[0]
-    if (log.education >= 0) percent += score.education[0]
-    if (log.mbti >= 0) percent += score.mbti[0]
+    if (log.company) percent += score.company[1]
+    if (log.work.length > 5) percent += score.work[1]
+    if (log.job_title) percent += score.job_title[1]
+    if (log.salary != null) percent += score.salary[1]
+    if (log.school) percent += score.school[1]
+    if (log.education != null) percent += score.education[1]
+    if (log.mbti != null) percent += score.mbti[1]
 
-    if (log.nickname) percent += score.nickname[0]
-    if (log.avatar_url) percent += score.avatar_url[0]
-    if (log.birthday) percent += score.birthday[0]
-    if (log.height) percent += score.height[0]
-    if (log.weight >= 0) percent += score.weight[0]
-    if (log.sex >= 0) percent += score.sex[0]
+    if (log.nickname) percent += score.nickname[1]
+    if (log.avatar_url) percent += score.avatar_url[1]
+    if (log.birthday) percent += score.birthday[1]
+    if (log.height) percent += score.height[1]
+    if (log.weight != null) percent += score.weight[1]
+    if (log.sex != null) percent += score.sex[1]
     if (log.photos.length > 12) {
       log.photos = JSON.parse(log.photos)
-      percent += log.photos.length * score.photos[0]
+      percent += log.photos.length * score.photos[1]
     }
-    if (log.expectation) percent += score.expectation[0]
-    if (log.contact_wechat) percent += score.contact_wechat[0]
-    if (log.location) percent += score.location[0]
-    if (log.phone) percent += score.phone[0]
+    if (log.expectation) percent += score.expectation[1]
+    if (log.contact_wechat) percent += score.contact_wechat[1]
+    if (log.location) percent += score.location[1]
+    if (log.phone) percent += score.phone[1]
 
-    if (customer.relation_text) percent += customer.relation_text[0]
-    if (customer.introduction) percent += customer.introduction[0]
+    if (customer.relation_text) percent += score.relation_text[1]
+    if (customer.introduction) percent += score.introduction[1]    
 
     if (percent >= 100) {
       value = '100%'
