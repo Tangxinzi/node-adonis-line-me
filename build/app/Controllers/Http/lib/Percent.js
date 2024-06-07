@@ -38,12 +38,14 @@ function percentUserinfo(user_id) {
                 percent += score.work[2];
             if (user.job_title)
                 percent += score.job_title[2];
-            if (user.salary)
+            if (user.salary >= 0)
                 percent += score.salary[2];
             if (user.school)
                 percent += score.school[2];
             if (user.education >= 0)
                 percent += score.education[2];
+            if (user.mbti >= 0)
+                percent += score.mbti[2];
             if (user.nickname)
                 percent += score.nickname[2];
             if (user.avatar_url)
@@ -52,7 +54,7 @@ function percentUserinfo(user_id) {
                 percent += score.birthday[2];
             if (user.height)
                 percent += score.height[2];
-            if (user.weight)
+            if (user.weight >= 0)
                 percent += score.weight[2];
             if (user.sex >= 0)
                 percent += score.sex[2];
@@ -78,12 +80,14 @@ function percentUserinfo(user_id) {
                 percent += score.work[0];
             if (user.job_title)
                 percent += score.job_title[0];
-            if (user.salary)
+            if (user.salary >= 0)
                 percent += score.salary[0];
             if (user.school)
                 percent += score.school[0];
             if (user.education >= 0)
                 percent += score.education[0];
+            if (user.mbti >= 0)
+                percent += score.mbti[0];
             if (user.nickname)
                 percent += score.nickname[0];
             if (user.avatar_url)
@@ -92,13 +96,13 @@ function percentUserinfo(user_id) {
                 percent += score.birthday[0];
             if (user.height)
                 percent += score.height[0];
-            if (user.weight)
+            if (user.weight >= 0)
                 percent += score.weight[0];
             if (user.sex >= 0)
                 percent += score.sex[0];
             if (user.photos.length > 12) {
                 user.photos = JSON.parse(user.photos);
-                percent += user.photos.length * score.photos[2];
+                percent += user.photos.length * score.photos[0];
             }
             if (user.detail)
                 percent += score.detail[0];
@@ -142,12 +146,14 @@ function percentCustomerinfo(id) {
             percent += score.work[0];
         if (log.job_title)
             percent += score.job_title[0];
-        if (log.salary)
+        if (log.salary >= 0)
             percent += score.salary[0];
         if (log.school)
             percent += score.school[0];
         if (log.education >= 0)
             percent += score.education[0];
+        if (log.mbti >= 0)
+            percent += score.mbti[0];
         if (log.nickname)
             percent += score.nickname[0];
         if (log.avatar_url)
@@ -156,13 +162,13 @@ function percentCustomerinfo(id) {
             percent += score.birthday[0];
         if (log.height)
             percent += score.height[0];
-        if (log.weight)
+        if (log.weight >= 0)
             percent += score.weight[0];
         if (log.sex >= 0)
             percent += score.sex[0];
         if (log.photos.length > 12) {
             log.photos = JSON.parse(log.photos);
-            percent += log.photos.length * score.photos[2];
+            percent += log.photos.length * score.photos[0];
         }
         if (log.expectation)
             percent += score.expectation[0];

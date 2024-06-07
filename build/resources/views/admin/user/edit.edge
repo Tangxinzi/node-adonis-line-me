@@ -31,7 +31,7 @@
             <div class="field">
               <label>昵称</label>
               <div class="ui left icon input">
-                <input class="nickname" type="text" name="nickname" value="{{ data.user.nickname }}" placeholder="" />
+                <input class="nickname" type="text" name="nickname" value="{{ data.user.nickname || '' }}" placeholder="" />
                 <i class="address card icon"></i>
               </div>
             </div>
@@ -50,7 +50,7 @@
             <div class="field">
               <label>生日</label>
               <div class="ui left icon input">
-                <input type="text" name="birthday" value="{{ data.user.birthday || '' }}" placeholder="" />
+                <input type="date" name="birthday" value="{{ data.user.birthday || '' }}" placeholder="" />
                 <i class="birthday cake icon"></i>
               </div>
             </div>

@@ -10,6 +10,7 @@ Route_1.default.get('/', async ({ view }) => {
 Route_1.default.group(() => {
     Route_1.default.get('/filter', 'api/FiltersController.index');
     Route_1.default.post('/filter', 'api/FiltersController.index');
+    Route_1.default.get('/filter/match', 'api/FiltersController.match');
     Route_1.default.get('/filter/customer', 'api/FiltersController.customer');
     Route_1.default.get('/user/wxa-login', 'api/UserController.wxaLogin');
     Route_1.default.get('/user/login/phone', 'api/UserController.phoneLogin');

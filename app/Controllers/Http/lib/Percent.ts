@@ -41,15 +41,16 @@ function percentUserinfo(user_id) {
       if (user.company) percent += score.company[2]
       if (user.work.length > 5) percent += score.work[2]
       if (user.job_title) percent += score.job_title[2]
-      if (user.salary) percent += score.salary[2]
+      if (user.salary >= 0) percent += score.salary[2]
       if (user.school) percent += score.school[2]
       if (user.education >= 0) percent += score.education[2]
+      if (user.mbti >= 0) percent += score.mbti[2]
       
       if (user.nickname) percent += score.nickname[2]
       if (user.avatar_url) percent += score.avatar_url[2]
       if (user.birthday) percent += score.birthday[2]
       if (user.height) percent += score.height[2]
-      if (user.weight) percent += score.weight[2]
+      if (user.weight >= 0) percent += score.weight[2]
       if (user.sex >= 0) percent += score.sex[2]
       if (user.photos.length > 12) {
         user.photos = JSON.parse(user.photos)
@@ -67,19 +68,20 @@ function percentUserinfo(user_id) {
       if (user.company) percent += score.company[0]
       if (user.work.length > 5) percent += score.work[0]
       if (user.job_title) percent += score.job_title[0]
-      if (user.salary) percent += score.salary[0]
+      if (user.salary >= 0) percent += score.salary[0]
       if (user.school) percent += score.school[0]
       if (user.education >= 0) percent += score.education[0]
+      if (user.mbti >= 0) percent += score.mbti[0]
 
       if (user.nickname) percent += score.nickname[0]
       if (user.avatar_url) percent += score.avatar_url[0]
       if (user.birthday) percent += score.birthday[0]
       if (user.height) percent += score.height[0]
-      if (user.weight) percent += score.weight[0]
+      if (user.weight >= 0) percent += score.weight[0]
       if (user.sex >= 0) percent += score.sex[0]
       if (user.photos.length > 12) {
         user.photos = JSON.parse(user.photos)
-        percent += user.photos.length * score.photos[2]
+        percent += user.photos.length * score.photos[0]
       }
       if (user.detail) percent += score.detail[0]
       if (user.expectation) percent += score.expectation[0]
@@ -117,19 +119,20 @@ function percentCustomerinfo(id) {
     if (log.company) percent += score.company[0]
     if (log.work.length > 5) percent += score.work[0]
     if (log.job_title) percent += score.job_title[0]
-    if (log.salary) percent += score.salary[0]
+    if (log.salary >= 0) percent += score.salary[0]
     if (log.school) percent += score.school[0]
     if (log.education >= 0) percent += score.education[0]
+    if (log.mbti >= 0) percent += score.mbti[0]
 
     if (log.nickname) percent += score.nickname[0]
     if (log.avatar_url) percent += score.avatar_url[0]
     if (log.birthday) percent += score.birthday[0]
     if (log.height) percent += score.height[0]
-    if (log.weight) percent += score.weight[0]
+    if (log.weight >= 0) percent += score.weight[0]
     if (log.sex >= 0) percent += score.sex[0]
     if (log.photos.length > 12) {
       log.photos = JSON.parse(log.photos)
-      percent += log.photos.length * score.photos[2]
+      percent += log.photos.length * score.photos[0]
     }
     if (log.expectation) percent += score.expectation[0]
     if (log.contact_wechat) percent += score.contact_wechat[0]

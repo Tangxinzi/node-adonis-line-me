@@ -127,6 +127,88 @@ export default class FiltersController {
     }
   }
 
+  // 用户 match
+  public async match({ request, response, session }: HttpContextContract) {
+    try {
+      let all = request.all(), filter = await Database.from('users_filter').where('user_id', session.get('user_id')).first() || {}
+
+      if (all.type == 'match') {
+        filter.sex = all.sex, filter.age = [parseInt(all.age) - 5, parseInt(all.age) + 5]
+      } else if (filter.id) {
+        filter.age = filter.age.split(',')
+      } else {
+        filter = defaultFilter
+      }
+
+      let ageWhereSql = `(DATE_FORMAT(NOW(), '%Y-%m-%d') - DATE_FORMAT(IFNULL(customer_log.birthday, users.birthday), '%Y-%m-%d') BETWEEN ${ filter.age[0] } AND ${ filter.age[1] }) AND`
+      
+      let customer = (await Database.rawQuery(`
+        SELECT
+          customer.id as cid,
+          customer.user_id,
+          IFNULL(customer_log.sex, users.sex) AS sex,
+        	IFNULL(customer_log.nickname, users.nickname) AS nickname,
+        	IFNULL(customer_log.avatar_url, users.avatar_url) AS avatar_url,
+        	IFNULL(customer_log.birthday, users.birthday) AS birthday,
+        	IFNULL(customer_log.height, users.height) AS height,
+        	IFNULL(customer_log.weight, users.weight) AS weight,
+        	IFNULL(customer_log.work, users.work) AS work,
+        	IFNULL(customer_log.job_title, users.job_title) AS job_title,
+          users.job_title as user_job_title,
+        	IFNULL(customer_log.photos, users.photos) AS photos,
+        	IFNULL(customer_log.videos, users.videos) AS videos,
+        	IFNULL(customer_log.detail, users.detail) AS detail,
+        	IFNULL(customer_log.expectation, users.expectation) AS expectation,
+        	IFNULL(customer_log.contact_wechat, users.contact_wechat) AS contact_wechat,
+        	IFNULL(customer_log.company, users.company) AS company,
+        	IFNULL(customer_log.school, users.school) AS school,
+        	IFNULL(customer_log.location, users.location) AS location,
+        	IFNULL(customer_log.salary, users.salary) AS salary,
+          customer.relation,
+          customer.relation_text,
+          customer.introduction,
+        	customer.created_at,
+          customer.recommend_at
+        FROM customer
+        LEFT JOIN customer_log ON customer.relation_user_id IS NULL AND customer.relation_log_id = customer_log.id
+        LEFT JOIN users ON customer.relation_user_id IS NOT NULL AND customer.relation_user_id = users.user_id
+        WHERE ` + ageWhereSql + ` customer.status = 1 AND customer.recommend = 1 AND customer.deleted_at IS NULL AND (customer_log.sex IN (${ filter.sex || '0, 1' }) OR users.sex IN (${ filter.sex || '0, 1' }))
+        ORDER BY customer.recommend_at DESC
+        LIMIT 0, 1
+      `))[0]
+
+      for (let index = 0; index < customer.length; index++) {
+        // 介绍人
+        customer[index].parent = await Database.from('users').select('user_id', 'nickname', 'avatar_url', 'company', 'work', 'job_title').where('user_id', customer[index].user_id).first()
+        customer[index].parent.work = customer[index].parent.work ? JSON.parse(customer[index].parent.work) : []
+        if (customer[index].parent.work.value) {
+          customer[index].parent.work.text = await zpData.data(customer[index].parent.work.value[0], customer[index].parent.work.value[1])
+        }
+
+        // 格式数据
+        customer[index].like = await Database.from('likes').select('id').where({ status: 1, type: 'customer', relation_type_id: customer[index].cid, user_id: session.get('user_id') }).first() || {}
+        customer[index].location = customer[index].location ? JSON.parse(customer[index].location) : []
+        customer[index].photos = customer[index].photos ? JSON.parse(customer[index].photos) : []
+        customer[index].videos = customer[index].videos ? JSON.parse(customer[index].videos) : []
+        customer[index].zodiac_sign = this.getZodiacSign(Moment(customer[index].birthday).format('DD'), Moment(customer[index].birthday).format('MM'))
+        customer[index].age = Moment().diff(customer[index].birthday, 'years')
+        customer[index].salary = customer[index].salary ? SALARY_RANGE[customer[index].salary].value : ''
+        customer[index].work = customer[index].work ? JSON.parse(customer[index].work) : []
+        if (customer[index].work.value) {
+          customer[index].work.text = await zpData.data(customer[index].work.value[0], customer[index].work.value[1])
+        }
+        customer[index].created_at = Moment(customer[index].created_at).format('YYYY-MM-DD')
+
+        // delete 
+        delete customer[index].recommend_at
+      }
+
+      return response.json({ status: 200, message: "ok", data: customer || [] })
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   public async index({ request, response, session }: HttpContextContract) {
     try {
       let all = request.all(), filter = await Database.from('users_filter').where('user_id', session.get('user_id')).first() || {}
