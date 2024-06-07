@@ -756,12 +756,9 @@ export default class CustomerController {
       return response.json({
         status: 200,
         sms: "ok",
-        data: {
-          step_1,
-          step_2
-          // step_1: await Database.from('labels').select('id', 'name').whereIn('type', [1]).where('status', 1).orderBy('sort', 'asc').offset(Math.floor(Math.random() * (totalUsersCount - 10))).limit(30),
-          // step_2: await Database.from('labels').select('id', 'name').whereIn('type', [2]).where('status', 1).orderBy('sort', 'asc').offset(Math.floor(Math.random() * (totalUsersCount - 10))).limit(30)
-        }
+        data: [step_1, step_2]
+        // step_1: await Database.from('labels').select('id', 'name').whereIn('type', [1]).where('status', 1).orderBy('sort', 'asc').offset(Math.floor(Math.random() * (totalUsersCount - 10))).limit(30),
+        // step_2: await Database.from('labels').select('id', 'name').whereIn('type', [2]).where('status', 1).orderBy('sort', 'asc').offset(Math.floor(Math.random() * (totalUsersCount - 10))).limit(30)
       })
     } catch (error) {
       console.log(error);

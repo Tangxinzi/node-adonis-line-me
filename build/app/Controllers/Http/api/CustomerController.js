@@ -663,10 +663,7 @@ class CustomerController {
             return response.json({
                 status: 200,
                 sms: "ok",
-                data: {
-                    step_1,
-                    step_2
-                }
+                data: [step_1, step_2]
             });
         }
         catch (error) {
