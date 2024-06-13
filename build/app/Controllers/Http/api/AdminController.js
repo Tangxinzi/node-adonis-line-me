@@ -45,6 +45,7 @@ class AdminController {
                     case 'users.avatar_url':
                         break;
                     case 'users.photos':
+                    case 'customer_log.photos':
                         verification.before = JSON.parse(verification.before);
                         verification.value = JSON.parse(verification.value);
                         break;
