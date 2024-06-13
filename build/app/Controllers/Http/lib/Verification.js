@@ -93,6 +93,10 @@ function action(data, value) {
                         data.value = JSON.parse(data.value);
                         await Database_1.default.from('customer').where('id', data.value.customer_id).update({ status: 1 });
                         break;
+                    case 'customer_log.photos':
+                        data.value = data.value ? JSON.parse(data.value) : {};
+                        await Database_1.default.from('customer_log').where({ id: data.value.relation_log_id }).update({ photos: JSON.stringify(data.value.value) });
+                        break;
                     case 'authentication_log.idcard':
                         await Database_1.default.from('authentication').where({ user_id: data.user_id }).update({ idcard: 1 });
                         await Database_1.default.from('authentication').where({ user_id: data.user_id }).update({ idcard: 1 });
@@ -129,26 +133,17 @@ function action(data, value) {
 function field(field) {
     let result = ['', ''];
     switch (field) {
-        case 'customer.':
-            result = ['介绍好友', ''];
-            break;
         case 'users.avatar_url':
             result = ['用户信息', '头像'];
             break;
         case 'users.photos':
             result = ['用户信息', '照片集'];
             break;
-        case 'authentication_log.idcard':
-            result = ['认证审核', '用户身份'];
+        case 'customer.':
+            result = ['介绍好友', ''];
             break;
-        case 'users.photos':
-            result = ['用户信息', '照片集'];
-            break;
-        case 'users.photos':
-            result = ['用户信息', '照片集'];
-            break;
-        case 'users.photos':
-            result = ['用户信息', '照片集'];
+        case 'customer_log.photos':
+            result = ['被介绍人', '照片集'];
             break;
         case 'authentication_log.idcard':
             result = ['认证审核', '用户身份'];

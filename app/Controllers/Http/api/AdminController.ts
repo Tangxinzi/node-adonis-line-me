@@ -137,38 +137,25 @@ export default class AdminController {
 
           const field = await Verification.field(`${ verify[index].table }.${ verify[index].field }`)
           switch (`${ verify[index].table }.${ verify[index].field }`) {
+            // 介绍
             case 'customer.':
               verify[index].table = field[0]
               verify[index].value = JSON.parse(verify[index].value)
               break;
+            
+            // 用户
             case 'users.avatar_url':
-              verify[index].table = field[0]
-              verify[index].value = field[1]
-              break;
             case 'users.photos':
-              verify[index].table = field[0]
-              verify[index].value = field[1]
-              break;
+            
+              // 被介绍人信息 - 基础信息
+            case 'customer_log.photos':
+
+            // 被介绍人信息 - 认证
             case 'authentication_log.idcard':
-              verify[index].table = field[0]
-              verify[index].value = field[1]
-              break;
             case 'authentication_log.school':
-              verify[index].table = field[0]
-              verify[index].value = field[1]
-              break;
             case 'authentication_log.company':
-              verify[index].table = field[0]
-              verify[index].value = field[1]
-              break;
             case 'authentication_log.work':
-              verify[index].table = field[0]
-              verify[index].value = field[1]
-              break;
             case 'authentication_log.job_title':
-              verify[index].table = field[0]
-              verify[index].value = field[1]
-              break;
             case 'authentication_log.salary':
               verify[index].table = field[0]
               verify[index].value = field[1]

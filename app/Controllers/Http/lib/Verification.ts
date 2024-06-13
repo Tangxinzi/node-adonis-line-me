@@ -49,10 +49,17 @@ function action(data, value) {
       if (result && value.verification_status == 'rejected') {
         await Messages.push({ user_id: data.user_id, content: `您提交的认证信息被拒绝，请重新提交。原因：${ value.verification_comment }` }) // 拒绝
         switch (`${ data.table }.${ data.field }`) {
+          // 用户
+
+          // 介绍
           case 'customer.':
             data.value = JSON.parse(data.value)
             await Database.from('customer').where('id', data.value.customer_id).update({ status: 2 })
             break;
+
+          // 被介绍人信息 - 基础信息
+          
+          // 被介绍人信息 - 认证
           case 'authentication_log.idcard':
             await Database.from('authentication').where({ user_id: data.user_id }).update({ idcard: '' })
             await Database.from('authentication_log').where({ user_id: data.user_id }).update({ idcard: '' })
@@ -84,16 +91,27 @@ function action(data, value) {
       if (result && value.verification_status == 'approved') {
         await Messages.push({ user_id: data.user_id, content: '您提交的认证信息已通过。' }) // 通过
         switch (`${ data.table }.${ data.field }`) {
+          // 用户
           case 'users.avatar_url':
             await Database.from('users').where('user_id', data.user_id).update({ avatar_url: data.value })
             break;
           case 'users.photos':
             await Database.from('users').where('user_id', data.user_id).update({ photos: data.value })
             break;
+          
+          // 介绍
           case 'customer.':
             data.value = JSON.parse(data.value)
             await Database.from('customer').where('id', data.value.customer_id).update({ status: 1 })
             break;
+
+          // 被介绍人信息 - 基础信息
+          case 'customer_log.photos':
+            data.value = data.value ? JSON.parse(data.value) : {}
+            await Database.from('customer_log').where({ id: data.value.relation_log_id }).update({ photos: JSON.stringify(data.value.value) })
+            break;
+          
+          // 被介绍人信息 - 认证
           case 'authentication_log.idcard':
             await Database.from('authentication').where({ user_id: data.user_id }).update({ idcard: 1 })
             await Database.from('authentication').where({ user_id: data.user_id }).update({ idcard: 1 })
@@ -132,27 +150,25 @@ function field(field) {
   let result = ['', '']
 
   switch (field) {
-    case 'customer.':
-      result = ['介绍好友', '']
-      break;
+    // 用户
     case 'users.avatar_url':
       result = ['用户信息', '头像']  
       break;
     case 'users.photos':
       result = ['用户信息', '照片集']
       break;
-    case 'authentication_log.idcard':
-      result = ['认证审核', '用户身份']
+
+    // 介绍
+    case 'customer.':
+      result = ['介绍好友', '']
       break;
-    case 'users.photos':
-      result = ['用户信息', '照片集']
+
+    // 被介绍人信息 - 基础信息
+    case 'customer_log.photos':
+      result = ['被介绍人', '照片集']
       break;
-    case 'users.photos':
-      result = ['用户信息', '照片集']
-      break;
-    case 'users.photos':
-      result = ['用户信息', '照片集']
-      break;
+
+    // 被介绍人信息 - 认证
     case 'authentication_log.idcard':
       result = ['认证审核', '用户身份']
       break;

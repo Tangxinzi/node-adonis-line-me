@@ -118,33 +118,13 @@ class AdminController {
                             verify[index].value = JSON.parse(verify[index].value);
                             break;
                         case 'users.avatar_url':
-                            verify[index].table = field[0];
-                            verify[index].value = field[1];
-                            break;
                         case 'users.photos':
-                            verify[index].table = field[0];
-                            verify[index].value = field[1];
-                            break;
+                        case 'customer_log.photos':
                         case 'authentication_log.idcard':
-                            verify[index].table = field[0];
-                            verify[index].value = field[1];
-                            break;
                         case 'authentication_log.school':
-                            verify[index].table = field[0];
-                            verify[index].value = field[1];
-                            break;
                         case 'authentication_log.company':
-                            verify[index].table = field[0];
-                            verify[index].value = field[1];
-                            break;
                         case 'authentication_log.work':
-                            verify[index].table = field[0];
-                            verify[index].value = field[1];
-                            break;
                         case 'authentication_log.job_title':
-                            verify[index].table = field[0];
-                            verify[index].value = field[1];
-                            break;
                         case 'authentication_log.salary':
                             verify[index].table = field[0];
                             verify[index].value = field[1];

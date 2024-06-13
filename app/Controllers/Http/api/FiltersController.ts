@@ -44,7 +44,7 @@ export default class FiltersController {
     return zodiacSigns[0];
   }
 
-  // 用户筛选
+  // 筛选 filter
   public async customer({ request, response, session }: HttpContextContract) {
     try {
       let all = request.all(), filter = await Database.from('users_filter').where('user_id', session.get('user_id')).first() || {}
@@ -219,12 +219,11 @@ export default class FiltersController {
         } else {
           filter = defaultFilter
         }
-
         return response.json({ status: 200, message: "ok", data: filter })
       }
 
       if (request.method() == 'POST') {
-        if (filter) {
+        if (filter.id) {          
           const result = await Database.from('users_filter').where({ user_id: session.get('user_id') }).update({
             sex: all.sex,
             age: all.age.toString(),
@@ -233,7 +232,7 @@ export default class FiltersController {
             modified_at: Moment().format('YYYY-MM-DD HH:mm:ss')
           })
           return response.json({ status: 200, message: "ok", data: result })
-        } else {
+        } else {          
           const id = await Database.table('users_filter').insert({
             user_id: session.get('user_id'),
             sex: all.sex,

@@ -496,10 +496,26 @@ class CustomerController {
             });
         }
     }
+    compareArrays(before, after) {
+        const changes = { modified: [], added: [], deleted: [] };
+        before.forEach((item, index) => {
+            if (after[index] !== item) {
+                changes.modified.push({ index, before: item, after: after[index] });
+            }
+        });
+        after.slice(before.length).forEach((item, index) => {
+            changes.added.push({ index: index + before.length, item });
+        });
+        before.slice(after.length).forEach((item, index) => {
+            changes.deleted.push({ index: index + after.length, item });
+        });
+        return changes;
+    }
     async updateCustomerField({ params, request, response, session }) {
         try {
             const all = request.all();
-            let customer = await Database_1.default.from('customer').where({ id: params.id, user_id: session.get('user_id') }).first();
+            let customer = await Database_1.default.from('customer').where({ id: params.id, user_id: session.get('user_id') }).first() || {};
+            let customer_log = await Database_1.default.from('customer_log').where({ id: customer.relation_log_id }).first() || {};
             switch (`${all.type}.${all.field}`) {
                 case 'customer.relation':
                     var result = await Database_1.default.from('customer').where({ id: params.id, user_id: session.get('user_id') }).update({ relation: all.value.relation, relation_text: all.value.relation_text });
@@ -517,7 +533,23 @@ class CustomerController {
                     var result = await Database_1.default.from('customer_log').where({ id: customer.relation_log_id }).update({ contact_wechat: all.value.contact_wechat, contact_wechat_show: all.value.contact_wechat_show });
                     break;
                 case 'userinfo.photos':
-                    var result = await Database_1.default.from('customer_log').where({ id: customer.relation_log_id }).update({ photos: JSON.stringify(all.value) });
+                    const changes = this.compareArrays(JSON.parse(customer_log.photos), all.value);
+                    if (changes.added.length) {
+                        await Verification.regularData({
+                            user_id: session.get('user_id'),
+                            table: 'customer_log',
+                            field: 'photos',
+                            before: customer_log.photos || null,
+                            value: JSON.stringify({
+                                relation_log_id: customer.relation_log_id,
+                                value: all.value
+                            }),
+                            ip: request.ip()
+                        });
+                    }
+                    else {
+                        var result = await Database_1.default.from('customer_log').where({ id: customer.relation_log_id }).update({ photos: JSON.stringify(all.value) });
+                    }
                     break;
                 case 'userinfo.work':
                     var result = await Database_1.default.from('customer_log').where({ id: customer.relation_log_id }).update({ work: JSON.stringify(all.value), work_code: all.value ? all.value.code : '' });

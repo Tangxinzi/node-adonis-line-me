@@ -202,7 +202,7 @@ class FiltersController {
                 return response.json({ status: 200, message: "ok", data: filter });
             }
             if (request.method() == 'POST') {
-                if (filter) {
+                if (filter.id) {
                     const result = await Database_1.default.from('users_filter').where({ user_id: session.get('user_id') }).update({
                         sex: all.sex,
                         age: all.age.toString(),

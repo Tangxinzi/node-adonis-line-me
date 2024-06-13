@@ -111,6 +111,8 @@ export default class OperatesController {
     try {
       switch (`${ params.table }`) {
         case `users`:
+        case `customer_log`:
+        case 'authentication_log':
           var authentication = await Database.from('verification').select('id', 'value', 'table', 'field', 'created_at').where({ 
             user_id: session.get('user_id'), 
             verification_status: 'pending', 
@@ -118,15 +120,12 @@ export default class OperatesController {
             table: params.table || '',
             field: params.field || ''
           }).orderBy('created_at', 'desc').first()
-          break;
-        case 'authentication_log':
-          var authentication = await Database.from('verification').select('id', 'value', 'table', 'field', 'created_at').where({ 
-            user_id: session.get('user_id'), 
-            verification_status: 'pending', 
-            is_verified: 0,
-            table: params.table || '',
-            // field: params.field || ''
-          }).orderBy('created_at', 'desc').first()
+          
+          if (authentication.table == 'customer_log' && authentication.field == 'photos') {
+            authentication.value = JSON.parse(authentication.value)
+            authentication.value = authentication.value.value
+          }
+
           break;
         case 'customer':
           var authentication = await Database.from('verification').select('id', 'value', 'table', 'field', 'created_at').where({ 
@@ -136,9 +135,7 @@ export default class OperatesController {
             table: params.table || ''
           }).orderBy('created_at', 'desc')
 
-          for (let index = 0; index < authentication.length; index++) {
-            authentication[index].value = JSON.parse(authentication[index].value)
-          }
+          
           break;
         default:
           var authentication = null
