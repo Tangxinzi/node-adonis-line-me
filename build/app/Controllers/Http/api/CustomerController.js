@@ -541,6 +541,7 @@ class CustomerController {
                             field: 'photos',
                             before: customer_log.photos || null,
                             value: JSON.stringify({
+                                customer_id: customer.id,
                                 relation_log_id: customer.relation_log_id,
                                 value: all.value
                             }),
