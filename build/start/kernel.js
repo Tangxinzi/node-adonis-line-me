@@ -34,6 +34,7 @@ Server_1.default.middleware.register([
 Server_1.default.middleware.registerNamed({
     webCheck: () => Promise.resolve().then(() => __importStar(global[Symbol.for('ioc.use')]('App/Middleware/WebCheck'))),
     apiCheck: () => Promise.resolve().then(() => __importStar(global[Symbol.for('ioc.use')]('App/Middleware/ApiCheck'))),
+    apiAdminCheck: () => Promise.resolve().then(() => __importStar(global[Symbol.for('ioc.use')]('App/Middleware/ApiAdminCheck'))),
     adminCheck: () => Promise.resolve().then(() => __importStar(global[Symbol.for('ioc.use')]('App/Middleware/AdminCheck'))),
 });
 //# sourceMappingURL=kernel.js.map

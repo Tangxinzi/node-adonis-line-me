@@ -7,6 +7,8 @@ const Route_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Core/Route
 Route_1.default.get('/', async ({ view }) => {
     return view.render('welcome');
 });
+Route_1.default.post('/api/friend/verify', 'api/FriendController.verify');
+Route_1.default.post('/api/friend/customer/field/update/:id', 'api/FriendController.updateCustomerField');
 Route_1.default.group(() => {
     Route_1.default.get('/filter', 'api/FiltersController.index');
     Route_1.default.post('/filter', 'api/FiltersController.index');
@@ -77,15 +79,15 @@ Route_1.default.group(() => {
     Route_1.default.get('/gift/reward/videos', 'api/GiftController.rewardVideos');
     Route_1.default.post('/gift/reward/videos', 'api/GiftController.rewardVideos');
 }).middleware('apiCheck').prefix('/api');
-Route_1.default.post('/api/friend/verify', 'api/FriendController.verify');
-Route_1.default.post('/api/friend/customer/field/update/:id', 'api/FriendController.updateCustomerField');
 Route_1.default.group(() => {
     Route_1.default.get('/verification', 'api/AdminController.verification');
     Route_1.default.get('/verification/review/:id', 'api/AdminController.review');
     Route_1.default.post('/verification/review/:id', 'api/AdminController.review');
     Route_1.default.get('/customer', 'api/AdminController.customer');
+    Route_1.default.post('/customer/status/:customer_id/:status', 'api/AdminController.customerStatus');
+    Route_1.default.post('/customer/recommend/:customer_id/:recommend', 'api/AdminController.customerRecommend');
     Route_1.default.get('/users', 'api/AdminController.users');
-}).middleware('apiCheck').prefix('/api/admin');
+}).middleware('apiAdminCheck').prefix('/api/admin');
 Route_1.default.group(() => {
     Route_1.default.get('/datas', 'admin/DataController.index');
     Route_1.default.get('/datas/board', 'admin/DataController.board');

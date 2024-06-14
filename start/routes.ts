@@ -24,6 +24,10 @@ Route.get('/', async ({ view }) => {
   return view.render('welcome')
 })
 
+// 邀请验证模块
+Route.post('/api/friend/verify', 'api/FriendController.verify')
+Route.post('/api/friend/customer/field/update/:id', 'api/FriendController.updateCustomerField')
+
 Route.group(() => {
   Route.get('/filter', 'api/FiltersController.index')
   Route.post('/filter', 'api/FiltersController.index')
@@ -114,10 +118,6 @@ Route.group(() => {
   
 }).middleware('apiCheck').prefix('/api')
 
-// 邀请验证模块
-Route.post('/api/friend/verify', 'api/FriendController.verify')
-Route.post('/api/friend/customer/field/update/:id', 'api/FriendController.updateCustomerField')
-
 Route.group(() => {
   // 审核
   Route.get('/verification', 'api/AdminController.verification')
@@ -126,10 +126,12 @@ Route.group(() => {
 
   // 全部被介绍人
   Route.get('/customer', 'api/AdminController.customer')
+  Route.post('/customer/status/:customer_id/:status', 'api/AdminController.customerStatus')
+  Route.post('/customer/recommend/:customer_id/:recommend', 'api/AdminController.customerRecommend')
 
   // 用户
   Route.get('/users', 'api/AdminController.users')
-}).middleware('apiCheck').prefix('/api/admin')
+}).middleware('apiAdminCheck').prefix('/api/admin')
 
 Route.group(() => {
   Route.get('/datas', 'admin/DataController.index')

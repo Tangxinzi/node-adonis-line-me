@@ -55,8 +55,8 @@ export default class AdminController {
         const review = await Database.from('users').select('user_id', 'nickname', 'avatar_url', 'type').where({ user_id: verification.user_id }).first() || {}
         verification.verification_user = await Database.from('users').select('user_id', 'nickname', 'avatar_url', 'type').where({ user_id: verification.verification_user_id || '' }).first() || {}
         verification.verification_status = verification.verification_status.toUpperCase()
-        verification.created_at = Moment(verification.created_at).format('YYYY-MM-DD HH:mm:ss')
-        verification.modified_at = verification.modified_at ? Moment(verification.modified_at).format('YYYY-MM-DD HH:mm:ss') : ''
+        verification.created_at = Moment(verification.created_at).format('MM-DD HH:mm:ss')
+        verification.modified_at = verification.modified_at ? Moment(verification.modified_at).format('MM-DD HH:mm:ss') : ''
 
         switch (`${ verification.table }.${ verification.field }`) {
           case 'users.avatar_url':
@@ -134,7 +134,7 @@ export default class AdminController {
           verify[index].checker = await Database.from('users').select('avatar_url', 'nickname').where({ user_id: verify[index].verification_user_id }).first() || {}
           verify[index].verification_status = verify[index].verification_status.toUpperCase()
           verify[index].created_at = Moment(verify[index].created_at).fromNow()
-          verify[index].modified_at = verify[index].modified_at ? Moment(verify[index].modified_at).format('YYYY-MM-DD HH:mm:ss') : ''
+          verify[index].modified_at = verify[index].modified_at ? Moment(verify[index].modified_at).format('MM-DD HH:mm:ss') : ''
 
           const field = await Verification.field(`${ verify[index].table }.${ verify[index].field }`)
           switch (`${ verify[index].table }.${ verify[index].field }`) {
@@ -220,7 +220,7 @@ export default class AdminController {
       for (let index = 0; index < customer.length; index++) {
         customer[index].relation = RELATION[customer[index].relation]
         customer[index].parent = await Database.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].user_id).first() || {}
-        customer[index].created_at = Moment(customer[index].created_at).format('YYYY-MM-DD HH:mm:ss')
+        customer[index].created_at = Moment(customer[index].created_at).format('MM-DD HH:mm:ss')
       }
 
       return response.json({
@@ -233,12 +233,42 @@ export default class AdminController {
     }
   }
 
+  public async customerStatus({ params, request, response, session }: HttpContextContract) {
+    try {
+      switch (params.status) {
+        case '0':
+        case '1':
+        case '2':
+          return await Database.from('customer').where({ id: params.customer_id }).update({ status: params.status })
+      }
+
+      return
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  public async customerRecommend({ params, request, response, session }: HttpContextContract) {
+    try {       
+      switch (params.recommend) {
+        case '0':
+          return await Database.from('customer').where({ id: params.customer_id }).update({ recommend: 0 })
+        case '1':
+          return await Database.from('customer').where({ id: params.customer_id, status: 1 }).update({ recommend: 1, recommend_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
+      }
+
+      return
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   public async users({ request, response, session }: HttpContextContract) {
     try {
       const users = await Database.from('users').select('id', 'type', 'user_id', 'nickname', 'avatar_url', 'detail', 'created_at').orderBy('created_at', 'desc').forPage(request.input('page', 1), 20)
 
       for (let index = 0; index < users.length; index++) {
-        users[index].created_at = Moment(users[index].created_at).format('YYYY-MM-DD HH:mm:ss')
+        users[index].created_at = Moment(users[index].created_at).format('MM-DD HH:mm:ss')
       }
 
       return response.json({

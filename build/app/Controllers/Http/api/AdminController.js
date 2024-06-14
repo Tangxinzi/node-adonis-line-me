@@ -39,8 +39,8 @@ class AdminController {
                 const review = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url', 'type').where({ user_id: verification.user_id }).first() || {};
                 verification.verification_user = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url', 'type').where({ user_id: verification.verification_user_id || '' }).first() || {};
                 verification.verification_status = verification.verification_status.toUpperCase();
-                verification.created_at = (0, moment_1.default)(verification.created_at).format('YYYY-MM-DD HH:mm:ss');
-                verification.modified_at = verification.modified_at ? (0, moment_1.default)(verification.modified_at).format('YYYY-MM-DD HH:mm:ss') : '';
+                verification.created_at = (0, moment_1.default)(verification.created_at).format('MM-DD HH:mm:ss');
+                verification.modified_at = verification.modified_at ? (0, moment_1.default)(verification.modified_at).format('MM-DD HH:mm:ss') : '';
                 switch (`${verification.table}.${verification.field}`) {
                     case 'users.avatar_url':
                         break;
@@ -111,7 +111,7 @@ class AdminController {
                     verify[index].checker = await Database_1.default.from('users').select('avatar_url', 'nickname').where({ user_id: verify[index].verification_user_id }).first() || {};
                     verify[index].verification_status = verify[index].verification_status.toUpperCase();
                     verify[index].created_at = (0, moment_1.default)(verify[index].created_at).fromNow();
-                    verify[index].modified_at = verify[index].modified_at ? (0, moment_1.default)(verify[index].modified_at).format('YYYY-MM-DD HH:mm:ss') : '';
+                    verify[index].modified_at = verify[index].modified_at ? (0, moment_1.default)(verify[index].modified_at).format('MM-DD HH:mm:ss') : '';
                     const field = await Verification.field(`${verify[index].table}.${verify[index].field}`);
                     switch (`${verify[index].table}.${verify[index].field}`) {
                         case 'customer.':
@@ -186,7 +186,7 @@ class AdminController {
             for (let index = 0; index < customer.length; index++) {
                 customer[index].relation = RELATION[customer[index].relation];
                 customer[index].parent = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].user_id).first() || {};
-                customer[index].created_at = (0, moment_1.default)(customer[index].created_at).format('YYYY-MM-DD HH:mm:ss');
+                customer[index].created_at = (0, moment_1.default)(customer[index].created_at).format('MM-DD HH:mm:ss');
             }
             return response.json({
                 status: 200,
@@ -198,11 +198,39 @@ class AdminController {
             console.log(error);
         }
     }
+    async customerStatus({ params, request, response, session }) {
+        try {
+            switch (params.status) {
+                case '0':
+                case '1':
+                case '2':
+                    return await Database_1.default.from('customer').where({ id: params.customer_id }).update({ status: params.status });
+            }
+            return;
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+    async customerRecommend({ params, request, response, session }) {
+        try {
+            switch (params.recommend) {
+                case '0':
+                    return await Database_1.default.from('customer').where({ id: params.customer_id }).update({ recommend: 0 });
+                case '1':
+                    return await Database_1.default.from('customer').where({ id: params.customer_id, status: 1 }).update({ recommend: 1, recommend_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss') });
+            }
+            return;
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
     async users({ request, response, session }) {
         try {
             const users = await Database_1.default.from('users').select('id', 'type', 'user_id', 'nickname', 'avatar_url', 'detail', 'created_at').orderBy('created_at', 'desc').forPage(request.input('page', 1), 20);
             for (let index = 0; index < users.length; index++) {
-                users[index].created_at = (0, moment_1.default)(users[index].created_at).format('YYYY-MM-DD HH:mm:ss');
+                users[index].created_at = (0, moment_1.default)(users[index].created_at).format('MM-DD HH:mm:ss');
             }
             return response.json({
                 status: 200,
