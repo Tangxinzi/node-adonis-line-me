@@ -17,10 +17,10 @@ class CustomersController {
             const customer = await Database_1.default.from('customer').where({ id: all.id }).orderBy('id', 'desc').first();
             switch (all.button) {
                 case 're-recommend':
-                    await Database_1.default.from('customer').where({ id: all.id }).update({ recommend_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss') });
+                    await Database_1.default.from('customer').where({ id: all.id, status: 1 }).update({ recommend_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss') });
                     break;
                 case 'recommend':
-                    await Database_1.default.from('customer').where({ id: all.id }).update({ recommend: !customer.recommend, recommend_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss') });
+                    await Database_1.default.from('customer').where({ id: all.id, status: 1 }).update({ recommend: !customer.recommend, recommend_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss') });
                     break;
                 case 'delete':
                     await Database_1.default.from('customer').where({ id: all.id }).update({ status: 0, deleted_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss') });
@@ -57,7 +57,7 @@ class CustomersController {
                 if (customer[index].relation_log_id) {
                     customer[index] = {
                         ...customer[index],
-                        ...await Database_1.default.from('customer_log').select('nickname', 'avatar_url', 'sex', 'birthday', 'contact_wechat', 'photos', 'videos', 'school', 'company', 'work', 'phone', 'created_at', 'modified_at').where('id', customer[index].relation_log_id).first(),
+                        ...await Database_1.default.from('customer_log').select('nickname', 'avatar_url', 'sex', 'birthday', 'contact_wechat', 'photos', 'videos', 'school', 'education', 'company', 'job_title', 'work', 'phone', 'created_at', 'modified_at').where('id', customer[index].relation_log_id).first(),
                         percent: await percentCustomerinfo(customer[index].relation_log_id),
                         parent: await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].user_id).first() || {}
                     };
@@ -65,7 +65,7 @@ class CustomersController {
                 if (customer[index].relation_user_id) {
                     customer[index] = {
                         ...customer[index],
-                        ...await Database_1.default.from('users').select('nickname', 'avatar_url', 'sex', 'birthday', 'contact_wechat', 'photos', 'videos', 'school', 'company', 'work', 'phone', 'created_at', 'modified_at').where('user_id', customer[index].relation_user_id).first(),
+                        ...await Database_1.default.from('users').select('nickname', 'avatar_url', 'sex', 'birthday', 'contact_wechat', 'photos', 'videos', 'school', 'education', 'company', 'job_title', 'work', 'phone', 'created_at', 'modified_at').where('user_id', customer[index].relation_user_id).first(),
                         percent: await percentUserinfo(customer[index].relation_user_id),
                         parent: await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].relation_user_id).first() || {}
                     };
@@ -73,7 +73,7 @@ class CustomersController {
                 customer[index]['photos'] = customer[index]['photos'] ? JSON.parse(customer[index]['photos']) : [];
                 customer[index]['videos'] = customer[index]['videos'] ? JSON.parse(customer[index]['videos']) : [];
                 customer[index]['age'] = (0, moment_1.default)().diff(customer[index]['birthday'], 'years');
-                customer[index]['work'] = customer[index]['work'] ? JSON.parse(customer[index]['work']) : [];
+                customer[index]['work'] = customer[index]['work'] ? JSON.parse(customer[index]['work']) : {};
                 customer[index].recommend_at = (0, moment_1.default)(customer[index].recommend_at).format('YYYY-MM-DD HH:mm:ss');
                 customer[index].created_at = (0, moment_1.default)(customer[index].created_at).format('YYYY-MM-DD HH:mm:ss');
                 customer[index].modified_at = (0, moment_1.default)(customer[index].modified_at).fromNow();

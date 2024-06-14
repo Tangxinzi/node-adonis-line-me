@@ -7,7 +7,7 @@ const Database_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Lucid/D
 const Logger_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Core/Logger"));
 const moment_1 = __importDefault(require("moment"));
 const RELATION = ["朋友", "亲戚", "伙伴", "同事", "其他"];
-const { percentUserinfo } = require('../lib/Percent');
+const { percentUserinfo, percentCustomerinfo } = require('../lib/Percent');
 const Verification = require('../lib/Verification');
 class AdminController {
     watermark(mart) {
@@ -172,6 +172,7 @@ class AdminController {
         	IFNULL(customer_log.location, users.location) AS location,
         	IFNULL(customer_log.salary, users.salary) AS salary,
           customer.relation,
+          customer.relation_log_id,
           customer.introduction,
           customer.recommend,
           customer.status,
@@ -185,6 +186,7 @@ class AdminController {
       `))[0];
             for (let index = 0; index < customer.length; index++) {
                 customer[index].relation = RELATION[customer[index].relation];
+                customer[index].percent = await percentCustomerinfo(customer[index].relation_log_id);
                 customer[index].parent = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].user_id).first() || {};
                 customer[index].created_at = (0, moment_1.default)(customer[index].created_at).format('MM-DD HH:mm:ss');
             }

@@ -14,10 +14,10 @@ export default class CustomersController {
 
       switch (all.button) {
         case 're-recommend':
-          await Database.from('customer').where({ id: all.id }).update({ recommend_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
+          await Database.from('customer').where({ id: all.id, status: 1 }).update({ recommend_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
           break;
         case 'recommend':
-          await Database.from('customer').where({ id: all.id }).update({ recommend: !customer.recommend, recommend_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
+          await Database.from('customer').where({ id: all.id, status: 1 }).update({ recommend: !customer.recommend, recommend_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
           break;
         case 'delete':
           await Database.from('customer').where({ id: all.id }).update({ status: 0, deleted_at: Moment().format('YYYY-MM-DD HH:mm:ss') })
@@ -55,7 +55,7 @@ export default class CustomersController {
         if (customer[index].relation_log_id) {
           customer[index] = {
             ...customer[index],
-            ...await Database.from('customer_log').select('nickname', 'avatar_url', 'sex', 'birthday', 'contact_wechat', 'photos', 'videos', 'school', 'company', 'work', 'phone', 'created_at', 'modified_at').where('id', customer[index].relation_log_id).first(),
+            ...await Database.from('customer_log').select('nickname', 'avatar_url', 'sex', 'birthday', 'contact_wechat', 'photos', 'videos', 'school', 'education', 'company', 'job_title', 'work', 'phone', 'created_at', 'modified_at').where('id', customer[index].relation_log_id).first(),
             percent: await percentCustomerinfo(customer[index].relation_log_id),
             parent: await Database.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].user_id).first() || {}
           }
@@ -65,7 +65,7 @@ export default class CustomersController {
         if (customer[index].relation_user_id) {
           customer[index] = {
             ...customer[index],
-            ...await Database.from('users').select('nickname', 'avatar_url', 'sex', 'birthday', 'contact_wechat', 'photos', 'videos', 'school', 'company', 'work', 'phone', 'created_at', 'modified_at').where('user_id', customer[index].relation_user_id).first(),
+            ...await Database.from('users').select('nickname', 'avatar_url', 'sex', 'birthday', 'contact_wechat', 'photos', 'videos', 'school', 'education', 'company', 'job_title', 'work', 'phone', 'created_at', 'modified_at').where('user_id', customer[index].relation_user_id).first(),
             percent: await percentUserinfo(customer[index].relation_user_id),
             parent: await Database.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', customer[index].relation_user_id).first() || {}
           }
@@ -75,7 +75,7 @@ export default class CustomersController {
         customer[index]['photos'] = customer[index]['photos'] ? JSON.parse(customer[index]['photos']) : []
         customer[index]['videos'] = customer[index]['videos'] ? JSON.parse(customer[index]['videos']) : []
         customer[index]['age'] = Moment().diff(customer[index]['birthday'], 'years')
-        customer[index]['work'] = customer[index]['work'] ? JSON.parse(customer[index]['work']) : []
+        customer[index]['work'] = customer[index]['work'] ? JSON.parse(customer[index]['work']) : {}
         customer[index].recommend_at = Moment(customer[index].recommend_at).format('YYYY-MM-DD HH:mm:ss')
         customer[index].created_at = Moment(customer[index].created_at).format('YYYY-MM-DD HH:mm:ss')
         customer[index].modified_at = Moment(customer[index].modified_at).fromNow()

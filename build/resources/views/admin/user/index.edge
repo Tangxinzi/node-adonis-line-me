@@ -75,14 +75,22 @@
                   </a>
                 </td>
                 <td class="td">
+                  @if(row.school)
+                    <div class="ui label blue basic">
+                      {{ row.school }}
+                      @if(row.education != null)
+                        <div class="detail">{{ row.education }}</div>
+                      @endif
+                    </div>
+                  @endif
                   @if(row.company)
-                  <span class="ui label">{{ row.company || '' }}</span>
+                  <span class="ui label orange basic">{{ row.company || '' }}</span>
+                  @endif
+                  @if(row.work && row.work.text)
+                  <span class="ui label orange basic">{{ row.work.text || '' }}</span>
                   @endif
                   @if(row.job_title)
-                  <span class="ui label">{{ row.job_title || '' }}</span>
-                  @endif
-                  @if(row.work)
-                  <span class="ui label">{{ row.work.text || '' }}</span>
+                  <span class="ui label orange basic">{{ row.job_title || '' }}</span>
                   @endif
                 </td>
                 <td class="td" style="position: relative;">

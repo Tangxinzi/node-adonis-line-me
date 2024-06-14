@@ -86,18 +86,32 @@
                       <div class="detail" title="该用户已注册 {{ row.relation_user_id }}">已注册</div>
                     @endif
                   </a>
+
+                  <div class="ui label basic">
+                    {{ row.relation_text || row.relation || '' }}
+                    <div class="detail">{{ row.sex == 1 ? '男' : '' }}{{ row.sex == 0 ? '女' : '' }}</div>
+                  </div>
                 </td>
                 <td class="td" style="position: relative;">
                   <span class="activating click one-line" data-content="{{ row.introduction }}" data-position="bottom center" data-inverted="">{{ row.introduction }}</span>
                 </td>
                 <td class="td">
-                  <span class="ui label">{{ row.sex == 1 ? '男' : '' }}{{ row.sex == 0 ? '女' : '' }}</span>
-                  <span class="ui label">{{ row.relation_text || row.relation || '' }}</span>
                   @if(row.school)
-                    <span class="ui label">{{ row.school }}</span>
+                    <div class="ui label blue basic">
+                      {{ row.school }}
+                      @if(row.education != null)
+                        <div class="detail">{{ row.education }}</div>
+                      @endif
+                    </div>
                   @endif
                   @if(row.company)
-                    <span class="ui label">{{ row.company }}</span>
+                    <span class="ui label orange basic">{{ row.company }}</span>
+                  @endif
+                  @if(row.work && row.work.text)
+                    <span class="ui label orange basic">{{ row.work.text }}</span>
+                  @endif
+                  @if(row.job_title)
+                    <span class="ui label orange basic">{{ row.job_title }}</span>
                   @endif
                 </td>
                 <td class="td" title="{{ row.contact_wechat }}">
