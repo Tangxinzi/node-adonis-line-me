@@ -116,9 +116,6 @@ export default class TrackingController {
           case 'userBirthday':
             tracking[index].content.node = '生日';
             break;
-          case 'userSchool':
-            tracking[index].content.node = '学校';
-            break;
           case 'userCompany':
             tracking[index].content.node = '公司';
             break;
@@ -128,6 +125,9 @@ export default class TrackingController {
           case 'userWork':
             tracking[index].content.node = '行业';
             break;
+          case 'userSchool':
+            // tracking[index].content.node = '学校';
+            // break;
           case 'userPhotos':
             // tracking[index].content.node = '照片';
             // break;
@@ -145,7 +145,7 @@ export default class TrackingController {
 
       return view.render('admin/event-tracking/information-improvement-process', {
         data: {
-          title: '[IIP] 信息完善流程',
+          title: '[IIP] 注册流程',
           active: 'datas',
           tracking,
           all

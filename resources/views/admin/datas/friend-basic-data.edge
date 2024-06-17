@@ -22,31 +22,30 @@
       <table class="ui celled center aligned rounded table">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>关联用户</th>
-            <th>关联内容</th>
-            <th>地址</th>
-            <th class="center aligned">内容</th>
-            <th>时间类型</th>
-            <th>操作</th>
+            <th class="one wide">ID</th>
+            <th class="two wide">关联用户</th>
+            <th class="two wide">类别</th>
+            <th>值</th>
+            <th class="three wide">时间</th>
           </tr>
         </thead>
         <tbody>
           @each(row in data.datas)
             <tr>
               <td class="td">{{ row.id }}</td>
-              <td class="td">{{ row.user_id }}</td>
-              <td class="td">{{ row.table }} {{ row.field }} {{ row.field_value }}</td>
               <td class="td">
-                {{ row.category }}
+                <a class="ui image label" title="{{ row.user_id }}" href="{{ route('admin/UsersController.edit', { user_id: row.user_id || '-' }) }}">
+                  @if(row.userinfo.avatar_url)
+                    <img class="ui avatar image" src="{{ row.userinfo.avatar_url }}" />
+                  @endif
+                  {{ row.userinfo.nickname || ('Unnamed ' + row.user_id) }}
+                </a>
               </td>
+              <td class="td" title="{{ row.table }} {{ row.field }} {{ row.field_value }}">{{ row.type }}</td>
               <td class="td center aligned">
-                {{ row.count  }}
+                {{ row.count }}{{ row.category == '1' ? 's' : '' }}
               </td>
               <td class="td">{{ row.created_at }}</td>
-              <td class="td">
-                <a href="?path={{ row.filePath }}">删除</a>
-              </td>
             </tr>
           @endeach
         </tbody>

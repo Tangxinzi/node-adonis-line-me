@@ -134,13 +134,13 @@ Route.group(() => {
 }).middleware('apiAdminCheck').prefix('/api/admin')
 
 Route.group(() => {
-  Route.get('/datas', 'admin/DataController.index')
   Route.get('/datas/board', 'admin/DataController.board')
   Route.get('/datas/portrait-user', 'admin/DataController.portraitUser')
   Route.get('/datas/portrait-customer', 'admin/DataController.portraitCustomer')
   Route.get('/datas/event-tracking', 'admin/DataController.eventTracking')
   Route.get('/datas/event-tracking/:id', 'admin/TrackingController.eventTrackingID')
   Route.get('/datas/files', 'admin/DataController.files')
+  Route.get('/datas/friend-basic-data', 'admin/DataController.friendBasicData')
 
   Route.get('/operates', 'admin/OperatesController.index')
   Route.post('/operates', 'admin/OperatesController.save')

@@ -89,13 +89,13 @@ Route_1.default.group(() => {
     Route_1.default.get('/users', 'api/AdminController.users');
 }).middleware('apiAdminCheck').prefix('/api/admin');
 Route_1.default.group(() => {
-    Route_1.default.get('/datas', 'admin/DataController.index');
     Route_1.default.get('/datas/board', 'admin/DataController.board');
     Route_1.default.get('/datas/portrait-user', 'admin/DataController.portraitUser');
     Route_1.default.get('/datas/portrait-customer', 'admin/DataController.portraitCustomer');
     Route_1.default.get('/datas/event-tracking', 'admin/DataController.eventTracking');
     Route_1.default.get('/datas/event-tracking/:id', 'admin/TrackingController.eventTrackingID');
     Route_1.default.get('/datas/files', 'admin/DataController.files');
+    Route_1.default.get('/datas/friend-basic-data', 'admin/DataController.friendBasicData');
     Route_1.default.get('/operates', 'admin/OperatesController.index');
     Route_1.default.post('/operates', 'admin/OperatesController.save');
     Route_1.default.get('/incentive', 'admin/OperatesController.incentive');

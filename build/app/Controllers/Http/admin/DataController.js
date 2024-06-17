@@ -7,13 +7,29 @@ const Database_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Lucid/D
 const moment_1 = __importDefault(require("moment"));
 moment_1.default.locale('zh-cn');
 class DataController {
-    async index({ request, response, view, session }) {
+    async friendBasicData({ request, response, view, session }) {
         try {
-            const all = request.all(), datas = await Database_1.default.table('datas');
-            return view.render('admin/datas/index', {
+            const all = request.all(), datas = await Database_1.default.from('datas').andWhereNull('deleted_at').orderBy('created_at', 'desc').forPage(request.input('page', 1), 20);
+            for (let index = 0; index < datas.length; index++) {
+                switch (`${datas[index].table}.${datas[index].field}.${datas[index].category}`) {
+                    case 'customer.id.0':
+                        datas[index].type = '浏览查看';
+                        break;
+                    case 'customer.id.1':
+                        datas[index].type = '观看时间';
+                        break;
+                    case 'customer.id.2':
+                        datas[index].type = '好久介绍分享';
+                        break;
+                }
+                datas[index].userinfo = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', datas[index].user_id).first() || {};
+                datas[index].created_at = (0, moment_1.default)(datas[index].created_at).format('YYYY-MM-DD H:mm:ss');
+            }
+            return view.render('admin/datas/friend-basic-data', {
                 data: {
-                    title: '数据',
-                    active: 'datas',
+                    title: '好友基础数据',
+                    active: 'data',
+                    subActive: 'friend-basic-data',
                     datas,
                     all
                 }
@@ -69,6 +85,44 @@ class DataController {
             UNION ALL
             SELECT 'comments' AS type, count(*) AS value, '评论' AS text, '条' AS unit FROM moments WHERE status = 1
           ) AS data
+        `))[0],
+                weekdaysRegister: (await Database_1.default.rawQuery(`
+          SELECT 
+              week_number,
+              CONCAT(DATE_FORMAT(monday, '%m.%d'), ' ~ ', DATE_FORMAT(sunday, '%m.%d')) AS week_range,
+              COALESCE(type1_count, 0) AS 'user',
+              COALESCE(type2_count, 0) AS 'customer'
+          FROM (
+              SELECT 
+                  YEARWEEK(users.created_at, 1) AS week_number,
+                  MIN(DATE(users.created_at - INTERVAL (DAYOFWEEK(users.created_at) - 2) DAY)) AS monday,
+                  MAX(DATE(users.created_at + INTERVAL (8 - DAYOFWEEK(users.created_at)) DAY)) AS sunday,
+                  SUM(CASE WHEN users.type = 1 THEN 1 ELSE 0 END) AS 'type1_count',
+                  SUM(CASE WHEN users.type = 2 THEN 1 ELSE 0 END) AS 'type2_count'
+              FROM users
+              WHERE users.created_at >= DATE_SUB(CURDATE(), INTERVAL 9 WEEK) AND users.status = 1
+              GROUP BY week_number
+          ) AS weekly_summary
+          ORDER BY week_number DESC;                 
+        `))[0],
+                weekdaysCustomer: (await Database_1.default.rawQuery(`
+          SELECT 
+              week_number,
+              CONCAT(DATE_FORMAT(monday, '%m.%d'), ' ~ ', DATE_FORMAT(sunday, '%m.%d')) AS week_range,
+              COALESCE(status, 0) AS 'status',
+              COALESCE(recommend, 0) AS 'recommend'
+          FROM (
+              SELECT 
+                  YEARWEEK(created_at, 1) AS week_number,
+                  MIN(DATE(created_at - INTERVAL (DAYOFWEEK(created_at) - 2) DAY)) AS monday,
+                  MAX(DATE(created_at + INTERVAL (8 - DAYOFWEEK(created_at)) DAY)) AS sunday,
+                  SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) AS 'status',
+                  SUM(CASE WHEN recommend = 1 THEN 1 ELSE 0 END) AS 'recommend'
+              FROM customer
+              WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 9 WEEK) AND status = 1
+              GROUP BY week_number
+          ) AS weekly_summary
+          ORDER BY week_number DESC;                
         `))[0],
                 core: {
                     user: (await Database_1.default.rawQuery(`

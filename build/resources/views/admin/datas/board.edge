@@ -91,6 +91,64 @@
           <div id="core-customer" class="echarts" style="height: 400px"></div>
         </div>
       </div>
+      <!-- 周期数据统计 -->
+      <div class="ui header-title flex-between" style="margin-top: 2em;">
+        <span>周期数据统计</span>
+      </div>
+      <table class="ui celled center aligned rounded table">
+        <thead>
+          <tr>
+            <th class="one wide">周期</th>
+            <th class="two wide">周期范围</th>
+            <th class="two wide">用户注册</th>
+            <th class="two wide">介绍人注册</th>
+            <th class="two wide">用户有效注册</th>
+            <th class="two wide">介绍人有效注册</th>
+            {{--  <th>被介绍</th>
+            <th>有效被介绍</th>
+            <th>职业性介绍</th>  --}}
+          </tr>
+        </thead>
+        <tbody>
+          @each(item in data.datas.weekdaysRegister)
+          <tr>
+            <td>{{ item.week_number }}</td>
+            <td>{{ item.week_range }}</td>
+            <td>{{ item.user }}</td>
+            <td>{{ item.customer }}</td>
+            <td></td>
+            <td></td>
+            {{--  <td></td>
+            <td></td>
+            <td></td>  --}}
+          </tr>
+          @endeach
+        </tbody>
+      </table>
+      <table class="ui celled center aligned rounded table">
+        <thead>
+          <tr>
+            <th class="one wide">周期</th>
+            <th class="two wide">周期范围</th>
+            <th class="two wide">被介绍</th>
+            <th class="two wide">推荐池</th>
+            <th class="two wide">有效被介绍</th>
+            <th class="two wide">职业性介绍</th>
+          </tr>
+        </thead>
+        <tbody>
+          @each(item in data.datas.weekdaysCustomer)
+          <tr>
+            <td>{{ item.week_number }}</td>
+            <td>{{ item.week_range }}</td>
+            <td>{{ item.status }}</td>
+            <td>{{ item.recommend }}</td>
+            <td></td>
+            <td></td>
+          </tr>
+          @endeach
+        </tbody>
+      </table>
       <div class="ui header-title flex-between" style="margin-top: 2em;">
         <span>动态</span>
       </div>
