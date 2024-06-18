@@ -22,7 +22,7 @@
       <table class="ui celled center aligned table">
         <thead>
           <tr>
-            <th>ID</th>
+            <th class="one wide">ID</th>
             <th class="two wide">提交用户</th>
             <th class="two wide">数据字段</th>
             <th>更新值</th>
@@ -65,7 +65,7 @@
                   @endeach
                 @endif
               </td>
-              <td>{{ row.created_at }}</td>
+              <td title="{{ row.created_at }}">{{ row.fromNow }}</td>
               <td>{{ row.checker.nickname || '-' }}</td>
               <td>
                 <a class="ui label" href="{{ route('admin/OperatesController.review', { id: row.id }) }}" title="状态：pending 审核状态 / approved 通过 / rejected 拒绝 / close 关闭">

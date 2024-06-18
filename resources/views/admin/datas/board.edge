@@ -100,13 +100,11 @@
           <tr>
             <th class="one wide">周期</th>
             <th class="two wide">周期范围</th>
+            <th class="two wide">所有</th>
             <th class="two wide">用户注册</th>
             <th class="two wide">介绍人注册</th>
             <th class="two wide">用户有效注册</th>
             <th class="two wide">介绍人有效注册</th>
-            {{--  <th>被介绍</th>
-            <th>有效被介绍</th>
-            <th>职业性介绍</th>  --}}
           </tr>
         </thead>
         <tbody>
@@ -114,13 +112,11 @@
           <tr>
             <td>{{ item.week_number }}</td>
             <td>{{ item.week_range }}</td>
+            <td>{{ item.total }}</td>
             <td>{{ item.user }}</td>
             <td>{{ item.customer }}</td>
             <td></td>
             <td></td>
-            {{--  <td></td>
-            <td></td>
-            <td></td>  --}}
           </tr>
           @endeach
         </tbody>
@@ -130,6 +126,7 @@
           <tr>
             <th class="one wide">周期</th>
             <th class="two wide">周期范围</th>
+            <th class="two wide">所有</th>
             <th class="two wide">被介绍</th>
             <th class="two wide">推荐池</th>
             <th class="two wide">有效被介绍</th>
@@ -141,6 +138,7 @@
           <tr>
             <td>{{ item.week_number }}</td>
             <td>{{ item.week_range }}</td>
+            <td>{{ item.total }}</td>
             <td>{{ item.status }}</td>
             <td>{{ item.recommend }}</td>
             <td></td>

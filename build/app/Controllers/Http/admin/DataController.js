@@ -90,6 +90,7 @@ class DataController {
           SELECT 
               week_number,
               CONCAT(DATE_FORMAT(monday, '%m.%d'), ' ~ ', DATE_FORMAT(sunday, '%m.%d')) AS week_range,
+              COALESCE(total, 0) AS 'total',
               COALESCE(type1_count, 0) AS 'user',
               COALESCE(type2_count, 0) AS 'customer'
           FROM (
@@ -97,32 +98,48 @@ class DataController {
                   YEARWEEK(users.created_at, 1) AS week_number,
                   MIN(DATE(users.created_at - INTERVAL (DAYOFWEEK(users.created_at) - 2) DAY)) AS monday,
                   MAX(DATE(users.created_at + INTERVAL (8 - DAYOFWEEK(users.created_at)) DAY)) AS sunday,
+                  SUM(
+                    CASE
+                        WHEN type = 1 THEN 1
+                        WHEN type = 2 THEN 1
+                        ELSE 0
+                    END
+                  ) AS 'total',
                   SUM(CASE WHEN users.type = 1 THEN 1 ELSE 0 END) AS 'type1_count',
                   SUM(CASE WHEN users.type = 2 THEN 1 ELSE 0 END) AS 'type2_count'
               FROM users
               WHERE users.created_at >= DATE_SUB(CURDATE(), INTERVAL 9 WEEK) AND users.status = 1
               GROUP BY week_number
           ) AS weekly_summary
-          ORDER BY week_number DESC;                 
+          ORDER BY week_number DESC;
         `))[0],
                 weekdaysCustomer: (await Database_1.default.rawQuery(`
           SELECT 
               week_number,
               CONCAT(DATE_FORMAT(monday, '%m.%d'), ' ~ ', DATE_FORMAT(sunday, '%m.%d')) AS week_range,
+              COALESCE(total, 0) AS 'total',
               COALESCE(status, 0) AS 'status',
               COALESCE(recommend, 0) AS 'recommend'
           FROM (
-              SELECT 
+              SELECT
                   YEARWEEK(created_at, 1) AS week_number,
                   MIN(DATE(created_at - INTERVAL (DAYOFWEEK(created_at) - 2) DAY)) AS monday,
                   MAX(DATE(created_at + INTERVAL (8 - DAYOFWEEK(created_at)) DAY)) AS sunday,
+                  SUM(
+                    CASE
+                        WHEN status = 1 THEN 1
+                        WHEN status = 2 THEN 1
+                        WHEN status = 3 THEN 1
+                        ELSE 0
+                    END
+                  ) AS 'total',
                   SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) AS 'status',
                   SUM(CASE WHEN recommend = 1 THEN 1 ELSE 0 END) AS 'recommend'
               FROM customer
-              WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 9 WEEK) AND status = 1
+              WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 9 WEEK) AND status IN (1, 2, 3)
               GROUP BY week_number
           ) AS weekly_summary
-          ORDER BY week_number DESC;                
+          ORDER BY week_number DESC;
         `))[0],
                 core: {
                     user: (await Database_1.default.rawQuery(`
@@ -160,37 +177,51 @@ class DataController {
                 },
                 charts: {
                     total: (await Database_1.default.rawQuery(`
-            SELECT
-              date_range.day,
-              COALESCE(count_users, 0) AS count_users,
-              COALESCE(count_customer, 0) AS count_customer,
-              COALESCE(count_moments, 0) AS count_moments,
-              COALESCE(count_answer, 0) AS count_answer
-            FROM (
-              SELECT DATE_SUB(CURDATE(), INTERVAL seq DAY) AS day,
-                COUNT(users.created_at) AS count_users,
-                COUNT(customer.created_at) AS count_customer,
-                COUNT(moments.created_at) AS count_moments,
-                COUNT(answer.created_at) AS count_answer
+              SELECT
+                  date_range.day,
+                  COALESCE(count_users, 0) AS count_users,
+                  COALESCE(count_customer, 0) AS count_customer,
+                  COALESCE(count_moments, 0) AS count_moments,
+                  COALESCE(count_answer, 0) AS count_answer
               FROM (
-                SELECT 0 AS seq UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL
-                SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL
-                SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL
-                SELECT 10 UNION ALL SELECT 11 UNION ALL SELECT 12 UNION ALL
-                SELECT 13 UNION ALL SELECT 14 UNION ALL SELECT 15 UNION ALL
-                SELECT 16 UNION ALL SELECT 17 UNION ALL SELECT 18 UNION ALL
-                SELECT 19 UNION ALL SELECT 20 UNION ALL SELECT 21 UNION ALL
-                SELECT 22 UNION ALL SELECT 23 UNION ALL SELECT 24 UNION ALL
-                SELECT 25 UNION ALL SELECT 26 UNION ALL SELECT 27 UNION ALL SELECT 28 UNION ALL SELECT 29
-              ) AS dates
-              LEFT JOIN users ON DATE(users.created_at) = DATE_SUB(CURDATE(), INTERVAL seq DAY)
-              LEFT JOIN customer ON DATE(customer.created_at) = DATE_SUB(CURDATE(), INTERVAL seq DAY)
-              LEFT JOIN moments ON DATE(moments.created_at) = DATE_SUB(CURDATE(), INTERVAL seq DAY)
-              LEFT JOIN answer ON DATE(answer.created_at) = DATE_SUB(CURDATE(), INTERVAL seq DAY)
-              GROUP BY day
-              ORDER BY day DESC
-            ) date_range
-            ORDER BY date_range.day;
+                  SELECT DATE_SUB(CURDATE(), INTERVAL seq DAY) AS day
+                  FROM (
+                      SELECT 0 AS seq UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL
+                      SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL
+                      SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL
+                      SELECT 10 UNION ALL SELECT 11 UNION ALL SELECT 12 UNION ALL
+                      SELECT 13 UNION ALL SELECT 14 UNION ALL SELECT 15 UNION ALL
+                      SELECT 16 UNION ALL SELECT 17 UNION ALL SELECT 18 UNION ALL
+                      SELECT 19 UNION ALL SELECT 20 UNION ALL SELECT 21 UNION ALL
+                      SELECT 22 UNION ALL SELECT 23 UNION ALL SELECT 24 UNION ALL
+                      SELECT 25 UNION ALL SELECT 26 UNION ALL SELECT 27 UNION ALL SELECT 28 UNION ALL SELECT 29
+                  ) AS dates
+              ) AS date_range
+              LEFT JOIN (
+                  SELECT DATE(created_at) AS day, COUNT(*) AS count_users
+                  FROM users
+                  WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 29 DAY)
+                  GROUP BY day
+              ) AS users ON date_range.day = users.day
+              LEFT JOIN (
+                  SELECT DATE(created_at) AS day, COUNT(*) AS count_customer
+                  FROM customer
+                  WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 29 DAY)
+                  GROUP BY day
+              ) AS customer ON date_range.day = customer.day
+              LEFT JOIN (
+                  SELECT DATE(created_at) AS day, COUNT(*) AS count_moments
+                  FROM moments
+                  WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 29 DAY)
+                  GROUP BY day
+              ) AS moments ON date_range.day = moments.day
+              LEFT JOIN (
+                  SELECT DATE(created_at) AS day, COUNT(*) AS count_answer
+                  FROM answer
+                  WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 29 DAY)
+                  GROUP BY day
+              ) AS answer ON date_range.day = answer.day
+              ORDER BY date_range.day;      
           `))[0],
                     core: {
                         user: {

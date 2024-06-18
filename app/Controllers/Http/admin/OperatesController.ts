@@ -174,7 +174,8 @@ export default class OperatesController {
         verification[index].userinfo = await Database.from('users').select('avatar_url', 'nickname').where({ user_id: verification[index].user_id }).first()
         verification[index].checker = await Database.from('users').select('avatar_url', 'nickname').where({ user_id: verification[index].verification_user_id }).first() || {}
         verification[index].verification_status = verification[index].verification_status.toUpperCase()
-        verification[index].created_at = Moment(verification[index].created_at).fromNow()
+        verification[index].fromNow = Moment(verification[index].created_at).fromNow()
+        verification[index].created_at = Moment(verification[index].created_at).format('YYYY-MM-DD HH:mm:ss')
         verification[index].modified_at = verification[index].modified_at ? Moment(verification[index].modified_at).format('YYYY-MM-DD HH:mm:ss') : ''
       }
 

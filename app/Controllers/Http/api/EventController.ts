@@ -33,9 +33,10 @@ export default class EventController {
             for (let index = 0; index < customer.length; index++) {
               customer[index].created_at = Moment(customer[index].created_at).format('YYYY-MM-DD HH:mm')
               if (customer[index].relation_user_id) {
-                const user = await Database.from('users').select('avatar_url', 'nickname', 'birthday', 'work').where('user_id', customer[index].relation_user_id).first()
+                const user = await Database.from('users').select('avatar_url', 'nickname', 'birthday', 'photos', 'work').where('user_id', customer[index].relation_user_id).first() || {}
                 user.age = Moment().diff(user.birthday, 'years')
                 user.work = user.work ? JSON.parse(user.work) : []
+                user.photos = user.photos ? JSON.parse(user.photos) : []
                 if (user.work.value) {
                   user.work.text = await zpData.data(user.work.value[0], user.work.value[1])
                 }
@@ -44,9 +45,10 @@ export default class EventController {
                   ...user
                 }
               } else if (customer[index].relation_log_id) {
-                const customer_log = await Database.from('customer_log').select('avatar_url', 'nickname', 'birthday', 'work').where('id', customer[index].relation_log_id).first()
+                const customer_log = await Database.from('customer_log').select('avatar_url', 'nickname', 'birthday', 'photos', 'work').where('id', customer[index].relation_log_id).first() || {}
                 customer_log.age = Moment().diff(customer_log.birthday, 'years')
                 customer_log.work = customer_log.work ? JSON.parse(customer_log.work) : []
+                customer_log.photos = customer_log.photos ? JSON.parse(customer_log.photos) : []
                 if (customer_log.work.value) {
                   customer_log.work.text = await zpData.data(customer_log.work.value[0], customer_log.work.value[1])
                 }
