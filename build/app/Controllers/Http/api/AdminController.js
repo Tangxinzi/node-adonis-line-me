@@ -180,7 +180,7 @@ class AdminController {
         FROM customer
         LEFT JOIN customer_log ON customer.relation_user_id IS NULL AND customer.relation_log_id = customer_log.id
         LEFT JOIN users ON customer.relation_user_id IS NOT NULL AND customer.relation_user_id = users.user_id
-        WHERE customer.status IN (1, 2) AND customer.deleted_at IS NULL
+        WHERE customer.status IN (1, 2, 3) AND customer.deleted_at IS NULL
         ORDER BY customer.created_at DESC
         LIMIT ${request.input('page', 0) * 15}, 15
       `))[0];

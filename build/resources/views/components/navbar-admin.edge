@@ -10,7 +10,7 @@
         </div>
         <a class="{{ data.active == 'customers' ? 'item active' : 'item' }}" href="{{ route('admin/CustomersController.index' )}}">介绍</a>
         <a class="{{ data.active == 'descovery' ? 'item active' : 'item' }}" href="{{ route('admin/EventController.descovery' )}}">论坛</a>
-        <a class="{{ data.active == 'chatroom' ? 'item active' : 'item' }}" href="{{ route('admin/ChatroomController.index' )}}">聊天</a>
+        <a class="{{ data.active == 'chatroom' ? 'item active' : 'item' }}" href="{{ route('admin/ChatsroomController.index' )}}">聊天</a>
         <a class="{{ data.active == 'users' ? 'item active' : 'item' }}" href="{{ route('admin/UsersController.index') }}">用户</a>
         <a class="{{ (data.active == 'questions' || data.active == 'answer') ? 'item active' : 'item' }}" href="{{ route('admin/QuestionsController.index' )}}">问答</a>
         <a class="{{ (data.active == 'article' || data.active == 'article') ? 'item active' : 'item' }}" href="{{ route('admin/ArticleController.index' )}}">文章</a>

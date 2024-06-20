@@ -24,10 +24,10 @@ Route_1.default.group(() => {
     Route_1.default.post('/user/recommend/home', 'api/UserController.recommendHome');
     Route_1.default.post('/user/custom/create', 'api/PublishesController.create');
     Route_1.default.get('/user/qrcode', 'api/UserController.qrcode');
-    Route_1.default.get('/user/chat', 'api/UserController.chat');
-    Route_1.default.get('/user/chat/send', 'api/UserController.chatSend');
-    Route_1.default.get('/user/chat/messages', 'api/UserController.messages');
     Route_1.default.get('/user/location', 'api/UserController.location');
+    Route_1.default.get('/user/chat', 'api/ChatsroomController.chat');
+    Route_1.default.get('/user/chat/send', 'api/ChatsroomController.send');
+    Route_1.default.get('/user/chat/messages', 'api/ChatsroomController.messages');
     Route_1.default.get('/user/question', 'api/QuestionsController.index');
     Route_1.default.get('/user/question/lists', 'api/QuestionsController.questionLists');
     Route_1.default.get('/user/answer/lists', 'api/QuestionsController.answerLists');
@@ -123,10 +123,10 @@ Route_1.default.group(() => {
     Route_1.default.get('/article/edit/:id', 'admin/ArticleController.edit');
     Route_1.default.post('/article/save', 'admin/ArticleController.save');
     Route_1.default.post('/article/delete', 'admin/ArticleController.delete');
-    Route_1.default.get('/chatroom', 'admin/ChatroomController.index');
-    Route_1.default.get('/chatroom/edit/:id', 'admin/ChatroomController.edit').as('admin.chatroom.edit');
-    Route_1.default.post('/chatroom/store', 'admin/ChatroomController.store');
-    Route_1.default.post('/chatroom/update', 'admin/ChatroomController.update');
+    Route_1.default.get('/chatsroom', 'admin/ChatsroomController.index');
+    Route_1.default.get('/chatsroom/edit/:id', 'admin/ChatsroomController.edit').as('admin.chatsroom.edit');
+    Route_1.default.post('/chatsroom/store', 'admin/ChatsroomController.store');
+    Route_1.default.post('/chatsroom/update', 'admin/ChatsroomController.update');
     Route_1.default.get('/questions', 'admin/QuestionsController.index');
     Route_1.default.get('/questions/answer/:type', 'admin/QuestionsController.answer');
     Route_1.default.get('/questions/edit/:id', 'admin/QuestionsController.edit');

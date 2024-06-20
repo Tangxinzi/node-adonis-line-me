@@ -19,47 +19,52 @@
         <span>{{ data.title }}</span>
         <div class="">
           <a class="ui tiny button" href="#" onclick="modal('messages')">推送消息</a>
-          <a class="ui tiny button" href="#" onclick="modal('chatroom')">添加房间</a>
+          <a class="ui tiny button" href="#" onclick="modal('chatsroom')">添加房间</a>
         </div>
       </div>
       <table class="ui celled table center aligned">
         <thead>
           <tr>
-            {{-- <th>房间号</th> --}}
-            <th>名称</th>
-            <th>用户</th>
-            <th>人数</th>
-            <th>类型</th>
-            <!-- <th>状态</th> -->
-            <th>更新时间</th>
-            <th>创建时间</th>
-            <th>操作</th>
+            <th class="one wide">ID</th>
+            <th>发起用户</th>
+            <th>参与用户</th>
+            <th class="one wide">人数</th>
+            <th class="one wide">状态</th>
+            <th class="one wide">类型</th>
+            <th class="one wide">更新时间</th>
+            <th class="two wide">创建时间</th>
+            <th class="one wide">操作</th>
           </tr>
         </thead>
         <tbody>
-          @each(chatroom in data.chatroom)
+          @each(chatsroom in data.chatsroom)
             <tr>
-              {{-- <td><span class="one-line" style="width: 130px">{{ chatroom.chat_id }}</span></td> --}}
-              <td>
-                <a href="{{ route('admin.chatroom.edit', { id: chatroom.chat_id }) }}">{{ chatroom.chat_name || '未命名' }}</a>
+              <td><span class="one-line">{{ chatsroom.id }}</td>
+              <td class="ui labels">
+                <a class="ui mini image label" title="ID: {{ chatsroom.chat_users[0].user_id }}" href="{{ route('admin.chatsroom.edit', { id: chatsroom.chat_id }) }}">
+                  <img src="{{ chatsroom.chat_users[0].avatar_url }}" alt="" />
+                  {{ chatsroom.chat_users[0].nickname }}
+                </a>
               </td>
               <td class="ui labels">
-                @each(user in chatroom.chat_users)
-                  <span class="ui mini image label" title="ID: {{ user.user_id }}">
-                    <img src="{{ user.avatar_url }}" alt="{{ user.nickname }}" />
-                    {{ user.nickname }}
-                  </span>
+                @each((user, index) in chatsroom.chat_users)
+                  @if(index > 0)
+                    <a class="ui mini image label" title="ID: {{ user.user_id }}" >
+                      <img src="{{ user.avatar_url }}" alt="" />
+                      {{ user.nickname }}
+                    </a>
+                  @endif
                 @endeach
               </td>
-              <td>{{ chatroom.chat_users.length }}</td>
-              <!-- <td>{{ chatroom.type }}</td> -->
-              <td>{{ chatroom.status == 1 ? '正常' : '' }}{{ chatroom.status == 0 ? '封禁' : '' }}</td>
-              <td>{{ chatroom.modified_at }}</td>
-              <td>{{ chatroom.created_at }}</td>
+              <td>{{ chatsroom.chat_users.length }}</td>
+              <td>{{ chatsroom.type }}</td>
+              <td>{{ chatsroom.status == 1 ? '正常' : '' }}{{ chatsroom.status == 0 ? '封禁' : '' }}</td>
+              <td>{{ chatsroom.modified_at }}</td>
+              <td>{{ chatsroom.created_at }}</td>
               <td class="td" style="position: relative;">
                 <a href="#" class="activating click" data-position="bottom center" data-html="<form class='ui mini basic vertical buttons' method='post' action='/admin/customers/field'>
                   {{ csrfField() }}
-                  <input type='text' name='id' value='{{ chatroom.id }}' hidden />
+                  <input type='text' name='id' value='{{ chatsroom.id }}' hidden />
                   <button class='ui negative button' name='button' value='delete' style='color: red !important;'>删除</button>
                 </form>">
                   操作
@@ -71,7 +76,7 @@
       </table>
     </div>
   </div>
-  <form class="ui modal form chatroom" action="{{ route('admin/ChatroomController.store') }}" method="POST" enctype="multipart/form-data">
+  <form class="ui modal form chatsroom" action="{{ route('admin/ChatsroomController.store') }}" method="POST" enctype="multipart/form-data">
     <i class="close icon"></i>
     <div class="header">
       添加房间
@@ -85,10 +90,10 @@
     </div>
     <div class="actions">
       <div class="ui black deny button">取消</div>
-      <button class="ui positive right labeled icon button" type="submit" name="button" value="chatroom">提交<i class="checkmark icon"></i></button>
+      <button class="ui positive right labeled icon button" type="submit" name="button" value="chatsroom">提交<i class="checkmark icon"></i></button>
     </div>
   </form>
-  <form class="ui modal form messages" action="{{ route('admin/ChatroomController.store') }}" method="POST" enctype="multipart/form-data">
+  <form class="ui modal form messages" action="{{ route('admin/ChatsroomController.store') }}" method="POST" enctype="multipart/form-data">
     <i class="close icon"></i>
     <div class="header">
       推送消息

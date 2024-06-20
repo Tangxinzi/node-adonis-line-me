@@ -7,21 +7,22 @@ const Database_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Lucid/D
 const moment_1 = __importDefault(require("moment"));
 moment_1.default.locale('zh-cn');
 const uuid_1 = require("uuid");
-class ChatroomController {
+class ChatsroomController {
     async index({ request, response, view, session }) {
         try {
-            const chatroom = await Database_1.default.from('chatroom').orderBy('modified_at', 'desc');
-            for (var i = 0; i < chatroom.length; i++) {
-                chatroom[i].chat_users_id = chatroom[i].chat_users_id.split(',');
-                chatroom[i]['chat_users'] = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').whereIn('user_id', chatroom[i].chat_users_id);
-                chatroom[i]['created_at'] = (0, moment_1.default)(chatroom[i]['created_at']).format('YYYY-MM-DD HH:mm:ss');
-                chatroom[i]['modified_at'] = (0, moment_1.default)(chatroom[i]['modified_at']).fromNow();
+            const chatsroom = await Database_1.default.from('chatsroom').orderBy('modified_at', 'desc');
+            for (var i = 0; i < chatsroom.length; i++) {
+                chatsroom[i].chat_users = [];
+                chatsroom[i].chat_users[0] = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', chatsroom[i].chat_user_id).first() || {};
+                chatsroom[i].chat_users[1] = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').where('user_id', chatsroom[i].chat_participant_users_id).first() || {};
+                chatsroom[i]['created_at'] = (0, moment_1.default)(chatsroom[i]['created_at']).format('YYYY-MM-DD HH:mm:ss');
+                chatsroom[i]['modified_at'] = (0, moment_1.default)(chatsroom[i]['modified_at']).fromNow();
             }
-            return view.render('admin/chatroom/index', {
+            return view.render('admin/chatsroom/index', {
                 data: {
                     title: '聊天',
-                    active: 'chatroom',
-                    chatroom
+                    active: 'chatsroom',
+                    chatsroom
                 }
             });
         }
@@ -32,24 +33,24 @@ class ChatroomController {
     async edit({ params, request, response, view, session }) {
         try {
             var all = request.all();
-            const chatroom = await Database_1.default.from('chatroom').where('chat_id', params.id).first();
-            chatroom['users'] = await Database_1.default.from('users').whereIn('user_id', chatroom.chat_users_id.split(','));
-            chatroom.chat_users_id = chatroom.chat_users_id.split(',');
-            const users = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').whereIn('user_id', chatroom.chat_users_id);
+            const chatsroom = await Database_1.default.from('chatsroom').where('chat_id', params.id).first();
+            chatsroom['users'] = await Database_1.default.from('users').whereIn('user_id', [chatsroom.chat_user_id, chatsroom.chat_participant_users_id]);
+            chatsroom.chat_users_id = [chatsroom.chat_user_id, chatsroom.chat_participant_users_id];
+            const users = await Database_1.default.from('users').select('user_id', 'nickname', 'avatar_url').whereIn('user_id', chatsroom.chat_users_id);
             const chats = await Database_1.default.from('chats').select('id', 'chat_id', 'user_id', 'chat_content', 'chat_content_type', 'created_at').where({ chat_id: params.id, status: 1 }).orderBy('created_at', 'asc');
             for (let index = 0; index < chats.length; index++) {
-                const indexOf = chatroom.chat_users_id.indexOf(chats[index].user_id);
+                const indexOf = chatsroom.chat_users_id.indexOf(chats[index].user_id);
                 if (indexOf != -1) {
                     chats[index].userinfo = users[indexOf];
                 }
                 chats[index].created_at = (0, moment_1.default)(chats[index].created_at).format('YYYY-MM-DD HH:mm:ss');
             }
-            chatroom['chats'] = chats;
-            return view.render('admin/chatroom/edit', {
+            chatsroom.chats = chats;
+            return view.render('admin/chatsroom/edit', {
                 data: {
-                    title: `${chatroom.chat_name || ''} - 聊天`,
-                    active: 'chatroom',
-                    chatroom,
+                    title: `${chatsroom.chat_name || ''}聊天`,
+                    active: 'chatsroom',
+                    chatsroom,
                     users
                 }
             });
@@ -62,10 +63,10 @@ class ChatroomController {
         try {
             const all = request.all();
             switch (all.button) {
-                case 'chatroom':
+                case 'chatsroom':
                     if (all.users.split(',').length >= 2) {
                         const chat_id = (0, uuid_1.v4)();
-                        await Database_1.default.table('chatroom').insert({ chat_id, chat_users_id: all.users });
+                        await Database_1.default.table('chatsroom').insert({ chat_id, chat_users_id: all.users });
                         session.flash('success', { type: 'success', header: '', message: `房间号「${all.id}」更新成功。` });
                     }
                     else {
@@ -93,7 +94,7 @@ class ChatroomController {
         try {
             const all = request.all();
             if (all.chat_users_id.split(',').length >= 2) {
-                await Database_1.default.from('chatroom').where('chat_id', all.id).update({
+                await Database_1.default.from('chatsroom').where('chat_id', all.id).update({
                     status: all.status,
                     chat_name: all.name,
                     chat_description: all.description,
@@ -111,5 +112,5 @@ class ChatroomController {
         }
     }
 }
-module.exports = ChatroomController;
-//# sourceMappingURL=ChatroomController.js.map
+module.exports = ChatsroomController;
+//# sourceMappingURL=ChatsroomController.js.map

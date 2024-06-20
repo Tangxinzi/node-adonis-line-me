@@ -19,15 +19,15 @@
         <span>{{ data.title }}</span>
       </div>
       <div class="ui segment">
-        <form class="ui form" action="{{ route('admin/ChatroomController.update') }}" method="POST" enctype="multipart/form-data">
+        <form class="ui form" action="{{ route('admin/ChatsroomController.update') }}" method="POST" enctype="multipart/form-data">
           <div class="required disabled field">
             <label for="id">房间 ID</label>
-            <input id="id" type="text" name="id" value="{{ data.chatroom.chat_id || '' }}" />
+            <input id="id" type="text" name="id" value="{{ data.chatsroom.chat_id || '' }}" />
           </div>
           <div class="required field">
             <label for="name">状态</label>
             <div class="ui selection dropdown">
-              <input type="hidden" name="status" value="{{ data.chatroom.status }}" />
+              <input type="hidden" name="status" value="{{ data.chatsroom.status }}" />
               <i class="dropdown icon"></i>
               <div class="default text">点击选择</div>
               <div class="menu">
@@ -38,16 +38,16 @@
           </div>
           <div class="required field">
             <label for="name">名称</label>
-            <input id="name" type="text" name="name" value="{{ data.chatroom.chat_name || '' }}" />
+            <input id="name" type="text" name="name" value="{{ data.chatsroom.chat_name || '' }}" />
           </div>
           <div class="required field">
             <label for="description">描述</label>
-            <textarea name="description" rows="4" cols="80">{{ data.chatroom.chat_description || '' }}</textarea>
+            <textarea name="description" rows="4" cols="80">{{ data.chatsroom.chat_description || '' }}</textarea>
           </div>
           <div class="required field">
             <label for="users">用户</label>
             <div class="ui labels" style="margin-bottom: 0.5em;">
-              @each(row in data.chatroom.users)
+              @each(row in data.chatsroom.users)
                 <a class="ui image label" title="{{ row.user_id }}">
                   @if(row.avatar_url)
                   <img src="{{ row.avatar_url }}" />
@@ -57,14 +57,14 @@
                 </a>
               @endeach
             </div>
-            <textarea name="chat_users_id" rows="8" cols="80" placeholder="房间需要 2 人以上，如需更新请插入多个 USER_ID。">{{ data.chatroom.chat_users_id || '' }}</textarea>
+            <textarea name="chat_users_id" rows="8" cols="80" placeholder="房间需要 2 人以上，如需更新请插入多个 USER_ID。">{{ data.chatsroom.chat_users_id || '' }}</textarea>
           </div>
           {{ csrfField() }}
           <button class="ui positive button" type="submit" name="button">提交更新</button>
         </form>
       </div>
       <div class="ui segments">
-        @each(chat in data.chatroom.chats)
+        @each(chat in data.chatsroom.chats)
           <div class="ui segment">
             <div class="flex-between">
               <span>{{ chat.userinfo.nickname }}：{{ chat.chat_content }}</span>
@@ -75,7 +75,7 @@
       </div>
     </div>
   </div>
-  <form class="ui modal tiny form" action="{{ route('admin/ChatroomController.store') }}" method="POST" enctype="multipart/form-data">
+  <form class="ui modal tiny form" action="{{ route('admin/ChatsroomController.store') }}" method="POST" enctype="multipart/form-data">
     <i class="close icon"></i>
     <div class="header">
       添加房间

@@ -44,10 +44,11 @@ Route.group(() => {
   Route.post('/user/recommend/home', 'api/UserController.recommendHome')
   Route.post('/user/custom/create', 'api/PublishesController.create')
   Route.get('/user/qrcode', 'api/UserController.qrcode')
-  Route.get('/user/chat', 'api/UserController.chat')
-  Route.get('/user/chat/send', 'api/UserController.chatSend')
-  Route.get('/user/chat/messages', 'api/UserController.messages')
   Route.get('/user/location', 'api/UserController.location')
+
+  Route.get('/user/chat', 'api/ChatsroomController.chat')
+  Route.get('/user/chat/send', 'api/ChatsroomController.send')
+  Route.get('/user/chat/messages', 'api/ChatsroomController.messages')
 
   Route.get('/user/question', 'api/QuestionsController.index')
   Route.get('/user/question/lists', 'api/QuestionsController.questionLists')
@@ -175,10 +176,10 @@ Route.group(() => {
   Route.post('/article/save', 'admin/ArticleController.save')
   Route.post('/article/delete', 'admin/ArticleController.delete')
 
-  Route.get('/chatroom', 'admin/ChatroomController.index')
-  Route.get('/chatroom/edit/:id', 'admin/ChatroomController.edit').as('admin.chatroom.edit')
-  Route.post('/chatroom/store', 'admin/ChatroomController.store')
-  Route.post('/chatroom/update', 'admin/ChatroomController.update')
+  Route.get('/chatsroom', 'admin/ChatsroomController.index')
+  Route.get('/chatsroom/edit/:id', 'admin/ChatsroomController.edit').as('admin.chatsroom.edit')
+  Route.post('/chatsroom/store', 'admin/ChatsroomController.store')
+  Route.post('/chatsroom/update', 'admin/ChatsroomController.update')
 
   Route.get('/questions', 'admin/QuestionsController.index')
   Route.get('/questions/answer/:type', 'admin/QuestionsController.answer')
