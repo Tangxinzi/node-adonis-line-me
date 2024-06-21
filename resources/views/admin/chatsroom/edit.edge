@@ -36,11 +36,11 @@
               </div>
             </div>
           </div>
-          <div class="required field">
+          <div class="field">
             <label for="name">名称</label>
             <input id="name" type="text" name="name" value="{{ data.chatsroom.chat_name || '' }}" />
           </div>
-          <div class="required field">
+          <div class="field">
             <label for="description">描述</label>
             <textarea name="description" rows="4" cols="80">{{ data.chatsroom.chat_description || '' }}</textarea>
           </div>
@@ -57,7 +57,7 @@
                 </a>
               @endeach
             </div>
-            <textarea name="chat_users_id" rows="8" cols="80" placeholder="房间需要 2 人以上，如需更新请插入多个 USER_ID。">{{ data.chatsroom.chat_users_id || '' }}</textarea>
+            <textarea name="chat_users_id" rows="8" cols="80" placeholder="">{{ data.chatsroom.chat_users_id || '' }}</textarea>
           </div>
           {{ csrfField() }}
           <button class="ui positive button" type="submit" name="button">提交更新</button>

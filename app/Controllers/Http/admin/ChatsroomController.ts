@@ -69,15 +69,11 @@ class ChatsroomController {
       const all = request.all()
       switch (all.button) {
         case 'chatsroom':
-          if (all.users.split(',').length >= 2) {
-            const chat_id = uuidv4()
-            await Database.table('chatsroom').insert({ chat_id, chat_users_id: all.users })
-            session.flash('success', { type: 'success', header: '', message: `房间号「${ all.id }」更新成功。` })
-          } else {
-            session.flash('error', { type: 'error', header: '', message: `创建失败，房间需要 2 人以上，请插入多个 ID。` })
-          }
-          break;
+          const chat_id = uuidv4()
+          await Database.table('chatsroom').insert({ chat_id, chat_user_id: all.chat_user_id, chat_participant_users_id: all.chat_participant_users_id })
+          session.flash('success', { type: 'success', header: '', message: `房间号「${ all.id }」更新成功。` })
           return response.redirect('back')
+          break;
         case 'messages':
           if (all.user_id && all.content) {
             await Database.table('messages').insert({ content: all.content, user_id: all.user_id })
@@ -95,18 +91,19 @@ class ChatsroomController {
 
   async update({ request, response, view, session }: HttpContextContract) {
     try {
-      const all = request.all()
-      if (all.chat_users_id.split(',').length >= 2) {
+      const all = request.all(), users = all.chat_users_id.split(',')      
+      if (users.length == 2) {
         await Database.from('chatsroom').where('chat_id', all.id).update({
           status: all.status,
-          chat_name: all.name,
-          chat_description: all.description,
-          chat_users_id: all.chat_users_id
+          chat_name: all.name || null,
+          chat_description: all.description || null,
+          chat_user_id: users[0],
+          chat_participant_users_id: users[1],
         })
 
-        session.flash('success', { type: 'success', header: '', message: `房间号「${ all.id }」更新成功。` })
+        session.flash('success', { type: 'success', header: '更新成功', message: `房间号「${ all.id }」更新成功。` })
       } else {
-        session.flash('error', { type: 'error', header: '', message: `创建失败，房间需要 2 人以上，请插入多个 ID。` })
+        session.flash('error', { type: 'error', header: '更新失败', message: `更新失败，请检查填写 ID。` })
       }
 
       return response.redirect('back')

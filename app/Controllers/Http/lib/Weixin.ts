@@ -19,6 +19,8 @@ function token() {
   return new Promise((resolve, reject) => {
     return axios.get(`https://api.weixin.qq.com/cgi-bin/token?appid=${ Env.get('AppID') }&secret=${ Env.get('AppSecret') }&grant_type=client_credential`)
       .then((response) => {
+        console.log(response.data);
+        
         resolve(response.data)
       })
       .catch((error) => {
@@ -30,9 +32,9 @@ function token() {
 function getUserPhoneNumber(access_token, data) {
   return new Promise((resolve, reject) => {
     return axios.post(`https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=${ access_token }`, {
-      code: data.code,
-      openid: data.openid
-    })
+        code: data.code,
+        openid: data.openid
+      })
       .then((response) => {
         resolve(response.data)
       })
@@ -142,11 +144,53 @@ function getWxacode(data) {
   }
 }
 
+function msgSecCheck(data) {
+  return new Promise(async (resolve, reject) => {
+    const token = await this.token()
+    return await axios.post(`https://api.weixin.qq.com/wxa/msg_sec_check?access_token=${ token.access_token }`, {
+        "content": data.content,
+        "version": 2,
+        "scene": data.scene,
+        "openid": data.openid,
+        // "title": data.title,
+        // "nickname": data.nickname,
+        // "signature": data.signature
+      })
+      .then((response) => {
+        resolve(response.data)
+      })
+      .catch((error) => {
+        reject(error)
+      })
+  });
+}
+
+function mediaCheck(data) {
+  return new Promise(async (resolve, reject) => {
+    const token = await this.token()
+    return await axios.post(`https://api.weixin.qq.com/wxa/media_check_async?access_token=${ token.access_token }`, {
+        "media_url": data.media_url,
+        "media_type": data.media_type,
+        "version": 2,
+        "scene": data.scene,
+        "openid": data.openid
+      })
+      .then((response) => {
+        resolve(response.data)
+      })
+      .catch((error) => {
+        reject(error)
+      })
+  });
+}
+
 module.exports = {
   jscode2session,
   token,
   generateUrllink,
   genwxaShortlink,
   getWxacode,
-  getUserPhoneNumber
+  getUserPhoneNumber,
+  msgSecCheck,
+  mediaCheck
 }

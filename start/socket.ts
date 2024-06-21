@@ -5,6 +5,8 @@ import Jwt from 'App/Models/Jwt';
 import Ws from 'App/Services/Ws';
 Ws.boot()
 
+const Security = require('../app/Controllers/Http/lib/Security');
+
 const getChatroom = async (user_id) => {
   try {
     const chatroom = await Database.from('chatsroom').where({ chat_user_id: user_id, status: 1 }).orWhere({ chat_participant_users_id: user_id, status: 1 }).orderBy('modified_at', 'desc')
@@ -62,11 +64,12 @@ const getChatsMessage = async (data, chat_id) => {
       }
 
       if (chats[index].chat_content_type == 'share-customer') {
-        const customer = await Database.from('customer').select('id', 'relation_user_id', 'relation_log_id').where({ id: chats[index].chat_content }).first()
+        const customer = await Database.from('customer').select('id', 'relation_user_id', 'relation_log_id').where({ id: chats[index].chat_content }).first() || {}
 
         // 红娘自行发布 / 关联已存在用户
         if (customer.relation_log_id) {
-          chats[index].chat_content = await Database.from('customer_log').select('avatar_url', 'nickname').where('id', customer.relation_log_id).first()
+          chats[index].chat_content = await Database.from('customer_log').select('nickname', 'photos').where('id', customer.relation_log_id).first() || {}
+          chats[index].chat_content.photos = chats[index].chat_content.photos ? JSON.parse(chats[index].chat_content.photos) : []
           chats[index].chat_content.id = customer.id
         } else if (customer.relation_user_id) {
           chats[index].chat_content = await Database.from('users').select('*').where('user_id', customer.relation_user_id).first()
@@ -190,6 +193,8 @@ Ws.io.on('connection', async (socket) => {
         await lastJoinChat(user, chat_id)
 
         // page 发送消息后返回消息数据
+        // await Security.center({ scene: 1, content: data.message, openid: user.wechat_open_id })
+
         await Database.table('chats').insert({ chat_id, user_id: user.user_id, chat_content: data.message, chat_content_type: data.type, chat_ip: socket.handshake.headers['x-real-ip'] })
         const chats = await getChatsMessage(data, chat_id)
         socket.to(room).emit('messages lists', chats)

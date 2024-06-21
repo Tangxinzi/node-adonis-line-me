@@ -154,6 +154,8 @@ Route.group(() => {
   Route.get('/operates/introduction', 'admin/OperatesController.introduction')
   Route.post('/operates/introduction', 'admin/OperatesController.introduction')
 
+  Route.get('/security/center', 'admin/SecuritiesController.secCenter')
+
   Route.get('/users', 'admin/UsersController.index')
   Route.get('/users/edit/:user_id', 'admin/UsersController.edit')
   Route.post('/users/update/:user_id', 'admin/UsersController.update')

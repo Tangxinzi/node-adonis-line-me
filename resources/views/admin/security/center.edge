@@ -1,0 +1,30 @@
+@layout('components/layouts/main')
+
+@section('title')
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<title>{{ data.title }} - Pie</title>
+@endsection
+
+@section('style')
+<style media="screen">
+
+</style>
+@endsection
+
+@section('content')
+  <div class="ui stackable four column grid">
+    @!component('components/operates-menus', data=data, csrf=csrfField())
+    <div class="thirteen wide column">
+      <div class="ui header-title flex-between">
+        <span>{{ data.title }}</span>
+      </div>
+    </div>
+  </div>
+@endsection
+
+@section('script')
+<script type="text/javascript">
+
+</script>
+@endsection
