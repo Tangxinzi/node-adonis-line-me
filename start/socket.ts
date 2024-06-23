@@ -10,13 +10,13 @@ const Security = require('../app/Controllers/Http/lib/Security');
 const getChatroom = async (user_id) => {
   try {
     const chatroom = await Database.from('chatsroom').where({ chat_user_id: user_id, status: 1 }).orWhere({ chat_participant_users_id: user_id, status: 1 }).orderBy('modified_at', 'desc')
-    
+
     for (let index = 0; index < chatroom.length; index++) {
       chatroom[index].unread = await countUnread(user_id, chatroom[index].chat_id) // 统计未读
       chatroom[index].created_at = Moment(chatroom[index].created_at).format('YYYY-MM-DD')
       chatroom[index].modified_at = Moment(chatroom[index].modified_at).fromNow()
       chatroom[index].message = await Database.from('chats').select('user_id', 'chat_content_type', 'chat_content').where({ chat_id: chatroom[index].chat_id, status: 1 }).orderBy('created_at', 'desc').first()
-      
+
       chatroom[index].chat_user_id = [chatroom[index].chat_user_id, chatroom[index].chat_participant_users_id]
       chatroom[index].user = await new Promise((resolve) => {
         chatroom[index].chat_user_id.map(async (item, key) => {
@@ -114,14 +114,14 @@ const countUnread = async (user_id, chat_id) => {
   }
 }
 
-const getMessages = async (user_id) => {  
+const getMessages = async (user_id) => {
   try {
     const message = await Database.from('messages').select('content', 'created_at').where({ user_id, status: 1 }).orderBy('created_at', 'desc').first() || {}
     const messages_log = await Database.from('messages_log').where({ user_id }).first() || {}
     const count = await Database.from('messages').where({ user_id }).where('created_at', '>', messages_log.last_at).count('* as total')
 
     message.created_at = message.created_at ? Moment(message.created_at).fromNow() : ''
-    
+
     return {
       notice: {
         ...message,
@@ -147,11 +147,11 @@ Ws.io.on('connection', async (socket) => {
     });
 
     // tab 消息列表
-    socket.on('chatsroom', async () => {      
+    socket.on('chatsroom', async () => {
       // 获取消息列表和聊天室列表
       const messages = await getMessages(user.user_id);
       const chatroom = await getChatroom(user.user_id);
-      
+
       // 发送消息列表和聊天室列表给客户端
       socket.emit('chatsroom list', {
         messages: messages,
@@ -193,9 +193,16 @@ Ws.io.on('connection', async (socket) => {
         await lastJoinChat(user, chat_id)
 
         // page 发送消息后返回消息数据
-        // await Security.center({ scene: 1, content: data.message, openid: user.wechat_open_id })
+        const rows = await Database.table('chats').insert({ chat_id, user_id: user.user_id, chat_content: data.message, chat_content_type: data.type, chat_ip: socket.handshake.headers['x-real-ip'] })
+        await Security.center({
+          review: {
+            scene: 1, content: data.message, openid: user.wechat_open_id, type: data.type
+          },
+          database: {
+            table: 'chats', field: 'chat_content', table_id: rows[0], user_id: user.user_id
+          }
+        })
 
-        await Database.table('chats').insert({ chat_id, user_id: user.user_id, chat_content: data.message, chat_content_type: data.type, chat_ip: socket.handshake.headers['x-real-ip'] })
         const chats = await getChatsMessage(data, chat_id)
         socket.to(room).emit('messages lists', chats)
         socket.broadcast.to(room).emit('messages lists', chats)

@@ -19,8 +19,6 @@ function token() {
   return new Promise((resolve, reject) => {
     return axios.get(`https://api.weixin.qq.com/cgi-bin/token?appid=${ Env.get('AppID') }&secret=${ Env.get('AppSecret') }&grant_type=client_credential`)
       .then((response) => {
-        console.log(response.data);
-        
         resolve(response.data)
       })
       .catch((error) => {
@@ -144,44 +142,71 @@ function getWxacode(data) {
   }
 }
 
-function msgSecCheck(data) {
-  return new Promise(async (resolve, reject) => {
-    const token = await this.token()
-    return await axios.post(`https://api.weixin.qq.com/wxa/msg_sec_check?access_token=${ token.access_token }`, {
+async function msgSecCheck(data) {
+  try {
+    const tokenData = await token()
+    const response = await axios({
+      url: `https://api.weixin.qq.com/wxa/msg_sec_check?access_token=${ tokenData.access_token }`,
+      method: 'post',
+      data: JSON.stringify({
         "content": data.content,
         "version": 2,
         "scene": data.scene,
         "openid": data.openid,
-        // "title": data.title,
-        // "nickname": data.nickname,
-        // "signature": data.signature
+        "title": data.title,
+        "nickname": data.nickname,
+        "signature": data.signature
       })
-      .then((response) => {
-        resolve(response.data)
-      })
-      .catch((error) => {
-        reject(error)
-      })
-  });
+    })
+
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
 }
 
-function mediaCheck(data) {
-  return new Promise(async (resolve, reject) => {
-    const token = await this.token()
-    return await axios.post(`https://api.weixin.qq.com/wxa/media_check_async?access_token=${ token.access_token }`, {
-        "media_url": data.media_url,
+// https://developers.weixin.qq.com/miniprogram/dev/framework/security.imgSecCheck.html
+async function imgSecCheck(data) {
+  try {
+    const tokenData = await token()
+    const response = await axios({
+      url: `https://api.weixin.qq.com/wxa/img_sec_check?access_token=${ tokenData.access_token }`,
+      method: 'post',
+      data: JSON.stringify({
+        "media": ''
+      })
+    })
+
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+}
+
+async function mediaCheck(data) {
+  try {
+    const tokenData = await token()
+    console.log(tokenData);
+
+    const response = await axios({
+      url: `https://api.weixin.qq.com/wxa/media_check_async?access_token=${ tokenData.access_token }`,
+      method: 'post',
+      data: JSON.stringify({
+        "media_url": 'https://t07nvpkj.beesnat.com' + data.content,
         "media_type": data.media_type,
         "version": 2,
         "scene": data.scene,
         "openid": data.openid
       })
-      .then((response) => {
-        resolve(response.data)
-      })
-      .catch((error) => {
-        reject(error)
-      })
-  });
+    })
+
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
 }
 
 module.exports = {

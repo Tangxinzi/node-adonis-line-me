@@ -45,8 +45,8 @@ export default class UserController {
 
   public async wxaLogin({ request }: HttpContextContract) {
     try {
-      const all = request.all()      
-      const result = await jscode2session(all.code)      
+      const all = request.all()
+      const result = await jscode2session(all.code)
       result.user = await Database.from('users').where('wechat_open_id', result.openid).first() || {}
       if (!result.user.id) {
         const user_id = 'pie_a' + RandomString.generate({ length: 8, charset: ['numeric'] })
@@ -415,7 +415,7 @@ export default class UserController {
     try {
       const all = request.all()
       const type = all.type == 2 ? 2 : 1
-      
+
       await Database.from('users').where('user_id', session.get('user_id')).update({
         type,
         nickname: all.nickname,
