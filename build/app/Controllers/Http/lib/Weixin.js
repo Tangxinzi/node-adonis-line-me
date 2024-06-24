@@ -129,12 +129,76 @@ function getWxacode(data) {
         console.log(e);
     }
 }
+async function msgSecCheck(data) {
+    try {
+        const tokenData = await token();
+        const response = await (0, axios_1.default)({
+            url: `https://api.weixin.qq.com/wxa/msg_sec_check?access_token=${tokenData.access_token}`,
+            method: 'post',
+            data: JSON.stringify({
+                "content": data.content,
+                "version": 2,
+                "scene": data.scene,
+                "openid": data.openid,
+                "title": data.title,
+                "nickname": data.nickname,
+                "signature": data.signature
+            })
+        });
+        return response.data;
+    }
+    catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+async function imgSecCheck(data) {
+    try {
+        const tokenData = await token();
+        const response = await (0, axios_1.default)({
+            url: `https://api.weixin.qq.com/wxa/img_sec_check?access_token=${tokenData.access_token}`,
+            method: 'post',
+            data: JSON.stringify({
+                "media": ''
+            })
+        });
+        return response.data;
+    }
+    catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+async function mediaCheck(data) {
+    try {
+        const tokenData = await token();
+        console.log(tokenData);
+        const response = await (0, axios_1.default)({
+            url: `https://api.weixin.qq.com/wxa/media_check_async?access_token=${tokenData.access_token}`,
+            method: 'post',
+            data: JSON.stringify({
+                "media_url": 'https://t07nvpkj.beesnat.com' + data.content,
+                "media_type": data.media_type,
+                "version": 2,
+                "scene": data.scene,
+                "openid": data.openid
+            })
+        });
+        return response.data;
+    }
+    catch (error) {
+        console.log(error);
+        return false;
+    }
+}
 module.exports = {
     jscode2session,
     token,
     generateUrllink,
     genwxaShortlink,
     getWxacode,
-    getUserPhoneNumber
+    getUserPhoneNumber,
+    msgSecCheck,
+    mediaCheck
 };
 //# sourceMappingURL=Weixin.js.map

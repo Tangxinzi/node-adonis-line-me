@@ -106,6 +106,7 @@ Route_1.default.group(() => {
     Route_1.default.post('/operates/verification/review/:id', 'admin/OperatesController.review');
     Route_1.default.get('/operates/introduction', 'admin/OperatesController.introduction');
     Route_1.default.post('/operates/introduction', 'admin/OperatesController.introduction');
+    Route_1.default.get('/security/center', 'admin/SecuritiesController.secCenter');
     Route_1.default.get('/users', 'admin/UsersController.index');
     Route_1.default.get('/users/edit/:user_id', 'admin/UsersController.edit');
     Route_1.default.post('/users/update/:user_id', 'admin/UsersController.update');

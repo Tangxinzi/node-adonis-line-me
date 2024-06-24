@@ -83,8 +83,12 @@
     </div>
     <div class="content">
       <div class="required field">
-        <label for="users_ids">用户 Ids</label>
-        <input id="users_ids" type="text" name="users" value="" placeholder="房间用户需要两人以上，填写用户 ID，使用英文逗号「,」分割 ID。" />
+        <label for="">发起人 uid</label>
+        <input type="text" name="chat_user_id" value="" placeholder="发起人 User ID" />
+      </div>
+      <div class="required field">
+        <label for="">参与人 uid</label>
+        <input type="text" name="chat_participant_users_id" value="" placeholder="参与人 User ID" />
       </div>
       {{ csrfField() }}
     </div>

@@ -9,6 +9,7 @@ moment_1.default.locale('zh-cn');
 const Jwt_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/Jwt"));
 const Ws_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Services/Ws"));
 Ws_1.default.boot();
+const Security = require('../app/Controllers/Http/lib/Security');
 const getChatroom = async (user_id) => {
     try {
         const chatroom = await Database_1.default.from('chatsroom').where({ chat_user_id: user_id, status: 1 }).orWhere({ chat_participant_users_id: user_id, status: 1 }).orderBy('modified_at', 'desc');
@@ -59,9 +60,10 @@ const getChatsMessage = async (data, chat_id) => {
                 }
             }
             if (chats[index].chat_content_type == 'share-customer') {
-                const customer = await Database_1.default.from('customer').select('id', 'relation_user_id', 'relation_log_id').where({ id: chats[index].chat_content }).first();
+                const customer = await Database_1.default.from('customer').select('id', 'relation_user_id', 'relation_log_id').where({ id: chats[index].chat_content }).first() || {};
                 if (customer.relation_log_id) {
-                    chats[index].chat_content = await Database_1.default.from('customer_log').select('avatar_url', 'nickname').where('id', customer.relation_log_id).first();
+                    chats[index].chat_content = await Database_1.default.from('customer_log').select('nickname', 'photos').where('id', customer.relation_log_id).first() || {};
+                    chats[index].chat_content.photos = chats[index].chat_content.photos ? JSON.parse(chats[index].chat_content.photos) : [];
                     chats[index].chat_content.id = customer.id;
                 }
                 else if (customer.relation_user_id) {
@@ -158,7 +160,15 @@ Ws_1.default.io.on('connection', async (socket) => {
             if (chat_id) {
                 await Database_1.default.from('chatsroom').where({ chat_id, status: 1 }).update({ modified_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss') });
                 await lastJoinChat(user, chat_id);
-                await Database_1.default.table('chats').insert({ chat_id, user_id: user.user_id, chat_content: data.message, chat_content_type: data.type, chat_ip: socket.handshake.headers['x-real-ip'] });
+                const rows = await Database_1.default.table('chats').insert({ chat_id, user_id: user.user_id, chat_content: data.message, chat_content_type: data.type, chat_ip: socket.handshake.headers['x-real-ip'] });
+                await Security.center({
+                    review: {
+                        scene: 1, content: data.message, openid: user.wechat_open_id, type: data.type
+                    },
+                    database: {
+                        table: 'chats', field: 'chat_content', table_id: rows[0], user_id: user.user_id
+                    }
+                });
                 const chats = await getChatsMessage(data, chat_id);
                 socket.to(room).emit('messages lists', chats);
                 socket.broadcast.to(room).emit('messages lists', chats);
