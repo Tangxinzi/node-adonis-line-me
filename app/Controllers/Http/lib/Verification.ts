@@ -110,7 +110,7 @@ function action(data, value) {
             break;
           case 'customer.verify_face':
             data.value = JSON.parse(data.value)
-            await Database.from('customer').where('id', data.value.customer_id).update({ status: 1 })
+            await Database.from('customer').where('id', data.value.customer_id).update({ verify_face: 1 })
             break;
 
           // 被介绍人信息 - 基础信息

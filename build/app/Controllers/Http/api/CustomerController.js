@@ -367,7 +367,7 @@ class CustomerController {
             else {
                 user.authentication = false;
             }
-            const customer = await Database_1.default.from('customer').select('id', 'user_id', 'relation', 'relation_text', 'introduction', 'relation_log_id', 'relation_user_id', 'verify_phone', 'status', 'created_at').whereIn('status', all.status ? all.status.split(',') : [1, 2, 3]).where('user_id', all.user_id || session.get('user_id')).orderBy('created_at', 'desc');
+            const customer = await Database_1.default.from('customer').select('id', 'user_id', 'relation', 'relation_text', 'introduction', 'relation_log_id', 'relation_user_id', 'verify_phone', 'verify_face', 'status', 'created_at').whereIn('status', all.status ? all.status.split(',') : [1, 2, 3]).where('user_id', all.user_id || session.get('user_id')).orderBy('created_at', 'desc');
             for (let index = 0; index < customer.length; index++) {
                 customer[index].verify_phone = customer[index].verify_phone ? customer[index].verify_phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') : '';
                 if (customer[index].relation_user_id) {

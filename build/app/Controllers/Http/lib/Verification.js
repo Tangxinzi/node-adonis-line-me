@@ -99,7 +99,7 @@ function action(data, value) {
                         break;
                     case 'customer.verify_face':
                         data.value = JSON.parse(data.value);
-                        await Database_1.default.from('customer').where('id', data.value.customer_id).update({ status: 1 });
+                        await Database_1.default.from('customer').where('id', data.value.customer_id).update({ verify_face: 1 });
                         break;
                     case 'customer_log.photos':
                         data.value = data.value ? JSON.parse(data.value) : {};
