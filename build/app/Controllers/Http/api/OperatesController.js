@@ -3,9 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const Env_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Core/Env"));
 const Database_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Lucid/Database"));
 const Logger_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Core/Logger"));
 const moment_1 = __importDefault(require("moment"));
+const qrcode_1 = __importDefault(require("qrcode"));
 const { percentUserinfo, percentCustomerinfo } = require('../lib/Percent');
 const Verification = require('../lib/Verification');
 class OperatesController {
@@ -189,11 +191,14 @@ class OperatesController {
                 operates_log[index].created_at = (0, moment_1.default)(operates_log[index].created_at).format('YYYY-MM-DD HH:mm:ss');
                 operates_log[index].modified_at = (0, moment_1.default)(operates_log[index].modified_at).format('YYYY-MM-DD HH:mm:ss');
             }
+            const link = '/web/incentive/login?code=' + session.get('user_id').replace('pie_a', '');
             return response.json({
                 status: 200,
                 message: "ok",
                 data: {
                     operates_log,
+                    link,
+                    qrcode: await qrcode_1.default.toDataURL(Env_1.default.get('URL') + link, { width: 180 }),
                     onboard: (await Database_1.default.rawQuery(`
             SELECT data.type, data.value, data.text, data.unit FROM (
               SELECT 'customer' AS type, count(*) AS value, '介绍' AS text, '' AS unit FROM users_operates_log LEFT JOIN customer ON users_operates_log.customer_id = customer.id WHERE users_operates_log.user_id = '${session.get('user_id')}' AND customer.status IN (${all.orderBy || '1'})

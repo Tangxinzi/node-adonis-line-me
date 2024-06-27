@@ -18,16 +18,19 @@
     <div class="thirteen wide column">
       <div class="ui header-title flex-between">
         <span>{{ data.title }}</span>
-        <div class="ui mini selection dropdown">
-          <input type="hidden" name="type" value="{{ data.all.orderBy || '1' }}" />
-          <i class="dropdown icon"></i>
-          <div class="default text">排序</div>
-          <div class="menu">
-            <a href="?orderBy=0" class="item" data-value="0">删除</a>
-            <a href="?orderBy=1" class="item" data-value="1">发布</a>
-            <a href="?orderBy=2" class="item" data-value="2">未发布</a>
-            <a href="?orderBy=0,1,2" class="item" data-value="0,1,2">全部</a>
-          </div>
+        <div>
+          <div class="ui button" onclick="modal('setting')">设置</div>
+          <div class="ui mini selection dropdown">
+            <input type="hidden" name="type" value="{{ data.all.orderBy || '1' }}" />
+            <i class="dropdown icon"></i>
+            <div class="default text">排序</div>
+            <div class="menu">
+              <a href="?orderBy=0" class="item" data-value="0">删除</a>
+              <a href="?orderBy=1" class="item" data-value="1">发布</a>
+              <a href="?orderBy=2" class="item" data-value="2">未发布</a>
+              <a href="?orderBy=0,1,2" class="item" data-value="0,1,2">全部</a>
+            </div>
+          </div>  
         </div>
       </div>
       <div class="ui segments">
@@ -59,8 +62,56 @@
       </div>
     </div>
   </div>
+
+  <form class="ui modal form setting" action="{{ route('admin/OperatesController.incentive') }}" method="post">
+    <i class="close icon"></i>
+    <div class="header">激励设置</div>
+    <div class="content">
+      <div class="required field">
+        <label for="">激励收益</label>
+        <div class="ui right labeled input">
+          <input id="" type="number" name="income" value="{{ data.all.incentive.content.income }}" placeholder="" />
+          <div class="ui basic label">元</div>
+        </div>
+      </div>
+      <div class="required field">
+        <label for="">一级</label>
+        <div class="ui right labeled input">
+          <input id="" type="number" name="level_0" value="{{ data.all.incentive.content.level_0 }}" placeholder="" />
+          <div class="ui basic label">%</div>
+        </div>
+      </div>
+      <div class="required field">
+        <label for="">二级</label>
+        <div class="ui right labeled input">
+          <input id="" type="number" name="level_1" value="{{ data.all.incentive.content.level_1 }}" placeholder="" />
+          <div class="ui basic label">%</div>
+        </div>
+      </div>
+      <div class="required field">
+        <label for="">三级</label>
+        <div class="ui right labeled input">
+          <input id="" type="number" name="level_2" value="{{ data.all.incentive.content.level_2 }}" placeholder="" />
+          <div class="ui basic label">%</div>
+        </div>
+      </div>
+    </div>
+    {{ csrfField() }}
+    <div class="actions">
+      <div class="ui black deny button">取消</div>
+      <button class="ui positive right labeled icon button" type="submit" name="button" value="">提交<i class="checkmark icon"></i></button>
+    </div>
+  </form>
 @endsection
 
 @section('script')
+<script type="text/javascript">
+  function modal (value) {
+    $('.ui.modal.' + value).modal('show')
+  }
 
+  $('.activating').popup({
+    on: 'click'
+  })
+</script>
 @endsection

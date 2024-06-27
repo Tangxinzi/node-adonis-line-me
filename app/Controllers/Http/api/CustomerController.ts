@@ -482,7 +482,7 @@ export default class CustomerController {
     try {
       const all = request.all()
       
-      const customer = await Database.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'recommend', 'relation', 'relation_text', 'verify_phone', 'relation_log_id', 'introduction', 'created_at', 'modified_at').where({ 'id': params.id }).first() || {}
+      const customer = await Database.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'recommend', 'relation', 'relation_text', 'verify_phone', 'verify_face', 'relation_log_id', 'introduction', 'created_at', 'modified_at').where({ 'id': params.id }).first() || {}
       if (customer.verify_phone) {
         // 判断手机号格式
         if (/^1[0-9]{10}$/.test(customer.verify_phone)) {
@@ -520,6 +520,14 @@ export default class CustomerController {
       customer.userinfo.created_at = Moment(customer.userinfo.created_at).format('YYYY-MM-DD')
       customer.userinfo.modified_at = Moment(customer.userinfo.modified_at).format('YYYY-MM-DD')
       customer.like = await Database.from('likes').select('id').where({ status: 1, type: 'customer', relation_type_id: customer.cid, user_id: all.user_id || session.get('user_id') || '' }).first() || {}
+      
+      // 人脸验证
+      const verification = await Database.from('verification').where('value', 'like', `%"customer_id":"${ customer.cid }"%`).orderBy('created_at', 'desc').first() || {}
+      customer.verify_face = verification.verification_status
+      if (customer.verify_face == 'pending') {
+        verification.value = JSON.parse(verification.value)
+        customer.verify_face_photo = verification.value.photo
+      }
 
       if (all.type == 'share') {
         // 创建小程序码

@@ -70,6 +70,11 @@ export default class AdminController {
             // verification.table = '介绍好友'
             verification.value = JSON.parse(verification.value)
             break;
+          case 'customer.verify_face':
+            // verification.table = '介绍好友'
+            verification.before = JSON.parse(verification.before)
+            verification.value = JSON.parse(verification.value)
+            break;
           case 'authentication_log.idcard':
             // verification.table = '认证审核'
             verification.value = JSON.parse(verification.value)
@@ -143,6 +148,7 @@ export default class AdminController {
               verify[index].table = field[0]
               verify[index].value = JSON.parse(verify[index].value)
               break;
+            case 'customer.verify_face':
             
             // 用户
             case 'users.avatar_url':

@@ -52,6 +52,10 @@ class AdminController {
                     case 'customer.':
                         verification.value = JSON.parse(verification.value);
                         break;
+                    case 'customer.verify_face':
+                        verification.before = JSON.parse(verification.before);
+                        verification.value = JSON.parse(verification.value);
+                        break;
                     case 'authentication_log.idcard':
                         verification.value = JSON.parse(verification.value);
                         break;
@@ -118,6 +122,7 @@ class AdminController {
                             verify[index].table = field[0];
                             verify[index].value = JSON.parse(verify[index].value);
                             break;
+                        case 'customer.verify_face':
                         case 'users.avatar_url':
                         case 'users.photos':
                         case 'customer_log.photos':

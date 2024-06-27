@@ -26,6 +26,7 @@ Route.get('/', async ({ view }) => {
 
 // 邀请验证模块
 Route.post('/api/friend/verify', 'api/FriendController.verify')
+Route.post('/api/friend/verify-face', 'api/FriendController.verifyFace')
 Route.post('/api/friend/customer/field/update/:id', 'api/FriendController.updateCustomerField')
 
 Route.group(() => {
@@ -146,6 +147,7 @@ Route.group(() => {
   Route.get('/operates', 'admin/OperatesController.index')
   Route.post('/operates', 'admin/OperatesController.save')
   Route.get('/incentive', 'admin/OperatesController.incentive')
+  Route.post('/incentive', 'admin/OperatesController.incentive')
   Route.get('/operates/reward-video', 'admin/OperatesController.rewardVideo')
   Route.post('/operates/reward-video', 'admin/OperatesController.rewardVideo')
   Route.get('/operates/verification', 'admin/OperatesController.verification')
@@ -201,4 +203,6 @@ Route.group(() => {
 
 Route.group(() => {
   Route.get('/user/share', 'web/UserController.share')
+  Route.get('/incentive/login', 'web/UserController.incentiveLogin')
+  Route.post('/incentive/login', 'web/UserController.incentiveLogin')
 }).middleware('webCheck').prefix('/web')

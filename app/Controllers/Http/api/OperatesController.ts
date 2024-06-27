@@ -1,7 +1,9 @@
 import Application from '@ioc:Adonis/Core/Application'
+import Env from '@ioc:Adonis/Core/Env';
 import Database from '@ioc:Adonis/Lucid/Database';
 import Logger from '@ioc:Adonis/Core/Logger'
 import Moment from 'moment';
+import QrCode from 'qrcode';
 
 const { percentUserinfo, percentCustomerinfo } = require('../lib/Percent');
 const Verification = require('../lib/Verification');
@@ -208,12 +210,16 @@ export default class OperatesController {
         operates_log[index].created_at = Moment(operates_log[index].created_at).format('YYYY-MM-DD HH:mm:ss')
         operates_log[index].modified_at = Moment(operates_log[index].modified_at).format('YYYY-MM-DD HH:mm:ss')
       }
+
+      const link = '/web/incentive/login?code=' + session.get('user_id').replace('pie_a', '')
       
       return response.json({
         status: 200,
         message: "ok",
         data: {
           operates_log,
+          link,
+          qrcode: await QrCode.toDataURL(Env.get('URL') + link, { width: 180 }),
           onboard: (await Database.rawQuery(`
             SELECT data.type, data.value, data.text, data.unit FROM (
               SELECT 'customer' AS type, count(*) AS value, '介绍' AS text, '' AS unit FROM users_operates_log LEFT JOIN customer ON users_operates_log.customer_id = customer.id WHERE users_operates_log.user_id = '${ session.get('user_id') }' AND customer.status IN (${ all.orderBy || '1' })

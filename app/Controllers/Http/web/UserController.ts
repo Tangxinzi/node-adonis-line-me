@@ -84,12 +84,25 @@ export default class UserController {
         value: mbti.value[user.mbti]
       } : null
 
-      console.log(user);
-
       return view.render('web/user/share', {
         data: {
           title: '派 PIE',
           user
+        }
+      })
+    } catch (error) {
+      console.log(error);      
+    }
+  }
+
+  async incentiveLogin({ request, response, view, session }: HttpContextContract) {
+    try {
+      const all = request.all()
+      console.log(all);
+      
+      return view.render('web/user/incentive-login', {
+        data: {
+          title: '派 PIE'
         }
       })
     } catch (error) {

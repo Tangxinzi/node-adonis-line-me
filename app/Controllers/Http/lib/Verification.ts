@@ -56,6 +56,10 @@ function action(data, value) {
             data.value = JSON.parse(data.value)
             await Database.from('customer').where('id', data.value.customer_id).update({ status: 2 })
             break;
+          case 'customer.verify_face':
+            data.value = JSON.parse(data.value)
+            await Database.from('customer').where('id', data.value.customer_id).update({ status: 2 })
+            break;
 
           // 被介绍人信息 - 基础信息
           
@@ -101,6 +105,10 @@ function action(data, value) {
           
           // 介绍
           case 'customer.':
+            data.value = JSON.parse(data.value)
+            await Database.from('customer').where('id', data.value.customer_id).update({ status: 1 })
+            break;
+          case 'customer.verify_face':
             data.value = JSON.parse(data.value)
             await Database.from('customer').where('id', data.value.customer_id).update({ status: 1 })
             break;
@@ -161,6 +169,9 @@ function field(field) {
     // 介绍
     case 'customer.':
       result = ['介绍好友', '']
+      break;
+    case 'customer.verify_face':
+      result = ['介绍好友', '人脸验证']
       break;
 
     // 被介绍人信息 - 基础信息

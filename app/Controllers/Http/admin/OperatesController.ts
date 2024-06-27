@@ -109,7 +109,23 @@ export default class OperatesController {
 
   public async incentive({ request, response, view, session }: HttpContextContract) {
     try {
-      const all = request.all(), operates_log = (await Database.rawQuery(`
+      const all = request.all()
+
+      if (request.method() == 'POST') {
+        await Database.from('settings').where({ field: 'incentive' }).update({ 
+          content: JSON.stringify({
+            income: all.income || 0,
+            level_0: all.level_0 || 0,
+            level_1: all.level_1 || 0,
+            level_2: all.level_2 || 0
+          })
+        })
+
+        session.flash('message', { type: 'success', header: '设置信息成功', message: `` })
+        return response.redirect('back')
+      }
+      
+      const operates_log = (await Database.rawQuery(`
           SELECT 
             users_operates_log.id AS id, 
             users_operates_log.customer_id, 
@@ -133,7 +149,6 @@ export default class OperatesController {
           ORDER BY users_operates_log.id DESC
           LIMIT ${ request.input('page', 0) * 15 }, 15
       `))[0]
-
       for (let index = 0; index < operates_log.length; index++) {
         if (operates_log[index].customer_log_id) {
           operates_log[index] = {
@@ -148,6 +163,9 @@ export default class OperatesController {
         operates_log[index].created_at = Moment(operates_log[index].created_at).format('YYYY-MM-DD HH:mm:ss')
         operates_log[index].modified_at = Moment(operates_log[index].modified_at).format('YYYY-MM-DD HH:mm:ss')
       }
+
+      all.incentive = await Database.from('settings').where({ field: 'incentive' }).first() || {}
+      all.incentive.content = all.incentive.content ? JSON.parse(all.incentive.content) : {}
 
       return view.render('admin/operates/incentive', {
         data: {

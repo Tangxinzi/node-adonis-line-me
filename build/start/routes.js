@@ -8,6 +8,7 @@ Route_1.default.get('/', async ({ view }) => {
     return view.render('welcome');
 });
 Route_1.default.post('/api/friend/verify', 'api/FriendController.verify');
+Route_1.default.post('/api/friend/verify-face', 'api/FriendController.verifyFace');
 Route_1.default.post('/api/friend/customer/field/update/:id', 'api/FriendController.updateCustomerField');
 Route_1.default.group(() => {
     Route_1.default.get('/filter', 'api/FiltersController.index');
@@ -99,6 +100,7 @@ Route_1.default.group(() => {
     Route_1.default.get('/operates', 'admin/OperatesController.index');
     Route_1.default.post('/operates', 'admin/OperatesController.save');
     Route_1.default.get('/incentive', 'admin/OperatesController.incentive');
+    Route_1.default.post('/incentive', 'admin/OperatesController.incentive');
     Route_1.default.get('/operates/reward-video', 'admin/OperatesController.rewardVideo');
     Route_1.default.post('/operates/reward-video', 'admin/OperatesController.rewardVideo');
     Route_1.default.get('/operates/verification', 'admin/OperatesController.verification');
@@ -143,5 +145,7 @@ Route_1.default.group(() => {
 }).middleware('adminCheck').prefix('/admin');
 Route_1.default.group(() => {
     Route_1.default.get('/user/share', 'web/UserController.share');
+    Route_1.default.get('/incentive/login', 'web/UserController.incentiveLogin');
+    Route_1.default.post('/incentive/login', 'web/UserController.incentiveLogin');
 }).middleware('webCheck').prefix('/web');
 //# sourceMappingURL=routes.js.map

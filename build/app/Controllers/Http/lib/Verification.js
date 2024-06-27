@@ -54,6 +54,10 @@ function action(data, value) {
                         data.value = JSON.parse(data.value);
                         await Database_1.default.from('customer').where('id', data.value.customer_id).update({ status: 2 });
                         break;
+                    case 'customer.verify_face':
+                        data.value = JSON.parse(data.value);
+                        await Database_1.default.from('customer').where('id', data.value.customer_id).update({ status: 2 });
+                        break;
                     case 'authentication_log.idcard':
                         await Database_1.default.from('authentication').where({ user_id: data.user_id }).update({ idcard: '' });
                         await Database_1.default.from('authentication_log').where({ user_id: data.user_id }).update({ idcard: '' });
@@ -90,6 +94,10 @@ function action(data, value) {
                         await Database_1.default.from('users').where('user_id', data.user_id).update({ photos: data.value });
                         break;
                     case 'customer.':
+                        data.value = JSON.parse(data.value);
+                        await Database_1.default.from('customer').where('id', data.value.customer_id).update({ status: 1 });
+                        break;
+                    case 'customer.verify_face':
                         data.value = JSON.parse(data.value);
                         await Database_1.default.from('customer').where('id', data.value.customer_id).update({ status: 1 });
                         break;
@@ -141,6 +149,9 @@ function field(field) {
             break;
         case 'customer.':
             result = ['介绍好友', ''];
+            break;
+        case 'customer.verify_face':
+            result = ['介绍好友', '人脸验证'];
             break;
         case 'customer_log.photos':
             result = ['被介绍人', '照片集'];

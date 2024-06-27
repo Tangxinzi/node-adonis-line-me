@@ -419,7 +419,7 @@ class CustomerController {
     async customerShow({ params, request, response, session }) {
         try {
             const all = request.all();
-            const customer = await Database_1.default.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'recommend', 'relation', 'relation_text', 'verify_phone', 'relation_log_id', 'introduction', 'created_at', 'modified_at').where({ 'id': params.id }).first() || {};
+            const customer = await Database_1.default.from('customer').select('id as cid', 'status', 'user_id', 'relation_user_id', 'recommend', 'relation', 'relation_text', 'verify_phone', 'verify_face', 'relation_log_id', 'introduction', 'created_at', 'modified_at').where({ 'id': params.id }).first() || {};
             if (customer.verify_phone) {
                 if (/^1[0-9]{10}$/.test(customer.verify_phone)) {
                     customer.verify_phone = customer.verify_phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
@@ -454,6 +454,12 @@ class CustomerController {
             customer.userinfo.created_at = (0, moment_1.default)(customer.userinfo.created_at).format('YYYY-MM-DD');
             customer.userinfo.modified_at = (0, moment_1.default)(customer.userinfo.modified_at).format('YYYY-MM-DD');
             customer.like = await Database_1.default.from('likes').select('id').where({ status: 1, type: 'customer', relation_type_id: customer.cid, user_id: all.user_id || session.get('user_id') || '' }).first() || {};
+            const verification = await Database_1.default.from('verification').where('value', 'like', `%"customer_id":"${customer.cid}"%`).orderBy('created_at', 'desc').first() || {};
+            customer.verify_face = verification.verification_status;
+            if (customer.verify_face == 'pending') {
+                verification.value = JSON.parse(verification.value);
+                customer.verify_face_photo = verification.value.photo;
+            }
             if (all.type == 'share') {
                 customer.wxacode = `/uploads/wxacode/customer-${customer.cid}.png`;
                 fs_1.default.access(Application_1.default.publicPath(customer.wxacode), fs_1.default.constants.F_OK, async (err) => {

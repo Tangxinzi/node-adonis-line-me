@@ -1,6 +1,7 @@
 import Database from '@ioc:Adonis/Lucid/Database'
 import Moment from 'moment';
 import Jwt from 'App/Models/Jwt';
+const Verification = require('../lib/Verification');
 
 export default class FriendController {
   public async verify({ response, request, session }: HttpContextContract) {
@@ -24,6 +25,39 @@ export default class FriendController {
         }
       } else {
         return response.json({ status: 200, message: "error", data: '验证码有误' })
+      }
+    } catch (error) {
+      console.log(error);
+      return response.json({ status: 200, message: "error" })      
+    }
+  }
+
+  public async verifyFace({ response, request, session }: HttpContextContract) {
+    try {
+      const all = request.all()
+      if (all.id && all.user_id && all.open_id && all.photo) {
+        let customer = await Database.from('customer').where({ id: all.id, user_id: all.user_id }).first() || {}
+        await Verification.regularData({
+          user_id: all.user_id,
+          table: 'customer',
+          field: 'verify_face',
+          before: JSON.stringify({
+            open_id: all.open_id,
+            photo: customer.verify_face
+          }),
+          value: JSON.stringify({
+            customer_id: all.id,
+            photo: all.photo
+          }),
+          ip: request.ip()
+        })
+
+        return response.json({ 
+          status: 200,
+          message: "success"
+        })
+      } else {
+        return 
       }
     } catch (error) {
       console.log(error);

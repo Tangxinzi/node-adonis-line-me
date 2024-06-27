@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Database_1 = __importDefault(global[Symbol.for('ioc.use')]("Adonis/Lucid/Database"));
 const moment_1 = __importDefault(require("moment"));
 const Jwt_1 = __importDefault(global[Symbol.for('ioc.use')]("App/Models/Jwt"));
+const Verification = require('../lib/Verification');
 class FriendController {
     async verify({ response, request, session }) {
         try {
@@ -29,6 +30,39 @@ class FriendController {
             }
             else {
                 return response.json({ status: 200, message: "error", data: '验证码有误' });
+            }
+        }
+        catch (error) {
+            console.log(error);
+            return response.json({ status: 200, message: "error" });
+        }
+    }
+    async verifyFace({ response, request, session }) {
+        try {
+            const all = request.all();
+            if (all.id && all.user_id && all.open_id && all.photo) {
+                let customer = await Database_1.default.from('customer').where({ id: all.id, user_id: all.user_id }).first() || {};
+                await Verification.regularData({
+                    user_id: all.user_id,
+                    table: 'customer',
+                    field: 'verify_face',
+                    before: JSON.stringify({
+                        open_id: all.open_id,
+                        photo: customer.verify_face
+                    }),
+                    value: JSON.stringify({
+                        customer_id: all.id,
+                        photo: all.photo
+                    }),
+                    ip: request.ip()
+                });
+                return response.json({
+                    status: 200,
+                    message: "success"
+                });
+            }
+            else {
+                return;
             }
         }
         catch (error) {
