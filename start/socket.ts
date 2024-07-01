@@ -77,12 +77,40 @@ const getChatsMessage = async (data, chat_id) => {
         }
       }
 
+      if (chats[index].chat_content_type == 'switch-customer') {
+        const customer = await Database.from('customer').select('id', 'relation_user_id', 'relation_log_id').where({ id: chats[index].chat_content }).first() || {}
+
+        // 红娘自行发布 / 关联已存在用户
+        if (customer.relation_log_id) {
+          chats[index].content = await Database.from('customer_log').select('nickname', 'photos').where('id', customer.relation_log_id).first() || {}
+          chats[index].content.photos = chats[index].content.photos ? JSON.parse(chats[index].content.photos) : []
+          chats[index].content.id = customer.id
+        } else if (customer.relation_user_id) {
+          chats[index].content = await Database.from('users').select('*').where('user_id', customer.relation_user_id).first()
+          chats[index].content.id = customer.id
+        }
+      }
+
       chats[index].created_at = Moment(chats[index].created_at).format('YYYY-MM-DD HH:mm:ss')
+    }
+
+    const customer = await Database.from('customer').select('id', 'relation_user_id', 'relation_log_id').where({ id: chatroom.customer_id, status: 1 }).first() || {}
+    if (customer.relation_log_id) {
+      // 红娘自行发布 / 关联已存在用户
+      if (customer.relation_log_id) {
+        customer.chat_content = await Database.from('customer_log').select('nickname', 'photos').where('id', customer.relation_log_id).first() || {}
+        customer.chat_content.photos = customer.chat_content.photos ? JSON.parse(customer.chat_content.photos) : []
+        customer.chat_content.id = customer.id
+      } else if (customer.relation_user_id) {
+        customer.chat_content = await Database.from('users').select('*').where('user_id', customer.relation_user_id).first()
+        customer.chat_content.id = customer.id
+      }
     }
 
     return {
       users,
-      lists: chats
+      lists: chats,
+      customer
     }
   } catch (error) {
     console.log(error);
@@ -193,6 +221,12 @@ Ws.io.on('connection', async (socket) => {
         await lastJoinChat(user, chat_id)
 
         // page 发送消息后返回消息数据
+        if (data.type == 'switch-customer') {
+          await Database.from('chatsroom').where({ chat_id, chat_user_id: user.user_id }).orWhere({ chat_id, chat_user_id: user.user_id }).update({
+            customer_id: data.message,
+            modified_at: Moment().format('YYYY-MM-DD HH:mm:ss')
+          })
+        }
         const rows = await Database.table('chats').insert({ chat_id, user_id: user.user_id, chat_content: data.message, chat_content_type: data.type, chat_ip: socket.handshake.headers['x-real-ip'] })
         await Security.center({
           review: {
