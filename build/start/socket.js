@@ -85,8 +85,8 @@ const getChatsMessage = async (data, chat_id) => {
             }
             chats[index].created_at = (0, moment_1.default)(chats[index].created_at).format('YYYY-MM-DD HH:mm:ss');
         }
-        const customer = await Database_1.default.from('customer').select('id', 'relation_user_id', 'relation_log_id').where({ id: chatroom.customer_id, status: 1 }).first() || {};
-        if (customer.relation_log_id) {
+        const customer = await Database_1.default.from('customer').select('id', 'relation_user_id', 'relation_log_id').where({ id: chatroom.customer_id || '', status: 1 }).first() || {};
+        if (chatroom.customer_id && customer.relation_log_id) {
             if (customer.relation_log_id) {
                 customer.chat_content = await Database_1.default.from('customer_log').select('nickname', 'photos').where('id', customer.relation_log_id).first() || {};
                 customer.chat_content.photos = customer.chat_content.photos ? JSON.parse(customer.chat_content.photos) : [];
@@ -186,7 +186,7 @@ Ws_1.default.io.on('connection', async (socket) => {
                 await Database_1.default.from('chatsroom').where({ chat_id, status: 1 }).update({ modified_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss') });
                 await lastJoinChat(user, chat_id);
                 if (data.type == 'switch-customer') {
-                    await Database_1.default.from('chatsroom').where({ chat_id, chat_user_id: user.user_id }).orWhere({ chat_id, chat_user_id: user.user_id }).update({
+                    await Database_1.default.from('chatsroom').where({ chat_id, chat_user_id: user.user_id }).orWhere({ chat_id, chat_participant_users_id: user.user_id }).update({
                         customer_id: data.message,
                         modified_at: (0, moment_1.default)().format('YYYY-MM-DD HH:mm:ss')
                     });
@@ -203,7 +203,7 @@ Ws_1.default.io.on('connection', async (socket) => {
                 const chats = await getChatsMessage(data, chat_id);
                 socket.to(room).emit('messages lists', chats);
                 socket.broadcast.to(room).emit('messages lists', chats);
-                const chatroom = await Database_1.default.from('chatsroom').where({ chat_id, status: 1 }).first();
+                const chatroom = await Database_1.default.from('chatsroom').where({ chat_id, type: user.type, status: 1 }).first();
                 chatroom.chat_user_id = [chatroom.chat_user_id, chatroom.chat_participant_users_id];
                 for (let index = 0; index < chatroom.chat_user_id.length; index++) {
                     const user_id = chatroom.chat_user_id[index];

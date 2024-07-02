@@ -94,8 +94,8 @@ const getChatsMessage = async (data, chat_id) => {
       chats[index].created_at = Moment(chats[index].created_at).format('YYYY-MM-DD HH:mm:ss')
     }
 
-    const customer = await Database.from('customer').select('id', 'relation_user_id', 'relation_log_id').where({ id: chatroom.customer_id, status: 1 }).first() || {}
-    if (customer.relation_log_id) {
+    const customer = await Database.from('customer').select('id', 'relation_user_id', 'relation_log_id').where({ id: chatroom.customer_id || '', status: 1 }).first() || {}
+    if (chatroom.customer_id && customer.relation_log_id) {
       // 红娘自行发布 / 关联已存在用户
       if (customer.relation_log_id) {
         customer.chat_content = await Database.from('customer_log').select('nickname', 'photos').where('id', customer.relation_log_id).first() || {}
@@ -222,7 +222,7 @@ Ws.io.on('connection', async (socket) => {
 
         // page 发送消息后返回消息数据
         if (data.type == 'switch-customer') {
-          await Database.from('chatsroom').where({ chat_id, chat_user_id: user.user_id }).orWhere({ chat_id, chat_user_id: user.user_id }).update({
+          await Database.from('chatsroom').where({ chat_id, chat_user_id: user.user_id }).orWhere({ chat_id, chat_participant_users_id: user.user_id }).update({
             customer_id: data.message,
             modified_at: Moment().format('YYYY-MM-DD HH:mm:ss')
           })
@@ -242,7 +242,7 @@ Ws.io.on('connection', async (socket) => {
         socket.broadcast.to(room).emit('messages lists', chats)
 
         // tab 消息列表
-        const chatroom = await Database.from('chatsroom').where({ chat_id, status: 1 }).first()
+        const chatroom = await Database.from('chatsroom').where({ chat_id, type: user.type, status: 1 }).first()
         chatroom.chat_user_id = [chatroom.chat_user_id, chatroom.chat_participant_users_id]
         for (let index = 0; index < chatroom.chat_user_id.length; index++) {
           const user_id = chatroom.chat_user_id[index];

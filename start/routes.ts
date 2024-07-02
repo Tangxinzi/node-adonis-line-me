@@ -71,6 +71,7 @@ Route.group(() => {
   Route.post('/customer/data/phone/:phone', 'api/CustomerController.phoneUpdateCustomerData')
   Route.get('/customer/userlist', 'api/CustomerController.customerList')
   Route.get('/customer/userlist/show/:id', 'api/CustomerController.customerShow')
+  Route.get('/customer/like/:id', 'api/CustomerController.customerLike')
   Route.post('/customer/create', 'api/CustomerController.createCustomerinfo')
   Route.post('/customer/update', 'api/CustomerController.updateCustomerinfo')
   Route.post('/customer/create/relation', 'api/CustomerController.relationCustomerinfo')

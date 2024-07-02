@@ -416,6 +416,33 @@ class CustomerController {
             });
         }
     }
+    async customerLike({ params, request, response, session }) {
+        try {
+            const likes = (await Database_1.default.rawQuery(`
+        SELECT u.user_id, avatar_url, nickname, birthday, school, location, education, job_title, work, company FROM users u JOIN (
+          SELECT user_id FROM likes WHERE status = 1 AND type = 'customer' AND relation_type_id = '${params.id}' ORDER BY created_at DESC
+        ) AS l ON u.user_id = l.user_id AND u.status = 1;
+      `))[0];
+            for (let index = 0; index < likes.length; index++) {
+                likes[index].work = likes[index].work ? JSON.parse(likes[index].work) : {};
+                likes[index].location = likes[index].location ? JSON.parse(likes[index].location) : {};
+                likes[index].age = (0, moment_1.default)().diff(likes[index].birthday, 'years');
+                delete likes[index].birthday;
+            }
+            return response.json({
+                status: 200,
+                sms: "ok",
+                data: likes
+            });
+        }
+        catch (error) {
+            console.log(error);
+            response.json({
+                status: 500,
+                sms: "internalServerError"
+            });
+        }
+    }
     async customerShow({ params, request, response, session }) {
         try {
             const all = request.all();

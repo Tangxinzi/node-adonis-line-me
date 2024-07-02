@@ -478,6 +478,35 @@ export default class CustomerController {
     }
   }
 
+  public async customerLike({ params, request, response, session }: HttpContextContract) {
+    try {
+      const likes = (await Database.rawQuery(`
+        SELECT u.user_id, avatar_url, nickname, birthday, school, location, education, job_title, work, company FROM users u JOIN (
+          SELECT user_id FROM likes WHERE status = 1 AND type = 'customer' AND relation_type_id = '${ params.id }' ORDER BY created_at DESC
+        ) AS l ON u.user_id = l.user_id AND u.status = 1;
+      `))[0]
+
+      for (let index = 0; index < likes.length; index++) {
+        likes[index].work = likes[index].work ? JSON.parse(likes[index].work) : {}
+        likes[index].location = likes[index].location ? JSON.parse(likes[index].location) : {}
+        likes[index].age = Moment().diff(likes[index].birthday, 'years')
+        delete likes[index].birthday
+      }
+
+      return response.json({
+        status: 200,
+        sms: "ok",
+        data: likes
+      })
+    } catch (error) {
+      console.log(error)
+      response.json({
+        status: 500,
+        sms: "internalServerError"
+      })
+    }
+  }
+
   public async customerShow({ params, request, response, session }: HttpContextContract) {
     try {
       const all = request.all()
@@ -558,7 +587,7 @@ export default class CustomerController {
       if ((all.user_id || session.get('user_id')) == customer.user_id) {
         const review = await Database.from('datas').where({ status: 1, category: 0, table: 'customer', field_value: customer.cid }).count('* as total')
         const shareReview = await Database.from('datas').where({ status: 1, category: 2, table: 'customer', field_value: customer.cid }).count('* as total')
-        const like = await Database.from('likes').where({ status: 1, type: 'customer', relation_type_id: customer.cid }).count('* as total')
+        const like = await Database.from('likes').where({ status: 1, type: 'customer', relation_type_id: customer.cid }).count('* as total')        
         const timer = await Database.from('datas').where({ status: 1, category: 1, table: 'customer', field_value: customer.cid }).sum('count as sum')
         const timerCounter = await Database.from('datas').distinct('user_id').where({ status: 1, category: 1, table: 'customer', field_value: customer.cid })
         customer.datas = {
