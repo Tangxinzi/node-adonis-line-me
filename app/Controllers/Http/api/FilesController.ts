@@ -7,7 +7,7 @@ export default class FilesController {
     try {
       if (request.file('files')) {
         let file = {}
-        const profile = request.file('files', { type: ['image', 'video'], size: '20mb' })
+        const profile = request.file('files', { type: ['image', 'audio', 'video'], size: '20mb' })
         const profileName = `${RandomString.generate(32)}.${profile.extname}`
         const profilePath = `/uploads/files/`
 
